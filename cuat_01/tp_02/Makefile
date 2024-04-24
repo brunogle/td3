@@ -13,7 +13,7 @@ DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init.gdb"
 #DEBUGGERFLAGS = --gdb-program gdb-multiarch --connect localhost:2159
 
 
-LINKER_SCRIPT = $(SRC_DIR)/td3_memmap.ld
+LINKER_SCRIPT = $(SRC_DIR)/memmap.ld
 
 SRC_DIR = src
 BIN_DIR = bin
@@ -32,8 +32,8 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
 # Rule to link object files
-$(TARGET_ELF): $(OBJ_FILES)
-	$(LD) $(LDFLAGS) -o $@ $^
+$(TARGET_ELF): $(OBJ_FILES) $(LINKER_SCRIPT)
+	$(LD) $(LDFLAGS) -o $@ $(filter-out $(LINKER_SCRIPT), $^)
 
 # Rule to generate .bin file
 $(TARGET_BIN): $(TARGET_ELF)

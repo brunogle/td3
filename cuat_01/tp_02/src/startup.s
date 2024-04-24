@@ -1,25 +1,24 @@
 .global _start
 
-.extern
 
+.section .stack
+	.space 0x1000
 
-.equ KB,1024
-.equ PILA_SIZE,32*KB
-
-.section .pila
-	.space PILA_SIZE
-
-.section .bootloader
+.section .bootloader,"ax"@progbits
 
 
 //Comienzo de codigo de test
 _start:
-      LDR R0, =__DESTINO_KERNEL
-      LDR R1, =.kernel
-      MOV R2, #10
-      BL memcpy
-	  BL kernel_start
-      B .
+	LDR SP,=STACK_END
+
+	LDR R0, =KERNEL_INIT
+	LDR R1, =KERNEL_LOAD
+	LDR R2, =KERNEL_SIZE
+	BL memcpy
+
+	BL kernel_start
+end:
+	B .
 //Fin de codigo de test
 
 
@@ -47,12 +46,10 @@ memcpy_end:
 //Fin de codigo de memcpy
 
 
-.section .kernel
+.section .kernel,"ax"@progbits
 	kernel_start:
-	MOV R0, #0x70080000
-	MOV R1, #12
+	LDR R0, =0x70080000
+	LDR R1, =12
 	STR R1, [R0]
-	B .
-
-
+	BX LR
 
