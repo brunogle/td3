@@ -9,8 +9,7 @@ ASFLAGS = -g
 LDFLAGS = -T $(LINKER_SCRIPT)
 OBJCOPYFLAGS = -O binary
 QEMUFLAGS = -M realview-pb-a8 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -S -gdb tcp::2159
-DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init.gdb"
-#DEBUGGERFLAGS = --gdb-program gdb-multiarch --connect localhost:2159
+DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init.txt"
 
 
 LINKER_SCRIPT = $(SRC_DIR)/td3_memmap.ld
@@ -32,8 +31,8 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
 # Rule to link object files
-$(TARGET_ELF): $(OBJ_FILES)
-	$(LD) $(LDFLAGS) -o $@ $^
+$(TARGET_ELF): $(OBJ_FILES) $(LINKER_SCRIPT)
+	$(LD) $(LDFLAGS) -o $@ $(filter-out $(LINKER_SCRIPT), $^)
 
 # Rule to generate .bin file
 $(TARGET_BIN): $(TARGET_ELF)

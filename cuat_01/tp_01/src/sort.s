@@ -4,6 +4,8 @@
 
 //Comienzo de codigo de test
 _start:
+	LDR SP, =_PUBLIC_STACK_INIT //Preparo el stack pointer
+
 	LDR R0, =data_destino
 	LDR R1, =data_origen
 	MOV R2, #10
@@ -11,6 +13,7 @@ _start:
 end:
 	B .
 //Fin de codigo de test
+
 
 
 // Subrutina sort. Implementado utilizando insertion sort.
