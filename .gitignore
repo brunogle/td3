@@ -17,6 +17,7 @@
 !*.ld
 !.gitignore
 !*.gdb
+!*.seer
 # Unignore all dirs
 !*/
 
