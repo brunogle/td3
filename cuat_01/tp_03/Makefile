@@ -9,7 +9,7 @@ ASFLAGS = -g
 LDFLAGS = -T $(LINKER_SCRIPT)
 OBJCOPYFLAGS = -O binary
 QEMUFLAGS = -M realview-pb-a8 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -S -gdb tcp::2159
-DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init.txt"
+DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init_ddd.txt"
 
 
 LINKER_SCRIPT = $(SRC_DIR)/memmap.ld
@@ -53,5 +53,9 @@ debug: $(TARGET_BIN) $(TARGET_ELF) # Debug
 	$(DEBUGGER) $(DEBUGGERFLAGS) $(TARGET_ELF)
 	killall $(QEMU)
 
+debug_seer: $(TARGET_BIN) $(TARGET_ELF) # Debug
+	$(QEMU) $(QEMUFLAGS) -kernel $(TARGET_BIN) &
+	seergdb --project project.seer --gdb-program gdb-multiarch
+	killall $(QEMU)
 
 

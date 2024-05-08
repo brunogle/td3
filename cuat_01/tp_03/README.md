@@ -1,15 +1,21 @@
 # Descripción del proyecto
 
-Este es un ejemplo de como se puede copiar código dentro de la memoria y muestra que rol cumple el linker en este proceso.
+En este proyecto, se agrega la configuración de las interrupciones. El bootloader además de cargar el kernel, carga el ISR a el valor de memoria 0x00000000.
+Se definen todos los handlers necesarios para el manejo de cualquier tipo de interrupción y se definen stacks para cada modo del procesador.
+Cuando el programa entra a la sección de kernel, este habilita las interrupciones y produce una excepción con la instrucción SWI.
 
-La sección `.bootloader`, que se va a encontrar ubicada al principio de la ROM (0x70010000) tiene el trabajo de copiar la sección `.kernel` que originalmente se encuentra inmediatamente después de `.bootloader` en ROM a una nueva dirección en RAM (0x70030000)
-Luego de copiar esta sección, hace un branch a la subrutina `kernel_start`, parte de la seccion `kernel` que se encuentra en el lugar nuevo de memoria.
-La sección kernel se encuentra en modo Thumb. Como ejemplo, lo único que hace el "kernel" es cambiar un valor de memoria y quedarse en un loop infinito.
+## Archivos:
+- `src/bootloader.s`: Aca se encuentra el codigo de bootloader, las secciones definidas en este archivo se ejecutan sobre ROM. Es el punto de entrada del programa
+- `src/kernel.s`: Aca (supuestamente) se encuentra el kernel, con el codigo de ejemplo para verificar el funcionamiento de las interrupciones.
+- `src/interrupts.s`: Aca se encuentra el codigo necesario para el uso de las interrucpciones (Handlers y tabla ISR)
+
 
 # Ejecución
 
 Ejecutando el comando `make debug` genera el binario, lo comienza a ejecutar en `qemu` y abre `ddd` para debuggear.
-La conexión de `gdb` y la configuración del registro `pc` se realiza automáticamente. Los comandos de `gdb` que se ejecutan para realizar esto se encuentran en `gdb_init.txt`.
-Al completarse el comando (cuando `ddd` se cierra), el makefile automáticamente **mata todos los procesos de `qemu`**.
+La conexión de `gdb` y la configuración del registro `pc` se realiza automáticamente. Los comandos de `gdb` que se ejecutan para realizar esto se encuentran en `gdb_init_ddd.txt`.
+Al completarse el comando (cuando `ddd` se cierra), el makefile automáticamente.**mata todos los procesos de `qemu`**.
+
+Además, el comando `make debug_seer` ejecuta el programa con un front end diferente a `ddd`, llamado `seergdb`. Esto esta implementado para probar alternativas a `ddd` que ya se encuentra obsoleto.
 
  
