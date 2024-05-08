@@ -45,7 +45,6 @@ SECTIONS
     .text :
     {
         *(.bootloader*);
-        *(.handlers*);
     } >rom
 
 
@@ -61,6 +60,7 @@ SECTIONS
 
     .kernel : 
     {
+        *(.handlers*);
         *(.kernel*);
     } >ram AT>rom
     /* Defino simbolos con valores numericos importantes para realizar la copia del kernel */
