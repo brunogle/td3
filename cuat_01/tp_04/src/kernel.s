@@ -46,12 +46,14 @@ Que es copiado de ROM a RAM por el bootloader
 
 	BL _gic_enable //Habilito en GIC
 
-	LDR R10,=#0 // Preparo R10 para contar
+	LDR R10,=0 // Preparo R10 para contar
 
 	BL _timer0_enable //Habilito timer 0, preconfigurado para un tick rate de 10ms
 
-	loop:
-		WFI
-		B loop
-	B . 
+	LDR R9,=0x70040000
+
+	interrupt_loop:
+		STR R10,[R9]
+		B interrupt_loop
+	 
 
