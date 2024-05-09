@@ -1,0 +1,3 @@
+target remote localhost:2159
+set $pc=0x70010000
+break kernel_start
