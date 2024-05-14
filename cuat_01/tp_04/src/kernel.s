@@ -42,18 +42,23 @@ Que es copiado de ROM a RAM por el bootloader
 	kernel_start:
 
 
-	BL _irq_enable //Habilito IRQ
 
 	BL _gic_enable //Habilito en GIC
 
-	LDR R10,=0 // Preparo R10 para contar
-
 	BL _timer0_enable //Habilito timer 0, preconfigurado para un tick rate de 10ms
 
-	LDR R9,=0x70040000
+	LDR R10,=0 // Preparo R10 para contar
+
+	BL _irq_enable //Habilito IRQ (importante habilitarlo despues de configurar el GIC)
+
+
+	loop_start:
+
+	LDR R9,=0xFFFFFFFF
+	//STR R9,[R9]   // Esto crearia una exepcion
 
 	interrupt_loop:
-		STR R10,[R9]
+		WFI
 		B interrupt_loop
 	 
 

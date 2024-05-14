@@ -1,59 +1,126 @@
+################################################## PROGRAMAS ##################################################
+
+
 AS = arm-none-eabi-as
 LD = arm-none-eabi-ld
 OBJCOPY = arm-none-eabi-objcopy
 QEMU = qemu-system-arm
 DEBUGGER = ddd
-#DEBUGGER = seergdb
 
+
+################################################## FLAGS ##################################################
 ASFLAGS = -g
 LDFLAGS = -T $(LINKER_SCRIPT)
 OBJCOPYFLAGS = -O binary
 QEMUFLAGS = -M realview-pb-a8 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -S -gdb tcp::2159
 DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init_ddd.txt"
 
+################################################## DIRECTORIOS ##################################################
 
-LINKER_SCRIPT = $(SRC_DIR)/memmap.ld
 
 SRC_DIR = src
 BIN_DIR = bin
 
-SRC_FILES = $(wildcard $(SRC_DIR)/*.s)
+$(shell mkdir -p $(BIN_DIR))
 
-OBJ_FILES = $(patsubst $(SRC_DIR)/%.s,$(BIN_DIR)/%.o,$(SRC_FILES)) #Object files places are placed in bin dir
+
+################################################## ARCHIVOS ESPECIALES ##################################################
+
+LINKER_SCRIPT = $(SRC_DIR)/memmap.ld
+
+SRC_EXCEPTIONS = src/exceptions.s # Este archivo no es compilado por la misma tarea que compila las otras fuentes
 
 TARGET_ELF = $(BIN_DIR)/output.elf
 TARGET_BIN = $(BIN_DIR)/output.bin
 
+
+
+################################################## DETECCION AUTOMATICA DE ARCHIVOS ##################################################
+
+### Fuentes
+
+SRC_FILES_INC_EXCEPTIONS = $(wildcard $(SRC_DIR)/*.s)
+SRC_FILES =  $(filter-out src/exceptions.s,$(SRC_FILES_INC_EXCEPTIONS)) # Archivos fuentes excepto por SRC_EXCPETIONS
+
+### Objetos
+
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.s,$(BIN_DIR)/%.o,$(SRC_FILES))
+OBJ_EXCEPTIONS = $(patsubst $(SRC_DIR)/%.s,$(BIN_DIR)/%.o,$(SRC_EXCEPTIONS))
+
+
+################################################## TAREA MAKE ALL ##################################################
+
 all: $(TARGET_BIN)
 
-# Rule to compile assembly files
+
+################################################## TAREAS DE ASSEMBLER ##################################################
+
+
+## Tarea para todos los objetos menos OBJ_EXCEPTIONS
 $(BIN_DIR)/%.o: $(SRC_DIR)/%.s
 	$(AS) $(ASFLAGS) -o $@ $<
 
-# Rule to link object files
-$(TARGET_ELF): $(OBJ_FILES) $(LINKER_SCRIPT)
+
+## Tarea especial para OBJ_EXCEPTIONS
+## Se fuerza en assembly de las expeciones para asegurar que se cumple la condicion de EXCEPTIONS=0 si se pasa
+$(OBJ_EXCEPTIONS): $(SRC_EXCEPTIONS) .FORCE
+
+ifeq ($(EXCEPTIONS), 0)
+	@echo -e "\033[0;31mExceptions dissabled\033[0m"
+	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_DISABLED=1 -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
+else
+	$(AS) $(ASFLAGS) -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
+endif
+
+################################################## TAREAS DE LINKEO ##################################################
+
+
+## Para generar el ELF a partir de los objetos
+$(TARGET_ELF): $(OBJ_FILES) $(OBJ_EXCEPTIONS) $(LINKER_SCRIPT)
 	$(LD) $(LDFLAGS) -o $@ $(filter-out $(LINKER_SCRIPT), $^)
 
-# Rule to generate .bin file
+# Para generar el BIN a partir del ELF
 $(TARGET_BIN): $(TARGET_ELF)
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
+
+
+################################################## TAREAS EXTRA ##################################################
+
 
 # Clean target
 clean:
 	rm -rf $(BIN_DIR)
 
-# Create bin directory if it doesn't exist
-$(shell mkdir -p $(BIN_DIR))
+# Necesario para forzar el assembly de exepciones
+.PHONY: .FORCE
+.FORCE:
 
-qemu: $(TARGET_BIN) # Run bin file in qemu
+# Help
+help:
+	@echo "Este makefile posee las siguientes tareas:"
+	@echo "make all   : Ensambla el binario"
+	@echo "make qemu  : Ensambla el binario y lo corre en qemu"
+	@echo "make debug : Ensambla el binario, lo corre en qemu y abre el ddd y ejecuta los comandos en gdb_init_ddd.txt"
+	@echo "make seer  : Ensambla el binario, lo corre en qemu y abre el seergdb y ejecuta los comandos en gdb_init_seer.txt"
+	@echo ""
+	@echo "Opcionalmente, si se pasa EXCEPTIONS=0 en cualquier tarea, no se ejecutara codigo en ninguna exepcion"
+################################################## TAREAS DE EJECUCION ##################################################
+
+
+## Ejecuta el programa en qemu
+qemu: $(TARGET_BIN)
 	$(QEMU) $(QEMUFLAGS) -kernel $(TARGET_BIN)
 
-debug: $(TARGET_BIN) $(TARGET_ELF) # Debug
+
+## Ejecuta el programa en qemu y abre ddd
+debug: $(TARGET_BIN) $(TARGET_ELF)
 	$(QEMU) $(QEMUFLAGS) -kernel $(TARGET_BIN) &
 	$(DEBUGGER) $(DEBUGGERFLAGS) $(TARGET_ELF)
 	killall $(QEMU)
 
-debug_seer: $(TARGET_BIN) $(TARGET_ELF) # Debug
+
+## Ejecuta el programa en qemu y abre seergdb
+debug_seer: $(TARGET_BIN) $(TARGET_ELF)
 	$(QEMU) $(QEMUFLAGS) -kernel $(TARGET_BIN) &
 	seergdb --project project.seer --gdb-program gdb-multiarch
 	killall $(QEMU)

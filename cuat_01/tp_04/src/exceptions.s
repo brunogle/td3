@@ -20,6 +20,7 @@
 .equ F_BIT,    0x40    /* Mask bit F - Encoding segun ARM B1.3.3 (pag. B1-1149) - Bit 6 del CPSR */
 
 
+
 .section .handlers,"ax"@progbits
 
 _reset_vector:
@@ -28,21 +29,30 @@ _reset_vector:
 
 UND_Handler:  
     SRSFD   SP!, #UND_MODE
+    .ifndef _EXCEPTIONS_DISABLED // Posiblemente definido mediante --defsym por el makefile
     LDR R10, =0x00494E56
+    .endif
     RFEFD   SP!  
 
 SVC_Handler:
     SRSFD   SP!, #SVC_MODE
+    .ifndef _EXCEPTIONS_DISABLED // Posiblemente definido mediante --defsym por el makefile
     LDR R10, =0x00435653
+    .endif
     RFEFD   SP!
 
 PREF_Handler:
     SRSFD   SP!, #ABT_MODE
+    .ifndef _EXCEPTIONS_DISABLED // Posiblemente definido mediante --defsym por el makefile
+    LDR R10, =0x004D454D
+    .endif
     RFEFD   SP!
 
 ABT_Handler:
     SRSFD   SP!, #ABT_MODE
+    .ifndef _EXCEPTIONS_DISABLED // Posiblemente definido mediante --defsym por el makefile
     LDR R10, =0x004D454D
+    .endif
     RFEFD   SP!
 
 IRQ_Handler:
@@ -60,6 +70,8 @@ IRQ_Handler:
 FIQ_Handler:
     SRSFD   SP!, #FIQ_MODE
     RFEFD   SP!
+
+
 
 
 
