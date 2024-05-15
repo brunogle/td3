@@ -6,7 +6,7 @@
 .global _timer0_enable
 
 _timer0_enable:
-    LDR R0, =(TIMER0_ADDR + TIMER_LOAD_OFFSET) //Para ticks de 10ms si el clock es de 32.768kHz
+    LDR R0, =(TIMER0_ADDR + TIMER_LOAD_OFFSET) //Para ticks de 10ms si el clock es de 1MHz
 	LDR R1, =10000
 	STR R1, [R0]
 
