@@ -62,7 +62,7 @@ Que es copiado de ROM a RAM por el bootloader
 
 	interrupt_loop:
 		WFI
-		B interrupt_loop
-		B interrupt_loop // Cuando sale de IRQ se viene aca, si no pongo esto se sale del loop. Porque pasa esto???
+		NOP
+		B interrupt_loop // Cuando sale de IRQ se viene aca, si no pongo el NOP se me sae del loop. Porque pasa esto???
 	 
 
