@@ -1,15 +1,29 @@
 # Descripción del proyecto
 
-Este es un ejemplo de como se puede copiar código dentro de la memoria y muestra que rol cumple el linker en este proceso.
 
-La sección `.bootloader`, que se va a encontrar ubicada al principio de la ROM (0x70010000) tiene el trabajo de copiar la sección `.kernel` que originalmente se encuentra inmediatamente después de `.bootloader` en ROM a una nueva dirección en RAM (0x70030000)
-Luego de copiar esta sección, hace un branch a la subrutina `kernel_start`, parte de la seccion `kernel` que se encuentra en el lugar nuevo de memoria.
-La sección kernel se encuentra en modo Thumb. Como ejemplo, lo único que hace el "kernel" es cambiar un valor de memoria y quedarse en un loop infinito.
+En este proyecto, se configura el GIC y se habilita el Timer 0 para incrementar R10 cada 10ms. Se amplia el uso de las exepciones, haciendo que guarden en R10 un string de 3 caracteres con el tipo de exepcion que se produjo. Se implemento un argumento opcional en el makefile (EXCPETIONS=0) que deshabilita la ejecucion de codigo en las exepciones.
+
+## Archivos:
+- `src/bootloader.s`: Aca se encuentra el codigo de bootloader, las secciones definidas en este archivo se ejecutan sobre ROM. Es el punto de entrada del programa
+- `src/kernel.s`: Aca (supuestamente) se encuentra el kernel, con el codigo de ejemplo para verificar el funcionamiento de las interrupciones.
+- `src/exceptions.s`: Aca se encuentra el codigo necesario para el uso de las interrucpciones y exepciones (Handlers y tabla ISR)
+- `src/gic.s`: Aca se encuentra el codigo para configurar el GIC
+- `src/timer.s`: Aca se encuentra el codigo para configurar el Timer 0
+- `src/addr.s`: Aca se encuentran todos los .equ que especifican direcciones de registros para poder configurar perifericos
 
 # Ejecución
 
-Ejecutando el comando `make debug` genera el binario, lo comienza a ejecutar en `qemu` y abre `ddd` para debuggear.
-La conexión de `gdb` y la configuración del registro `pc` se realiza automáticamente. Los comandos de `gdb` que se ejecutan para realizar esto se encuentran en `gdb_init.txt`.
-Al completarse el comando (cuando `ddd` se cierra), el makefile automáticamente **mata todos los procesos de `qemu`**.
+El make ahora incluye `make help` que explica las opciones de ejecutar el codigo:
+
+**make all**   : Ensambla el binario
+
+**make qemu**  : Ensambla el binario y lo corre en qemu
+
+**make debug** : Ensambla el binario, lo corre en qemu y abre el ddd y ejecuta los comandos en gdb_init_ddd.txt
+
+**make seer**  : Ensambla el binario, lo corre en qemu y abre el seergdb y ejecuta los comandos en gdb_init_seer.txt
+
+Opcionalmente, si se pasa EXCEPTIONS=0 en cualquier tarea, no se ejecutara codigo en ninguna exepcion
+
 
  
