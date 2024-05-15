@@ -108,7 +108,7 @@ help:
 	@echo "    make all   : Ensambla el binario"
 	@echo "    make qemu  : Ensambla el binario y lo corre en qemu"
 	@echo "    make debug : Ensambla el binario, lo corre en qemu y abre el ddd y ejecuta los comandos en gdb_init_ddd.txt"
-	@echo "    make seer  : Ensambla el binario, lo corre en qemu y abre el seergdb y ejecuta los comandos en gdb_init_seer.txt"
+	@echo "    make debug_seer  : Ensambla el binario, lo corre en qemu y abre el seergdb y ejecuta los comandos en gdb_init_seer.txt"
 	@echo ""
 	@echo "Argumentos opcionales:"
 	@echo "    EXCEPTIONS=0 en cualquier tarea, no se ejecutara el handler de ninguna exepcion"
