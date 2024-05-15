@@ -54,11 +54,15 @@ Que es copiado de ROM a RAM por el bootloader
 
 	loop_start:
 
-	LDR R9,=0xFFFFFFFF
-	//STR R9,[R9]   // Esto crearia una exepcion
+
+	// Esto crearia una exepcion, va a escribir "MEM" en el registro, enteonces no va a contar desde 0,
+	// va a contar desde 0x004D454D si esto se ejecuta
+	//LDR R9,=0xFFFFFFFF
+	STR R9,[R9]   
 
 	interrupt_loop:
 		WFI
 		B interrupt_loop
+		B interrupt_loop // Cuando sale de IRQ se viene aca, si no pongo esto se sale del loop. Porque pasa esto???
 	 
 

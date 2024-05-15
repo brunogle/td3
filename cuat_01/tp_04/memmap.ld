@@ -15,11 +15,11 @@ _RAM_INIT = 0x70030000;
 
 
 C_STACK_SIZE   = 4K;
-IRQ_STACK_SIZE = 128;
-FIQ_STACK_SIZE = 128;
-SVC_STACK_SIZE = 128;
-ABT_STACK_SIZE = 128;
-UND_STACK_SIZE = 128;
+IRQ_STACK_SIZE = 1K;
+FIQ_STACK_SIZE = 1K;
+SVC_STACK_SIZE = 1K;
+ABT_STACK_SIZE = 1K;
+UND_STACK_SIZE = 1K;
 
 
 
@@ -45,7 +45,7 @@ SECTIONS
     .text :
     {
         *(.bootloader*);
-        *(.handlers*);
+       
     } >rom
 
 
@@ -62,6 +62,7 @@ SECTIONS
     .kernel : 
     {
         *(.kernel*);
+        *(.handlers*);
     } >ram AT>rom
     /* Defino simbolos con valores numericos importantes para realizar la copia del kernel */
     _KERNEL_INIT = ADDR(.kernel); /* VMA del kernel */

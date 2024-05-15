@@ -1,7 +1,5 @@
 .include "src/addr.s"
 
-
-
 .global UND_Handler
 .global SVC_Handler
 .global PREF_Handler
@@ -20,6 +18,9 @@
 .equ F_BIT,    0x40    /* Mask bit F - Encoding segun ARM B1.3.3 (pag. B1-1149) - Bit 6 del CPSR */
 
 
+/*
+Esta sección contiene todos los handlers de execpciones e interrupciones
+*/
 
 .section .handlers,"ax"@progbits
 
@@ -29,30 +30,22 @@ _reset_vector:
 
 UND_Handler:  
     SRSFD   SP!, #UND_MODE
-    .ifndef _EXCEPTIONS_DISABLED // Posiblemente definido mediante --defsym por el makefile
     LDR R10, =0x00494E56
-    .endif
     RFEFD   SP!  
 
 SVC_Handler:
     SRSFD   SP!, #SVC_MODE
-    .ifndef _EXCEPTIONS_DISABLED // Posiblemente definido mediante --defsym por el makefile
     LDR R10, =0x00435653
-    .endif
     RFEFD   SP!
 
 PREF_Handler:
     SRSFD   SP!, #ABT_MODE
-    .ifndef _EXCEPTIONS_DISABLED // Posiblemente definido mediante --defsym por el makefile
     LDR R10, =0x004D454D
-    .endif
     RFEFD   SP!
 
 ABT_Handler:
     SRSFD   SP!, #ABT_MODE
-    .ifndef _EXCEPTIONS_DISABLED // Posiblemente definido mediante --defsym por el makefile
     LDR R10, =0x004D454D
-    .endif
     RFEFD   SP!
 
 IRQ_Handler:
@@ -74,19 +67,40 @@ FIQ_Handler:
 
 
 
-
+/*
+Esta tabla se encuentra un lugar de memoria especial distinto a el resto del programa
+*/
 .section .isr_table,"ax"@progbits
 
+
+// Los flags _EXCEPTIONS_ENABLED, _IRQ_ENABLED y _FIQ_ENABLED pueden ser definidos externamente
+// ensamblando con --defsym. El makefile los setea si el programador quiere deshabilitar execpiones
 _table_start:
-    LDR PC, addr__reset_vector
+    LDR PC, addr__reset_vector    
+.if _EXCEPTIONS_ENABLED == 0
+    SUBS  PC, LR, #0
+.else
     LDR PC, addr_UND_Handler
+.endif
     LDR PC, addr_SVC_Handler
+.if _EXCEPTIONS_ENABLED == 0
+    SUBS  PC, LR, #4
+    SUBS  PC, LR, #4
+.else
     LDR PC, addr_PREF_Handler
     LDR PC, addr_ABT_Handler
+.endif
     LDR PC, addr_start
+.if _IRQ_ENABLED == 0
+    SUBS  PC, LR, #4
+.else
     LDR PC, addr_IRQ_Handler
+.endif
+.if _FIQ_ENABLED == 0
+    SUBS PC, LR, #4
+.else
     LDR PC, addr_FIQ_Handler
-
+.endif
 
 addr__reset_vector:  .word _reset_vector
 addr_UND_Handler  :  .word UND_Handler  

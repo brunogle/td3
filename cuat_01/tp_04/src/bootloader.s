@@ -45,22 +45,22 @@ _start:
 
 _stack_init:
     /* Inicializamos los stack pointers para los diferentes modos de funcionamiento */
-    MSR cpsr_c,#(IRQ_MODE | I_BIT |F_BIT)
+    MSR cpsr_c,#(IRQ_MODE)
     LDR SP,=__irq_stack_top__     /* IRQ stack pointer */
 
-    MSR cpsr_c,#(FIQ_MODE | I_BIT |F_BIT)
+    MSR cpsr_c,#(FIQ_MODE)
     LDR SP,=__fiq_stack_top__     /* FIQ stack pointer */
 
-    MSR cpsr_c,#(SVC_MODE | I_BIT |F_BIT)
+    MSR cpsr_c,#(SVC_MODE)
     LDR SP,=__svc_stack_top__     /* SVC stack pointer */
 
-    MSR cpsr_c,#(ABT_MODE | I_BIT |F_BIT)
+    MSR cpsr_c,#(ABT_MODE)
     LDR SP,=__abt_stack_top__     /* ABT stack pointer */
 
-    MSR cpsr_c,#(UND_MODE | I_BIT |F_BIT)
+    MSR cpsr_c,#(UND_MODE)
     LDR SP,=__und_stack_top__     /* UND stack pointer */
 
-    MSR cpsr_c,#(SYS_MODE | I_BIT |F_BIT)
+    MSR cpsr_c,#(SYS_MODE)
     LDR SP,=__sys_stack_top__     /* SYS stack pointer */
 
 

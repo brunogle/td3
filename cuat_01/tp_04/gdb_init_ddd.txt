@@ -1,3 +1,4 @@
 target remote localhost:2159
 set $pc=0x70010000
 break loop_start
+break IRQ_Handler

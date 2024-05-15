@@ -26,7 +26,7 @@ $(shell mkdir -p $(BIN_DIR))
 
 ################################################## ARCHIVOS ESPECIALES ##################################################
 
-LINKER_SCRIPT = $(SRC_DIR)/memmap.ld
+LINKER_SCRIPT =  memmap.ld
 
 SRC_EXCEPTIONS = src/exceptions.s # Este archivo no es compilado por la misma tarea que compila las otras fuentes
 
@@ -40,13 +40,19 @@ TARGET_BIN = $(BIN_DIR)/output.bin
 ### Fuentes
 
 SRC_FILES_INC_EXCEPTIONS = $(wildcard $(SRC_DIR)/*.s)
-SRC_FILES =  $(filter-out src/exceptions.s,$(SRC_FILES_INC_EXCEPTIONS)) # Archivos fuentes excepto por SRC_EXCPETIONS
+SRC_FILES =  $(filter-out $(SRC_EXCEPTIONS),$(SRC_FILES_INC_EXCEPTIONS)) # Archivos fuentes excepto por SRC_EXCPETIONS
 
 ### Objetos
 
 OBJ_FILES = $(patsubst $(SRC_DIR)/%.s,$(BIN_DIR)/%.o,$(SRC_FILES))
 OBJ_EXCEPTIONS = $(patsubst $(SRC_DIR)/%.s,$(BIN_DIR)/%.o,$(SRC_EXCEPTIONS))
 
+
+################################################## VARIABLES DEFAULT ##################################################
+
+EXCEPTIONS = 1
+IRQ = 1
+FIQ = 1
 
 ################################################## TAREA MAKE ALL ##################################################
 
@@ -63,14 +69,13 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.s
 
 ## Tarea especial para OBJ_EXCEPTIONS
 ## Se fuerza en assembly de las expeciones para asegurar que se cumple la condicion de EXCEPTIONS=0 si se pasa
+
 $(OBJ_EXCEPTIONS): $(SRC_EXCEPTIONS) .FORCE
 
 ifeq ($(EXCEPTIONS), 0)
-	@echo -e "\033[0;31mExceptions dissabled\033[0m"
-	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_DISABLED=1 -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
-else
-	$(AS) $(ASFLAGS) -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
+	@echo -e "\033[0;31mExceptions disabled\033[0m"
 endif
+	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_ENABLED=$(EXCEPTIONS) --defsym _IRQ_ENABLED=$(IRQ) --defsym _FIQ_ENABLED=$(FIQ) -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
 
 ################################################## TAREAS DE LINKEO ##################################################
 
@@ -98,12 +103,16 @@ clean:
 # Help
 help:
 	@echo "Este makefile posee las siguientes tareas:"
-	@echo "make all   : Ensambla el binario"
-	@echo "make qemu  : Ensambla el binario y lo corre en qemu"
-	@echo "make debug : Ensambla el binario, lo corre en qemu y abre el ddd y ejecuta los comandos en gdb_init_ddd.txt"
-	@echo "make seer  : Ensambla el binario, lo corre en qemu y abre el seergdb y ejecuta los comandos en gdb_init_seer.txt"
+	@echo "    make all   : Ensambla el binario"
+	@echo "    make qemu  : Ensambla el binario y lo corre en qemu"
+	@echo "    make debug : Ensambla el binario, lo corre en qemu y abre el ddd y ejecuta los comandos en gdb_init_ddd.txt"
+	@echo "    make seer  : Ensambla el binario, lo corre en qemu y abre el seergdb y ejecuta los comandos en gdb_init_seer.txt"
 	@echo ""
-	@echo "Opcionalmente, si se pasa EXCEPTIONS=0 en cualquier tarea, no se ejecutara codigo en ninguna exepcion"
+	@echo "Argumentos opcionales:"
+	@echo "    EXCEPTIONS=0 en cualquier tarea, no se ejecutara el handler de ninguna exepcion"
+	@echo "    IRQ=0 en cualquier tarea, no se ejecutara el handler de IRQ"
+	@echo "    FIQ=0 en cualquier tarea, no se ejecutara el handler de FIQ"
+
 ################################################## TAREAS DE EJECUCION ##################################################
 
 
