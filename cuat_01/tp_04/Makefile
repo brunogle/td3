@@ -21,7 +21,7 @@ DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init_ddd.txt"
 SRC_DIR = src
 BIN_DIR = bin
 
-$(shell mkdir -p $(BIN_DIR))
+$(shell mkdir -p $(BIN_DIR)) # Creal BIN_DIR si no existe
 
 
 ################################################## ARCHIVOS ESPECIALES ##################################################
@@ -53,6 +53,7 @@ OBJ_EXCEPTIONS = $(patsubst $(SRC_DIR)/%.s,$(BIN_DIR)/%.o,$(SRC_EXCEPTIONS))
 EXCEPTIONS = 1
 IRQ = 1
 FIQ = 1
+SWI = 1
 
 ################################################## TAREA MAKE ALL ##################################################
 
@@ -75,7 +76,8 @@ $(OBJ_EXCEPTIONS): $(SRC_EXCEPTIONS) .FORCE
 ifeq ($(EXCEPTIONS), 0)
 	@echo -e "\033[0;31mExceptions disabled\033[0m"
 endif
-	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_ENABLED=$(EXCEPTIONS) --defsym _IRQ_ENABLED=$(IRQ) --defsym _FIQ_ENABLED=$(FIQ) -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
+	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_ENABLED=$(EXCEPTIONS) --defsym _IRQ_ENABLED=$(IRQ) --defsym _FIQ_ENABLED=$(FIQ) \
+					 --defsym _SWI_ENABLED=$(SWI) -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
 
 ################################################## TAREAS DE LINKEO ##################################################
 

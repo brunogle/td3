@@ -57,7 +57,7 @@ Que es copiado de ROM a RAM por el bootloader
 
 	// Esto crearia una exepcion, va a escribir "MEM" en el registro, enteonces no va a contar desde 0,
 	// va a contar desde 0x004D454D si esto se ejecuta
-	//LDR R9,=0xFFFFFFFF
+	LDR R9,=0xFFFFFFFF
 	STR R9,[R9]   
 
 	interrupt_loop:

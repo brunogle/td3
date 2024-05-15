@@ -75,31 +75,54 @@ Esta tabla se encuentra un lugar de memoria especial distinto a el resto del pro
 
 // Los flags _EXCEPTIONS_ENABLED, _IRQ_ENABLED y _FIQ_ENABLED pueden ser definidos externamente
 // ensamblando con --defsym. El makefile los setea si el programador quiere deshabilitar execpiones
+// EL ORDEN ES CRITICO PARA EL FUNCIONAMIENTO
 _table_start:
-    LDR PC, addr__reset_vector    
-.if _EXCEPTIONS_ENABLED == 0
-    SUBS  PC, LR, #0
-.else
+    // Reset
+    LDR PC, addr__reset_vector 
+
+    // UNDEF
+.if _EXCEPTIONS_ENABLED != 0
     LDR PC, addr_UND_Handler
+.else
+    SUBS  PC, LR, #0
 .endif
+
+    // SWI
+.if _SWI_ENABLED != 0
     LDR PC, addr_SVC_Handler
-.if _EXCEPTIONS_ENABLED == 0
-    SUBS  PC, LR, #4
-    SUBS  PC, LR, #4
 .else
+    SUBS  PC, LR, #0
+.endif
+
+    // PABT
+.if _EXCEPTIONS_ENABLED != 0
     LDR PC, addr_PREF_Handler
-    LDR PC, addr_ABT_Handler
-.endif
-    LDR PC, addr_start
-.if _IRQ_ENABLED == 0
+.else
     SUBS  PC, LR, #4
-.else
-    LDR PC, addr_IRQ_Handler
 .endif
-.if _FIQ_ENABLED == 0
-    SUBS PC, LR, #4
+
+    // DABT
+.if _EXCEPTIONS_ENABLED != 0
+    LDR PC, addr_ABT_Handler 
 .else
+    SUBS  PC, LR, #8
+.endif
+
+    // Reserved
+    LDR PC, addr_start
+
+    // IRQ
+.if _IRQ_ENABLED != 0
+    LDR PC, addr_IRQ_Handler
+.else
+    SUBS  PC, LR, #4
+.endif
+
+    // FIQ
+.if _FIQ_ENABLED != 0
     LDR PC, addr_FIQ_Handler
+.else
+    SUBS PC, LR, #4
 .endif
 
 addr__reset_vector:  .word _reset_vector
