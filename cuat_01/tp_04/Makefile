@@ -12,7 +12,7 @@ DEBUGGER = ddd
 ASFLAGS = -g
 LDFLAGS = -T $(LINKER_SCRIPT)
 OBJCOPYFLAGS = -O binary
-QEMUFLAGS = -M realview-pb-a8 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -S -gdb tcp::2159
+QEMUFLAGS = -M realview-pb-a8 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -S -gdb tcp::2159 -device loader,addr=0x70010000,cpu-num=0
 DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init_ddd.txt"
 
 ################################################## DIRECTORIOS ##################################################
@@ -71,10 +71,6 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.s
 ## Se fuerza en assembly de las expeciones para asegurar que se cumple la condicion de EXCEPTIONS=0 si se pasa
 
 $(OBJ_EXCEPTIONS): $(SRC_EXCEPTIONS) .FORCE
-
-ifeq ($(EXCEPTIONS), 0)
-	@echo -e "\033[0;31mExceptions disabled\033[0m"
-endif
 	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_ENABLED=$(EXCEPTIONS) --defsym _IRQ_ENABLED=$(IRQ) --defsym _FIQ_ENABLED=$(FIQ) -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
 
 ################################################## TAREAS DE LINKEO ##################################################

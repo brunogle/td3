@@ -1,2 +1,0 @@
-target remote localhost:2159
-break kernel_start
