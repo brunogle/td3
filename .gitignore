@@ -18,6 +18,8 @@
 !.gitignore
 !*.gdb
 !*.seer
+!launch*.json
+!tasks*.json
 # Unignore all dirs
 !*/
 
