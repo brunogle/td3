@@ -72,16 +72,7 @@ $(BIN_DIR)/%.o: $(SRC_DIR)/%.s
 ## Se fuerza en assembly de las expeciones para asegurar que se cumple la condicion de EXCEPTIONS=0 si se pasa
 
 $(OBJ_EXCEPTIONS): $(SRC_EXCEPTIONS) .FORCE
-<<<<<<< HEAD
-
-ifeq ($(EXCEPTIONS), 0)
-	@echo -e "\033[0;31mExceptions disabled\033[0m"
-endif
-	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_ENABLED=$(EXCEPTIONS) --defsym _IRQ_ENABLED=$(IRQ) --defsym _FIQ_ENABLED=$(FIQ) \
-					 --defsym _SWI_ENABLED=$(SWI) -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
-=======
 	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_ENABLED=$(EXCEPTIONS) --defsym _IRQ_ENABLED=$(IRQ) --defsym _FIQ_ENABLED=$(FIQ) -o $(OBJ_EXCEPTIONS) $(SRC_EXCEPTIONS)
->>>>>>> d386d6f (TP4 Soporta debug en VSCODE)
 
 ################################################## TAREAS DE LINKEO ##################################################
 
