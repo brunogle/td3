@@ -26,7 +26,7 @@ _set_l2_small_page:
     STMFD   SP!, {R0-R3, LR}
 
     LDR R4, =_L2_PAGE_TABLES_INIT
-    ADD R4, R0, LSL#14
+    ADD R4, R0, LSL#10
     ADD R4, R1, LSL#2
     ORR R2, R2, #(TT_SMALL_PAGE | TT_SMALL_PAGE_AP_0 | TT_SMALL_PAGE_TEX_1)
     CMP R3, #0
@@ -54,7 +54,6 @@ _set_l1_page_table:
     LDR R3, =_L1_PAGE_TABLES_INIT
     ADD R3, R0, LSL#2
     ORR R1, R1, #(TT_PAGE_TABLE)
-    ORR R1, R0, LSL#12
     CMP R2, #0
     BEQ set_l1_page_table_no_xn
         ORR R1, R1, #(TT_PAGE_TABLE_PXN)
@@ -76,12 +75,13 @@ R1: Execute Never
 _fill_l2_table_small_page:
     STMFD   SP!, {R0-R3, LR}
 
-    MOV R1, R3
+    MOV R3, R1
     LDR R1, =255 //Contador de posicion en la tabla
 
     fill_l2_table_small_page_loop:
 
         MOV R2, R1, LSL#12
+        ORR R2, R0, LSL#20
         BL _set_l2_small_page
 
     SUBS R1, R1, #1
@@ -107,7 +107,8 @@ _fill_l1_table_page_table:
 
     fill_l1_table_page_table_loop:
 
-        MOV R1, R0, LSL#4
+        LDR R1, =_L2_PAGE_TABLES_INIT
+        ADD R1, R0, LSL#10
         BL _set_l1_page_table
 
     SUBS R0, R0, #1
@@ -129,7 +130,7 @@ _fill_tables_identity_mapping:
 
     BL _fill_l1_table_page_table
 
-    MOV R0, #255
+    MOV R0, #4095
 
     fill_tables_identity_mapping_loop:
 

@@ -51,12 +51,11 @@ Que es copiado de ROM a RAM por el bootloader
 	// Esto crearia una exepcion, va a escribir "MEM" en el registro, enteonces no va a contar desde 0,
 	// va a contar desde 0x004D454D si esto se ejecuta
 	
-	LDR R0, =1
+	LDR R0, =0
 	BL _fill_tables_identity_mapping
 
 	MRC p15, 0, r0, c2, c0, 0   
-	LDR R1, =_L1_PAGE_TABLES_INIT
-	ORR r0, R1
+	LDR r0, =_L1_PAGE_TABLES_INIT
 	MCR p15, 0, r0, c2, c0, 0   
 
 	MRC p15, 0, r0, c1, c0, 0 //Coprocesor to Register
