@@ -48,22 +48,22 @@ Que es copiado de ROM a RAM por el bootloader
 
 	BL _irq_enable //Habilito IRQ (importante habilitarlo despues de configurar el GIC)
 
+	BL _timer0_10ms_tick_enable
+
 	// Esto crearia una exepcion, va a escribir "MEM" en el registro, enteonces no va a contar desde 0,
 	// va a contar desde 0x004D454D si esto se ejecuta
 	
 	LDR R0, =0
 	BL _fill_tables_identity_mapping
 
-	MRC p15, 0, r0, c2, c0, 0   
-	LDR r0, =_L1_PAGE_TABLES_INIT
-	MCR p15, 0, r0, c2, c0, 0   
+    LDR R0,=_L1_PAGE_TABLES_INIT
+	BL _mmu_write_ttbr0
 
-	MRC p15, 0, r0, c1, c0, 0 //Coprocesor to Register
-	ORR r0, #0x01
-	MCR p15, 0, r0, c1, c0, 0 //Register to coprocessor
+	LDR R0, =0x55555555
+	BL _mmu_write_dacr
 
-	NOP
-
+	BL _mmu_enable
+	
 	interrupt_loop:
 		WFI
 		NOP

@@ -28,7 +28,7 @@ _set_l2_small_page:
     LDR R4, =_L2_PAGE_TABLES_INIT
     ADD R4, R0, LSL#10
     ADD R4, R1, LSL#2
-    ORR R2, R2, #(TT_SMALL_PAGE | TT_SMALL_PAGE_AP_0 | TT_SMALL_PAGE_TEX_1)
+    ORR R2, R2, #(TT_SMALL_PAGE | TT_SMALL_PAGE_AP_0 | TT_SMALL_PAGE_TEX_1 | TT_SMALL_PAGE_AP_1)
     CMP R3, #0
     BEQ set_l2_small_page_no_xn
         ORR R2, R2, #(TT_SMALL_PAGE_XN)
@@ -56,7 +56,7 @@ _set_l1_page_table:
     ORR R1, R1, #(TT_PAGE_TABLE)
     CMP R2, #0
     BEQ set_l1_page_table_no_xn
-        ORR R1, R1, #(TT_PAGE_TABLE_PXN)
+        ORR R1, R1, #(TT_PAGE_TABLE_PXN | TT_PAGE_TABLE_NS)
     set_l1_page_table_no_xn:
     STR R1, [R3]
 
