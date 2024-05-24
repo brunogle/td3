@@ -15,7 +15,7 @@
 Esta sección contiene todos los handlers de execpciones e interrupciones
 */
 
-.section .handlers,"ax"@progbits
+.section .text_kernel,"ax"@progbits
 
 _reset_vector:
    @ ldr PC,=_start

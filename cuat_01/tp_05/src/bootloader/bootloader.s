@@ -10,9 +10,9 @@ La funcion del bootloader es:
 
 
 /* Simbolos definidos por el linker script */
-.extern _KERNEL_INIT
-.extern _KERNEL_LOAD
-.extern _KERNEL_SIZE
+.extern _TEXT_INIT
+.extern _TEXT_LOAD
+.extern _TEXT_SIZE
 .extern _ISR_INIT
 .extern _ISR_LOAD
 .extern _ISR_SIZE
@@ -28,9 +28,9 @@ La funcion del bootloader es:
 //Comienzo del main del bootloader
 _start:
 	// Copia el kernel a RAM
-	LDR R0, =_KERNEL_INIT //VMA del kernel (donde se va a copiar)
-	LDR R1, =_KERNEL_LOAD //LMA del kernel (codigo de origen)
-	LDR R2, =_KERNEL_SIZE //Tamano del kernel
+	LDR R0, =_TEXT_INIT //VMA del kernel (donde se va a copiar)
+	LDR R1, =_TEXT_LOAD //LMA del kernel (codigo de origen)
+	LDR R2, =_TEXT_SIZE //Tamano del kernel
 	BL _util_memcpy
 
 	// Copia el ISR a su direccion de inicio

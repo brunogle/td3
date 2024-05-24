@@ -43,47 +43,61 @@ SECTIONS
     */
     .bootloader :
     {
-        *(.bootloader*);
-       
+        *(.bootloader);
     } >rom
 
-
-    .isr_table :
+    /*
+    Todas las secciones text* son copiadas a RAM para su ejecucion (VMA!=LMA)
+    */
+    .text : 
     {
-        *(.isr_table*);
-    } >isr AT>rom
-    /* Defino simbolos con valores numericos importantes para realizar la copia del LMA */
-    _ISR_LOAD = LOADADDR(.isr_table); /* LMA del ISR */
-    _ISR_SIZE = SIZEOF(.isr_table); /* size del ISR */
-
-
-
-    .kernel : 
-    {
-        *(.kernel*);
-        *(.handlers*);
+        *(.text*);
     } >ram AT>rom
-    /* Defino simbolos con valores numericos importantes para realizar la copia del kernel */
-    _KERNEL_INIT = ADDR(.kernel); /* VMA del kernel */
-    _KERNEL_LOAD = LOADADDR(.kernel); /* LMA del kernel */
-    _KERNEL_SIZE = SIZEOF(.kernel); /* size del kernel */
+    /* Defino simbolos con valores numericos importantes para realizar la copia de la seccion */
+    _TEXT_INIT = ADDR(.text); /* VMA del kernel */
+    _TEXT_LOAD = LOADADDR(.text); /* LMA del kernel */
+    _TEXT_SIZE = SIZEOF(.text); /* size del kernel */
 
-    /* Data */
+    /* Variables globales y estaticas no inicializados. Se inicializa a cero */
     .bss :
     {
         *(.bss*)
     } > ram
 
+    /* Variables globales y estaticas inicializadas */
+    .data :
+    {
+        *(.data*)
+    } > ram
+
+    /* Datos constantes */
+    .rodata :
+    {
+        *(.rodata*)
+    } > ram
+
+    /* Tabla de interrupciones */
+    .isr_table :
+    {
+        *(.isr_table*);
+    } >isr AT>rom
+    /* Defino simbolos con valores numericos importantes para realizar la copia de ROM */
+    _ISR_LOAD = LOADADDR(.isr_table); /* LMA del ISR */
+    _ISR_SIZE = SIZEOF(.isr_table); /* size del ISR */
+
 
     /* Tablas de paginacion */
     .page_tables : ALIGN(16K)
     {
-        _L1_PAGE_TABLES_INIT = .;
-        . += 4096*4;
-        _L2_PAGE_TABLES_INIT = .;
+        _L1_PAGE_TABLES_INIT = .; /* Comienzo de la tabla de L1 */
+        . += 4096*4; /* La primer tabla son 4096 entradas de 4 bytes cada una */
+        _L2_PAGE_TABLES_INIT = .; /* Comienzo de las tablas de L2 */
     } > ram
 
 
+    /*
+    Un stack disitinto para cada modo
+    */
     .stack :
         {
         __stack_start__ = .;

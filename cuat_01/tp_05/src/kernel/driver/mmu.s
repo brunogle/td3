@@ -3,7 +3,7 @@
 .global _mmu_write_cr, _mmu_read_cr
 .global _mmu_enable, _mmu_disable
 
-.section .kernel,"ax"@progbits
+.section .text_kernel,"ax"@progbits
 
 _mmu_write_ttbr0:
     MCR P15, 0, R0, C2, C0, 0

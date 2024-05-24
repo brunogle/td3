@@ -1,19 +1,12 @@
 .include "src/util/addr.s"
 
-.equ L1_TABLE_SIZE, 256
-.equ L2_TABLE_SIZE, 4096
-
-
-.global _set_l2_small_page
-.global _fill_l2_table_small_page
 .global _fill_tables_identity_mapping
 
-.section .kernel,"ax"@progbits
-
+.section .text_kernel,"ax"@progbits
 
 
 /*
-Setea una pagina chica (4K) en una tabla L2
+Escribe una entrada de pagina chica (4K) en una tabla L2
 
 R0: Numero de tabla
 R1: Numero de entrada
@@ -28,7 +21,7 @@ _set_l2_small_page:
     LDR R4, =_L2_PAGE_TABLES_INIT
     ADD R4, R0, LSL#10
     ADD R4, R1, LSL#2
-    ORR R2, R2, #(TT_SMALL_PAGE | TT_SMALL_PAGE_AP_0 | TT_SMALL_PAGE_TEX_1 | TT_SMALL_PAGE_AP_1)
+    ORR R2, R2, #(TT_SMALL_PAGE | TT_SMALL_PAGE_AP_0 |TT_SMALL_PAGE_AP_1)
     CMP R3, #0
     BEQ set_l2_small_page_no_xn
         ORR R2, R2, #(TT_SMALL_PAGE_XN)
@@ -41,7 +34,7 @@ _set_l2_small_page:
 
 
 /*
-Setea una entrada de tabla de pagina en una tabla L1
+Escribe una entrada de "page table" en la tabla L1 
 
 R0: Numero de entrada
 R1: Direccion fisica de la tabla
@@ -53,10 +46,10 @@ _set_l1_page_table:
 
     LDR R3, =_L1_PAGE_TABLES_INIT
     ADD R3, R0, LSL#2
-    ORR R1, R1, #(TT_PAGE_TABLE)
+    ORR R1, R1, #(TT_PAGE_TABLE | TT_PAGE_TABLE_NS)
     CMP R2, #0
     BEQ set_l1_page_table_no_xn
-        ORR R1, R1, #(TT_PAGE_TABLE_PXN | TT_PAGE_TABLE_NS)
+        ORR R1, R1, #(TT_PAGE_TABLE_PXN)
     set_l1_page_table_no_xn:
     STR R1, [R3]
 

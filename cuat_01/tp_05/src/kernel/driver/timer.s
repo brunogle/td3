@@ -1,7 +1,7 @@
 .include "src/util/addr.s"
 
 
-.section .kernel,"ax"@progbits
+.section .text_kernel,"ax"@progbits
 
 .global _timer0_10ms_tick_enable
 

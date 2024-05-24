@@ -5,7 +5,7 @@
 .global _gic_enable
 
 
-.section .kernel,"ax"@progbits
+.section .text_kernel,"ax"@progbits
 
 
 _gic_timer_0_1_enable:
@@ -30,3 +30,4 @@ _gic_enable:
 	STR R1, [R0]
 
     BX LR
+
