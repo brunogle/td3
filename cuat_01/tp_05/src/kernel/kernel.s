@@ -25,7 +25,7 @@ Que es copiado de ROM a RAM por el bootloader
 	BL _fill_tables_identity_mapping
 
 	// Configuro TTBR0
-    LDR R0,=_L1_PAGE_TABLES_INIT
+	LDR R0,=_L1_PAGE_TABLES_INIT
 	BL _mmu_write_ttbr0
 
 	// Configuro DACR
