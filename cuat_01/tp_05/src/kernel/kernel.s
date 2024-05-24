@@ -16,17 +16,7 @@ Que es copiado de ROM a RAM por el bootloader
 	kernel_start:
 	
 
-	//Configuro y	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
-	BL _irq_enable
-
-	//Habilito timer
-	BL _timer0_10ms_tick_enable
-
-	interrupt_loop:
-		WFI
-		NOP
-		B interrupt_loop // Cuando sale de IRQ se viene aca, si no pongo el NOP se me sae del loop. Porque pasa esto???
-	  habilito GIC
+	//Configuro y habilito GIC
 	BL _gic_timer_0_1_enable
 	BL _gic_enable 
 
