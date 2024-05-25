@@ -21,7 +21,7 @@ Que es copiado de ROM a RAM por el bootloader
 	BL _gic_enable 
 
 	// Completo translation tables en identity mapping
-	LDR R0, =0
+	LDR R0, =0 // NX = 0 (Permito la ejecucion de codigo en toda la memoria)
 	BL _fill_tables_identity_mapping
 
 	// Configuro TTBR0

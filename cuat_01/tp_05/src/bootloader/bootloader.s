@@ -28,7 +28,7 @@ La funcion del bootloader es:
 //Comienzo del main del bootloader
 _start:
 	// Copia el kernel a RAM
-	LDR R0, =_TEXT_INIT //VMA del kernel (donde se va a copiar)
+ 	LDR R0, =_TEXT_INIT //VMA del kernel (donde se va a copiar)
 	LDR R1, =_TEXT_LOAD //LMA del kernel (codigo de origen)
 	LDR R2, =_TEXT_SIZE //Tamano del kernel
 	BL _util_memcpy
