@@ -1,9 +1,7 @@
 # Descripción del proyecto
 
 
-En este proyecto, se configura el GIC y se habilita el Timer 0 para incrementar R10 cada 10ms. Se amplia el uso de las exepciones, haciendo que guarden en R10 un string de 3 caracteres con el tipo de exepcion que se produjo. Se implemento un argumento opcional en el makefile (EXCPETIONS=0) que deshabilita la ejecucion de codigo en las exepciones.
-
-En este proyecto se habilita la paginación en modo identity mapping. El kernel escribe en memoria RAM, una tabla de nivel 1 y 4096 tablas de nivel 2, con direcciones para que se realice la conversión de direccion virtual a fisica y que no se produzcan cambios. Esto permite seguir ejecutando el codigo del kernel como si no hubiese habido ningun cambio
+En este proyecto se habilita la paginación en modo identity mapping. El kernel escribe en memoria RAM, una tabla de nivel 1 y 4096 tablas de nivel 2, con direcciones para que se realice la conversión de direccion virtual a fisica y que no se produzcan cambios. Esto permite seguir ejecutando el codigo del kernel como si no hubiese habido ningun cambio. Se mantiene el timer 0 que actualiza R10 cada 10ms
 
 ## Archivos:
 - `src/bootloader/bootloader.s`: Aca se encuentra el codigo de bootloader, las secciones definidas en este archivo se ejecutan sobre ROM. Es el punto de entrada del programa
