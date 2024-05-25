@@ -26,7 +26,10 @@ El make ahora incluye `make help` que explica las opciones de ejecutar el codigo
 
 **make debug** : Ensambla el binario, lo corre en qemu y abre el ddd y ejecuta los comandos en gdb_init_ddd.txt
 
-Opcionalmente, si se pasa EXCEPTIONS=0 en cualquier tarea, no se ejecutara codigo en ninguna exepcion
+Opcionalmente, si se pasa EXCEPTIONS=0 en cualquier tarea, no se ejecutara codigo en ninguna exepcion.
+Similar para IRQ=0 y FIQ=0
 
+Este TP es el primero en incluir un directorio .vscode que permite el uso de la extensión "Native Debug" para poder debuggear dentro de Visual Studio Code.
+El launch "Debug QEMU", compila el binario, ejecuta QEMU e inicializa el debugger. Terminar el launch task, cierra TODOS los procesos abiertos de qemu en el sistema.
 
  
