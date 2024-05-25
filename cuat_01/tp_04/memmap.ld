@@ -65,9 +65,9 @@ SECTIONS
         *(.handlers*);
     } >ram AT>rom
     /* Defino simbolos con valores numericos importantes para realizar la copia del kernel */
-    _KERNEL_INIT = ADDR(.kernel); /* VMA del kernel */
-    _KERNEL_LOAD = LOADADDR(.kernel); /* LMA del kernel */
-    _KERNEL_SIZE = SIZEOF(.kernel); /* size del kernel */
+    _TEXT_INIT = ADDR(.kernel); /* VMA del kernel */
+    _TEXT_LOAD = LOADADDR(.kernel); /* LMA del kernel */
+    _TEXT_SIZE = SIZEOF(.kernel); /* size del kernel */
 
 
     .data : { *(.data*) } > ram
