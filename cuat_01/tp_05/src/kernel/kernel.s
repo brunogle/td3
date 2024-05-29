@@ -15,6 +15,7 @@ Que es copiado de ROM a RAM por el bootloader
 	/* Codigo del kernel */
 	kernel_start:
 	
+	SWI 0  // Pruebo un SVC
 
 	//Configuro y habilito GIC
 	BL _gic_timer_0_1_enable
@@ -38,7 +39,8 @@ Que es copiado de ROM a RAM por el bootloader
 	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
 	BL _irq_enable
 
-	//Habilito timer
+	//Preparo count y habilito timer
+	LDR R10,=0
 	BL _timer0_10ms_tick_enable
 
 	interrupt_loop:

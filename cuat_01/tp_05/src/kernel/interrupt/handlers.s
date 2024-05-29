@@ -21,28 +21,38 @@ _reset_vector:
    @ ldr PC,=_start
    B _start
 
-UND_Handler:  
-    SRSFD   SP!, #UND_MODE
+UND_Handler:
+    STMFD SP!,{R0-R3,LR}
+    
     LDR R10, =0x00494E56
-    RFEFD   SP!  
 
+    LDMFD SP!,{R0-R3,PC}^
 SVC_Handler:
-    SRSFD   SP!, #SVC_MODE
+    STMFD SP!,{R0-R3,LR}
+
     LDR R10, =0x00435653
-    RFEFD   SP!
+
+    LDMFD SP!,{R0-R3,PC}^
 
 PREF_Handler:
-    SRSFD   SP!, #ABT_MODE
+    SUB LR,LR,#4
+    STMFD SP!,{R0-R3,LR}
+
     LDR R10, =0x004D454D
-    RFEFD   SP!
+
+    LDMFD SP!,{R0-R3,PC}^
 
 ABT_Handler:
-    SRSFD   SP!, #ABT_MODE
+    SUB LR,LR,#8
+    STMFD SP!,{R0-R3,LR}
+
     LDR R10, =0x004D454D
-    RFEFD   SP!
+
+    LDMFD SP!,{R0-R3,PC}^
 
 IRQ_Handler:
-    SRSFD   SP!, #IRQ_MODE
+    SUB LR,LR,#4
+    STMFD SP!,{R0-R3,LR}
 
     //Clear de interrupcion del timer
     LDR R0, =(TIMER0_ADDR + TIMER_INTCLT_OFFSET) 
@@ -51,10 +61,12 @@ IRQ_Handler:
     //Como pide la consigna, aumento R10 en 1
     ADD R10, R10, #1
 
-    RFEFD   SP!
+    LDMFD SP!,{R0-R3,PC}^
 
 FIQ_Handler:
-    SRSFD   SP!, #FIQ_MODE
-    RFEFD   SP!
+    SUB LR,LR,#4
+    STMFD SP!,{R0-R3,LR}
+
+    LDMFD SP!,{R0-R3,PC}^
 
 
