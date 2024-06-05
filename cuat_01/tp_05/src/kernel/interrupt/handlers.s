@@ -1,15 +1,17 @@
-.include "src/util/addr.s"
-
+/*
+Este archivo contiene los handlers para las interrupciones y
+exepciones.
+*/
 
 .global _reset_vector
-.global UND_Handler
-.global SVC_Handler
-.global PREF_Handler
-.global ABT_Handler
-.global IRQ_Handler
-.global FIQ_Handler
+.global _UND_Handler
+.global _SVC_Handler
+.global _PREF_Handler
+.global _ABT_Handler
+.global _IRQ_Handler
+.global _FIQ_Handler
 
-.include "src/util/addr.s"
+.include "src/addr.s"
 
 /*
 Esta sección contiene todos los handlers de execpciones e interrupciones
@@ -17,24 +19,36 @@ Esta sección contiene todos los handlers de execpciones e interrupciones
 
 .section .text_kernel,"ax"@progbits
 
+/*
+Reset Vector
+*/
 _reset_vector:
-   @ ldr PC,=_start
    B _start
 
-UND_Handler:
+/*
+Undefined Instruction handler
+*/
+_UND_Handler:
     STMFD SP!,{R0-R3,LR}
     
-    LDR R10, =0x00494E56
+    LDR R10, =0x00494E56 //Escribe "UND" en R10
 
     LDMFD SP!,{R0-R3,PC}^
-SVC_Handler:
+
+/*
+Software Interrupt Handler
+*/
+_SVC_Handler:
     STMFD SP!,{R0-R3,LR}
 
     LDR R10, =0x00435653
 
     LDMFD SP!,{R0-R3,PC}^
 
-PREF_Handler:
+/*
+Prefetch Abort Handler
+*/
+_PREF_Handler:
     SUB LR,LR,#4
     STMFD SP!,{R0-R3,LR}
 
@@ -42,7 +56,11 @@ PREF_Handler:
 
     LDMFD SP!,{R0-R3,PC}^
 
-ABT_Handler:
+
+/*
+Data Abort Handler
+*/
+_ABT_Handler:
     SUB LR,LR,#8
     STMFD SP!,{R0-R3,LR}
 
@@ -50,7 +68,10 @@ ABT_Handler:
 
     LDMFD SP!,{R0-R3,PC}^
 
-IRQ_Handler:
+/*
+Interrupt Request Handler
+*/
+_IRQ_Handler:
     SUB LR,LR,#4
     STMFD SP!,{R0-R3,LR}
 
@@ -63,7 +84,10 @@ IRQ_Handler:
 
     LDMFD SP!,{R0-R3,PC}^
 
-FIQ_Handler:
+/*
+Fast Interrupt Request Handler
+*/
+_FIQ_Handler:
     SUB LR,LR,#4
     STMFD SP!,{R0-R3,LR}
 

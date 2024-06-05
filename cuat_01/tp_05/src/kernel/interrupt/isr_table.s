@@ -1,6 +1,6 @@
 
 /*
-Esta tabla se encuentra un lugar de memoria especial distinto a el resto del programa
+Este archivo solamente contiene la tabla de ISR.
 */
 .section .isr_table,"ax"@progbits
 
@@ -61,11 +61,11 @@ _table_start:
 
 
 addr__reset_vector:  .word _reset_vector
-addr_UND_Handler  :  .word UND_Handler  
-addr_SVC_Handler  :  .word SVC_Handler  
-addr_PREF_Handler :  .word PREF_Handler 
-addr_ABT_Handler  :  .word ABT_Handler  
+addr_UND_Handler  :  .word _UND_Handler  
+addr_SVC_Handler  :  .word _SVC_Handler  
+addr_PREF_Handler :  .word _PREF_Handler 
+addr_ABT_Handler  :  .word _ABT_Handler  
 addr_start        :  .word _start        
-addr_IRQ_Handler  :  .word IRQ_Handler  
-addr_FIQ_Handler  :  .word FIQ_Handler  
+addr_IRQ_Handler  :  .word _IRQ_Handler  
+addr_FIQ_Handler  :  .word _FIQ_Handler  
 

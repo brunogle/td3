@@ -1,43 +1,48 @@
 /*
-Este archivo contiene el codigo del bootlader.
+Este archivo contiene el codigo del bootlader y es el punto de inicio
+del proyecto.
 
-La funcion del bootloader es:
-	Copiar el kernel a RAM (en KERNEL_INIT)
-	Copiar el ISR a la direccion _ISR_INIT
-	Configurar los distintos stack pointers
-	Comienza la ejecucion del kernel
+La funcion del bootloader es copiar los datos que son cargados
+en ROM a RAM y configura los stack pointers de cada modo de
+operacion.
+
+Luego de esto, salta a la ejecucion del codigo del kernel.
 */
 
 
-/* Simbolos definidos por el linker script */
-.extern _TEXT_INIT
-.extern _TEXT_LOAD
-.extern _TEXT_SIZE
-.extern _ISR_INIT
-.extern _ISR_LOAD
-.extern _ISR_SIZE
+.include "src/addr.s"
 
 .global _start
 
-
-.section .bootloader,"ax"@progbits
-
-.include "src/util/addr.s"
-
+.section .bootloader.main,"ax"@progbits
 
 //Comienzo del main del bootloader
 _start:
+	main:
 	// Copia el kernel a RAM
- 	LDR R0, =_TEXT_INIT //VMA del kernel (donde se va a copiar)
-	LDR R1, =_TEXT_LOAD //LMA del kernel (codigo de origen)
-	LDR R2, =_TEXT_SIZE //Tamano del kernel
+ 	LDR R0, =_TEXT_INIT //VMA del .text
+	LDR R1, =_TEXT_LOAD //LMA del .text
+	LDR R2, =_TEXT_SIZE //Tamaño del .text
+	BL _util_memcpy
+
+	// Copia los datos inicializados a RAM
+ 	LDR R0, =_DATA_INIT //VMA de .data
+	LDR R1, =_DATA_LOAD //LMA de .data
+	LDR R2, =_DATA_SIZE //Tamaño de .data
+	BL _util_memcpy
+
+	// Copia los datos read-only a RAM
+ 	LDR R0, =_RODATA_INIT //VMA de .rodata
+	LDR R1, =_RODATA_LOAD //LMA de .rodata
+	LDR R2, =_RODATA_SIZE //Tamaño de .rodata
 	BL _util_memcpy
 
 	// Copia el ISR a su direccion de inicio
-	LDR R0, =_ISR_INIT //VMA del ISR (donde se va a copiar)
-	LDR R1, =_ISR_LOAD //LMA del ISR (codigo de origen)
-	LDR R2, =_ISR_SIZE //Tamano del ISR
+	LDR R0, =_ISR_INIT //VMA del ISR
+	LDR R1, =_ISR_LOAD //LMA del ISR
+	LDR R2, =_ISR_SIZE //Tamaño del ISR
 	BL _util_memcpy
+
 
     /* Inicializamos los stack pointers para los diferentes modos de funcionamiento */
     MSR cpsr_c,#(IRQ_MODE)
@@ -60,6 +65,9 @@ _start:
 _end:
 	B .
 //Fin del main del bootloader
+
+
+.end
 
 
 

@@ -1,10 +1,16 @@
-.include "src/util/addr.s"
-
+.include "src/addr.s"
 
 .section .text_kernel,"ax"@progbits
 
 .global _timer0_10ms_tick_enable
 
+
+/*
+Subrutina _timer0_10ms_tick_enable
+
+Configura y habilita el Timer0 para producir interrupciones cada 10ms
+(asumiendo clock de 1MHz).
+*/
 _timer0_10ms_tick_enable:
     LDR R0, =(TIMER0_ADDR + TIMER_LOAD_OFFSET) //Para ticks de 10ms si el clock es de 1MHz
 	LDR R1, =10000

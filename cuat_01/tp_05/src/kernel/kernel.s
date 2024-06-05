@@ -3,11 +3,12 @@ Este archivo contiene el codigo del kernel.
 Que es copiado de ROM a RAM por el bootloader
 */
 
-.include "src/util/addr.s"
+.include "src/addr.s"
 
 .global kernel_start
 
 .extern _L1_PAGE_TABLES_INIT
+
 
 .section .text_kernel,"ax"@progbits
 
@@ -17,31 +18,31 @@ Que es copiado de ROM a RAM por el bootloader
 	
 	SWI 0  // Pruebo un SVC
 
-	//Configuro y habilito GIC
-	BL _gic_timer_0_1_enable
-	BL _gic_enable 
-
-	// Completo translation tables en identity mapping
-	LDR R0, =0 // NX = 0 (Permito la ejecucion de codigo en toda la memoria)
-	BL _fill_tables_identity_mapping
+	// Configuro DACR
+	LDR R0, =0x55555555
+	BL _mmu_write_dacr
 
 	// Configuro TTBR0
 	LDR R0,=_L1_PAGE_TABLES_INIT
 	BL _mmu_write_ttbr0
 
-	// Configuro DACR
-	LDR R0, =0x55555555
-	BL _mmu_write_dacr
+	// Escribo tablas de paginacion
+	BL _identity_map_all_sections
 
 	// Habilito MMU
 	BL _mmu_enable
 
-	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
-	BL _irq_enable
-
 	//Preparo count y habilito timer
 	LDR R10,=0
 	BL _timer0_10ms_tick_enable
+
+	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
+	BL _irq_enable
+
+	//Configuro y habilito GIC
+	BL _gic_timer_0_1_enable
+	BL _gic_enable 
+
 
 	interrupt_loop:
 		WFI

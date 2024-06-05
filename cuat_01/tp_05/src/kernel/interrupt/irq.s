@@ -3,9 +3,10 @@
 .section .text_kernel,"ax"@progbits
 
 /*
-Habilita interrupciones
+Subrutina _irq_enable
+
+Habilita bit de interrupciones IRQ en el CPSR
 */
-.align 4  // Alineado a 4 Bytes
 _irq_enable:
     DSB
     MRS R0, CPSR
@@ -16,9 +17,10 @@ _irq_enable:
     BX LR
 
 /*
-Deshabilita interrupciones
+Subrutina _irq_disable
+
+Deshabilita bit de interrupciones IRQ en el CPSR
 */
-.align 4  // Alineado a 4 Bytes
 _irq_disable:
     DSB
     MRS R0, CPSR

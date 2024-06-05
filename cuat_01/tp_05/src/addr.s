@@ -1,20 +1,7 @@
 /*
-Modos de ejecucion
-*/
-.equ USR_MODE, 0x10    /* USER       - Encoding segun ARM B1.3.1 (pag. B1-1139): 10000 - Bits 4:0 del CPSR */
-.equ FIQ_MODE, 0x11    /* FIQ        - Encoding segun ARM B1.3.1 (pag. B1-1139): 10001 - Bits 4:0 del CPSR */
-.equ IRQ_MODE, 0x12    /* IRQ        - Encoding segun ARM B1.3.1 (pag. B1-1139): 10010 - Bits 4:0 del CPSR */
-.equ SVC_MODE, 0x13    /* Supervisor - Encoding segun ARM B1.3.1 (pag. B1-1139): 10011 - Bits 4:0 del CPSR */
-.equ ABT_MODE, 0x17    /* Abort      - Encoding segun ARM B1.3.1 (pag. B1-1139): 10111 - Bits 4:0 del CPSR */
-.equ UND_MODE, 0x1B    /* Undefined  - Encoding segun ARM B1.3.1 (pag. B1-1139): 11011 - Bits 4:0 del CPSR */
-.equ SYS_MODE, 0x1F    /* System     - Encoding segun ARM B1.3.1 (pag. B1-1139): 11111 - Bits 4:0 del CPSR */
-.equ I_BIT,    0x80    /* Mask bit I - Encoding segun ARM B1.3.3 (pag. B1-1149) - Bit 7 del CPSR */
-.equ F_BIT,    0x40    /* Mask bit F - Encoding segun ARM B1.3.3 (pag. B1-1149) - Bit 6 del CPSR */
-
-
-
-/*
-Direcciones de configuracion del GIC
+=============================================
+                    GIC
+==============================================
 */
 
 .equ GICC0_ADDR, 0x1E000000
@@ -46,11 +33,16 @@ Direcciones de configuracion del GIC
 .equ GICD_ICFGR_OFFSET,         0xC00
 .equ GICD_SGIR_OFFSET,          0xF00
 
+//Definiciones usadas para paginar los registros
+.equ GIC_REGMAP_INIT, GICC0_ADDR
+.equ GIC_REGMAP_SIZE, (GICD3_ADDR + GICD_SGIR_OFFSET - GIC_REGMAP_INIT)
+
 
 /*
-Direcciones de configuracion de Timers
+=============================================
+                    Timers
+==============================================
 */
-
 .equ TIMER0_ADDR, 0x10011000
 .equ TIMER1_ADDR, 0x10011020
 .equ TIMER2_ADDR, 0x10012000
@@ -68,9 +60,16 @@ Direcciones de configuracion de Timers
 .equ TIMER_MIS_OFFSET,    0x14
 .equ TIMER_BGLOAD_OFFSET, 0x18
 
+//Definiciones usadas para paginar los registros
+.equ TIMER_REGMAP_INIT, TIMER0_ADDR
+.equ TIMER_REGMAP_SIZE, (TIMER7_ADDR + TIMER_BGLOAD_OFFSET - TIMER_REGMAP_INIT)
+
+
 
 /*
-Bits de configuracion de translation tables
+=============================================
+            Tablas de paginacion
+==============================================
 */
 
 // Small Page
@@ -101,5 +100,23 @@ Bits de configuracion de translation tables
 .equ TT_PAGE_TABLE_PXN,     0x4
 
 .equ TT_PAGE_TABLE_DOMAIN_OFFSET,   8
+
+
+
+/*
+=============================================
+            Modos de operacion
+==============================================
+*/
+
+.equ USR_MODE, 0x10
+.equ FIQ_MODE, 0x11
+.equ IRQ_MODE, 0x12
+.equ SVC_MODE, 0x13
+.equ ABT_MODE, 0x17
+.equ UND_MODE, 0x1B
+.equ SYS_MODE, 0x1F
+.equ I_BIT,    0x80
+.equ F_BIT,    0x40
 
 

@@ -23,13 +23,15 @@ DEBUGGERFLAGS = --debugger "gdb-multiarch -x gdb_init_ddd.txt"
 SRC_DIR = src
 BIN_DIR = bin
 OBJ_DIR = obj
+LST_DIR = lst
+
 
 
 ################################################## ARCHIVOS ESPECIALES ##################################################
 
 LINKER_SCRIPT =  src/memmap.ld
 
-SRC_ISR = src/kernel/interrupt/isr.s # Este archivo no es compilado por la misma tarea que compila las otras fuentes
+SRC_ISR = src/kernel/interrupt/isr_table.s # Este archivo no es compilado por la misma tarea que compila las otras fuentes
 
 TARGET_ELF = $(BIN_DIR)/output.elf
 TARGET_BIN = $(BIN_DIR)/output.bin
@@ -48,6 +50,8 @@ SRC_FILES :=  $(filter-out $(SRC_ISR),$(SRC_FILES_INC_ISR)) # Archivos fuentes e
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.s,$(OBJ_DIR)/%.o,$(SRC_FILES))
 OBJ_ISR := $(patsubst $(SRC_DIR)/%.s,$(OBJ_DIR)/%.o,$(SRC_ISR))
 
+### Listas
+LST_FILES := $(patsubst $(SRC_DIR)/%.s,$(LST_DIR)/%.o,$(SRC_FILES))
 
 ################################################## VARIABLES DEFAULT ##################################################
 
@@ -67,7 +71,8 @@ all: $(TARGET_BIN)
 ## Tarea para todos los objetos menos OBJ_ISR
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
 	@mkdir -p $(dir $@)
-	$(AS) $(ASFLAGS) -o $@ $<
+	@mkdir -p $(dir $(LST_DIR)/$*.lst)
+	$(AS) $(ASFLAGS) -al=$(LST_DIR)/$*.lst -o $@ $<
 
 
 ## Tarea especial para OBJ_ISR
@@ -96,7 +101,7 @@ $(TARGET_BIN): $(TARGET_ELF)
 # Clean target
 .PHONY: clean
 clean:
-	rm -rf $(BIN_DIR) $(OBJ_DIR)
+	rm -rf $(BIN_DIR) $(OBJ_DIR) $(LST_DIR)
 
 # Necesario para forzar el assembly de exepciones
 .PHONY: .FORCE
