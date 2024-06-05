@@ -1,4 +1,4 @@
-.include "src/addr.s"
+.include "src/defines.s"
 
 
 .global _gic_timer_0_1_enable

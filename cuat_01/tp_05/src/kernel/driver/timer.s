@@ -1,4 +1,4 @@
-.include "src/addr.s"
+.include "src/defines.s"
 
 .section .text_kernel,"ax"@progbits
 

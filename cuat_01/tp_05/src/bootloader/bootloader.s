@@ -10,7 +10,7 @@ Luego de esto, salta a la ejecucion del codigo del kernel.
 */
 
 
-.include "src/addr.s"
+.include "src/defines.s"
 
 .global _start
 

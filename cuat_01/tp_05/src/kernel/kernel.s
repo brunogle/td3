@@ -3,7 +3,7 @@ Este archivo contiene el codigo del kernel.
 Que es copiado de ROM a RAM por el bootloader
 */
 
-.include "src/addr.s"
+.include "src/defines.s"
 
 .global kernel_start
 
