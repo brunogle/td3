@@ -36,17 +36,16 @@ Que es copiado de ROM a RAM por el bootloader
 	LDR R10,=0
 	BL _timer0_10ms_tick_enable
 
-	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
-	BL _irq_enable
-
 	//Configuro y habilito GIC
 	BL _gic_timer_0_1_enable
 	BL _gic_enable 
 
+	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
+	BL _irq_enable
+
 
 	interrupt_loop:
 		WFI
-		NOP
-		B interrupt_loop // Cuando sale de IRQ se viene aca, si no pongo el NOP se me sae del loop. Porque pasa esto???
+		B interrupt_loop
 	 
 

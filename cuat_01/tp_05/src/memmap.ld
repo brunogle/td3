@@ -25,9 +25,10 @@ ABT_STACK_SIZE = 8K;
 UND_STACK_SIZE = 8K;
 
 /*
-Tamaño reservado para tablas de paginacion
+Tamaño reservado para tablas de paginacion.
+Minimo recomendado de 8K
 */
-PAGE_TABLE_SIZE = 64K;
+PAGE_TABLE_SIZE = 64K; 
 
 
 
@@ -54,7 +55,7 @@ SECTIONS
     _BOOTLOADER_SIZE = SIZEOF(.bootloader);
 
     /*
-    Esta seccion contiene todo el codigo ademas del bootloader.
+    Esta seccion contiene todo el codigo excepto por el bootloader.
     El bootloader copiara toda la seccion a RAM para su ejecucion.
     */
     .text : ALIGN(4K)
@@ -122,9 +123,9 @@ SECTIONS
     .page_tables : ALIGN(16K)
     {
         _L1_PAGE_TABLES_INIT = .; /* Comienzo de la tabla de L1 */
-        . += 4096*4; /* La primer tabla son 4096 entradas de 4 bytes cada una */
+        . += 4K*4; /* La primer tabla son 4096 entradas de 4 bytes cada una */
         _L2_PAGE_TABLES_INIT = .; /* Comienzo de las tablas de L2 */
-        . += _L1_PAGE_TABLES_INIT + PAGE_TABLE_SIZE; /* Dejo espacio para la maxima cantidad posible de tablas de L2 */
+        . = _L1_PAGE_TABLES_INIT + PAGE_TABLE_SIZE; /* Dejo espacio para la maxima cantidad posible de tablas de L2 */
     } > ram
     _PAGE_TABLES_INIT = ADDR(.page_tables);
     _PAGE_TABLES_SIZE = SIZEOF(.page_tables);
