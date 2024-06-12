@@ -1,0 +1,60 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "runQEMU",
+        "type": "shell",
+        "command": "make qemu",
+        "isBackground": true,
+        "detail": "Run QEMU",
+        "problemMatcher": [
+          {
+            "pattern": [
+              {
+                "regexp": ".",
+                "file": 1,
+                "location": 2,
+                "message": 3
+              }
+            ],
+            "background": {
+              "activeOnStart": true,
+              "beginsPattern": ".",
+              "endsPattern": ".",
+            }
+          }
+        ]
+      },
+      {
+        "label": "build",
+        "type": "shell",
+        "command": "make",
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "detail": "Build the project using make"
+      },
+      {
+        "label": "buildAndRunQEMU",
+        "dependsOn": ["build", "runQEMU"],
+        "problemMatcher": []
+      },
+      {
+        "label": "terminateQEMU",
+        "command": "echo ${input:terminate}",
+        "type": "shell",
+        "problemMatcher": []
+      }
+    ],
+    "inputs": [
+      {
+        "id": "terminate",
+        "type": "command",
+        "command": "workbench.action.tasks.terminate",
+        "args": "terminateAll"
+      }
+    ]
+  }
