@@ -23,7 +23,7 @@ Las secciones mapeadas son:
     Direcciones mapeadas al Timers
 */
 _identity_map_all_sections:
-    STMFD   SP!, {R0-R3, LR}
+    PUSH {LR}
 
     LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
 	LDR R0, =_STACK_INIT
@@ -50,7 +50,7 @@ _identity_map_all_sections:
 	LDR R1, =_TEXT_SIZE
 	BL _identiy_map_memory_range
 
-    LDMFD   SP!, {R0-R3, LR}
+    POP {LR}
     BX LR
 
 /*
@@ -73,10 +73,6 @@ Parametros:
         Bit1: Read/Write, Si es 1 las paginas son marcadas con acceso de read/write
         Bit2: Cacheable,  Si es 1 la memoria es habilitada para ser almacenada en cache.
         Bit3: Global,     Si es 1 las paginas son marcadas como "Global" mediante el bit nG.
-
-Retorna:
-    R0: 1 si se realizo exitosamente, 0 si no.
-
 */
 
 _identiy_map_memory_range:
