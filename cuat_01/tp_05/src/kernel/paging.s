@@ -76,7 +76,7 @@ Parametros:
 */
 
 _identiy_map_memory_range:
-    STMFD   SP!, {R0-R3, LR}
+    PUSH {R4-R7, LR}
 
     //Reviso la alineacion de la direccion de inicio
     LDR R3, =0xFFF
@@ -86,20 +86,22 @@ _identiy_map_memory_range:
     
     ADD R4, R1, R0 //R4: Ultima direccion que se busca mapear
 
-    LDR R3, =0x1000
 
-    MOV R1, R2 //R1: Configuracion
+    MOV R5, R2 //R5: Configuracion
+    MOV R6, R0 //R6: Direccion desde donde paginar
 
     identity_map_loop:
         //Si me pase o ya llegue a la ultima direccion, termino el loop
-        CMP R0, R4
+        CMP R6, R4
         BGE identity_map_loop_end
 
         //Mapeo el bloque de 4KiB ubicado en R0
+        MOV R1, R5 //R1: Configuracion
+        MOV R0, R6 //R0: Direccion de bloque que se debe mapear
         BL _identy_map_small_page
 
         //Avanzo al siguiente bloque
-        ADD R0, R0, R3
+        ADD R6, R6, #0x1000 //R6: Direccion de bloque que se debe mapear en el siguiente loop
 
         B identity_map_loop
 
@@ -112,7 +114,7 @@ _identiy_map_memory_range:
 
     identity_map_end:
 
-    LDMFD   SP!, {R0-R3, LR}
+    POP {R4-R7, LR}
     BX LR
 
 /*
@@ -124,13 +126,17 @@ correcta en L1. Si existe, agrega la entrada para un small page en la tabla
 L2. Si aun no existe, crea una nueva tabla en donde apunte el puntero
 "next_l2_table_addr" y avanza el puntero.
 
-R0: Direccion de bloque de 4K que se desea mapear (0x11122---)
-R2: Ejecutable (Si es 0 la pagina es marcada como nunca ejecutable (XN)
-                si no es 0, la pagina es marcada como ejecutable)
+Parametros:
+    R0: Direccion de bloque de 4K que se desea mapear (0x11122---)
+    R1: Configuracion:
+        Bit0: Ejecutable, Si es 1 las paginas no son marcadas como nunca ejecutable (XN)
+        Bit1: Read/Write, Si es 1 las paginas son marcadas con acceso de read/write
+        Bit2: Cacheable,  Si es 1 la memoria es habilitada para ser almacenada en cache.
+        Bit3: Global,     Si es 1 las paginas son marcadas como "Global" mediante el bit nG.
 */
 
 _identy_map_small_page:
-    STMFD   SP!, {R0-R4, LR}
+    PUSH {R4-R7, LR}
     MOV R5, R1 //R5: Configuracion
 
     LDR R1, =0xFFFFF000
@@ -213,7 +219,7 @@ _identy_map_small_page:
         STR R1, [R3] //Escribo la entrada de la tabla L2
    
 
-    LDMFD   SP!, {R0-R4, LR}
+    POP {R4-R7, LR}
     BX LR
 
 
