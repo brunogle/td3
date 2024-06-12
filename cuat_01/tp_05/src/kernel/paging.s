@@ -15,40 +15,65 @@
 Subrutina _identity_map_all_sections
 
 Realiza un identity mapping de toda la memoria de interes.
-Las secciones mapeadas son:
-    Tabla ISR (.isr_table)
-    Stack (.stack)
-    Codigo (.text)
-    Direcciones mapeadas al GIC
-    Direcciones mapeadas al Timers
+
 */
 _identity_map_all_sections:
     PUSH {LR}
 
+    //Text (Codigo de bootloader)
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TEXT_INIT
+	LDR R1, =_TEXT_SIZE
+	BL _identiy_map_memory_range
+
+    //BSS
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_BSS_INIT
+	LDR R1, =_BSS_SIZE
+	BL _identiy_map_memory_range
+
+    //Data
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_DATA_INIT
+	LDR R1, =_DATA_SIZE
+	BL _identiy_map_memory_range
+
+    //RO-Data
+    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_RODATA_INIT
+	LDR R1, =_RODATA_SIZE
+	BL _identiy_map_memory_range
+
+    //Stack (Contiene los 6 stacks)
     LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
 	LDR R0, =_STACK_INIT
 	LDR R1, =_STACK_SIZE
 	BL _identiy_map_memory_range
 
+    //Registros GIC
     LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
 	LDR R0, =GIC_REGMAP_INIT
 	LDR R1, =GIC_REGMAP_SIZE
 	BL _identiy_map_memory_range
 
+    //Registros Timer
     LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
 	LDR R0, =TIMER_REGMAP_INIT
 	LDR R1, =TIMER_REGMAP_SIZE
 	BL _identiy_map_memory_range
-    
+
+    //ISR
     LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
-    LDR R0, =_ISR_INIT
+	LDR R0, =_ISR_INIT
 	LDR R1, =_ISR_SIZE
 	BL _identiy_map_memory_range
 
-    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
-	LDR R0, =_TEXT_INIT
-	LDR R1, =_TEXT_SIZE
+    //Page tables
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
+	LDR R0, =_PAGE_TABLES_INIT
+	LDR R1, =_PAGE_TABLES_SIZE
 	BL _identiy_map_memory_range
+
 
     POP {LR}
     BX LR
