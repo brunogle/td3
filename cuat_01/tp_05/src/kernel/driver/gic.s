@@ -1,4 +1,4 @@
-.include "src/defines.s"
+.include "src/cpu_defines.s"
 
 
 .global _gic_timer_0_1_enable

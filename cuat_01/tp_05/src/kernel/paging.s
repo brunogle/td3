@@ -1,10 +1,15 @@
-.include "src/defines.s"
+.include "src/cpu_defines.s"
 
 .global _identiy_map_memory_range
 .global _identity_map_all_sections
 
 
 .section .text_kernel,"ax"@progbits
+
+.equ IDNTY_MAP_EXECUTABLE, 0x1
+.equ IDNTY_MAP_RW, 0x2
+.equ IDNTY_MAP_CACHE_EN, 0x4
+.equ IDNTY_MAP_GLOBAL, 0x8
 
 /*
 Subrutina _identity_map_all_sections
@@ -20,26 +25,27 @@ Las secciones mapeadas son:
 _identity_map_all_sections:
     STMFD   SP!, {R0-R3, LR}
 
-    LDR R2, =0 //Todas estas secciones son datos, no son ejecutables
-
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
 	LDR R0, =_STACK_INIT
 	LDR R1, =_STACK_SIZE
 	BL _identiy_map_memory_range
 
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
 	LDR R0, =GIC_REGMAP_INIT
 	LDR R1, =GIC_REGMAP_SIZE
 	BL _identiy_map_memory_range
 
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
 	LDR R0, =TIMER_REGMAP_INIT
 	LDR R1, =TIMER_REGMAP_SIZE
 	BL _identiy_map_memory_range
     
-    LDR R2, =1 //Todas estas secciones son codigo, son ejecutables
-
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
     LDR R0, =_ISR_INIT
 	LDR R1, =_ISR_SIZE
 	BL _identiy_map_memory_range
 
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
 	LDR R0, =_TEXT_INIT
 	LDR R1, =_TEXT_SIZE
 	BL _identiy_map_memory_range
@@ -62,15 +68,19 @@ Esta subrutina puede aumentar el valor de next_l2_table_addr
 Parametros:
     R0: Direccion desde donde paginar (0x-----000)
     R1: Tamaño de memoria que se desea paginar (Multiplo de 4KiB)
-    R2: Ejecutable (Si es 0 las paginas son marcadas como nunca ejecutable (XN)
-                    si no es 0, las paginas son marcadas como ejecutable)
+    R2: Configuracion:
+        Bit0: Ejecutable, Si es 1 las paginas no son marcadas como nunca ejecutable (XN)
+        Bit1: Read/Write, Si es 1 las paginas son marcadas con acceso de read/write
+        Bit2: Cacheable,  Si es 1 la memoria es habilitada para ser almacenada en cache.
+        Bit3: Global,     Si es 1 las paginas son marcadas como "Global" mediante el bit nG.
+
 Retorna:
     R0: 1 si se realizo exitosamente, 0 si no.
 
 */
 
 _identiy_map_memory_range:
-    STMFD   SP!, {LR}
+    STMFD   SP!, {R0-R3, LR}
 
     //Reviso la alineacion de la direccion de inicio
     LDR R3, =0xFFF
@@ -82,7 +92,7 @@ _identiy_map_memory_range:
 
     LDR R3, =0x1000
 
-    MOV R1, R2 //R1: Ejecutable
+    MOV R1, R2 //R1: Configuracion
 
     identity_map_loop:
         //Si me pase o ya llegue a la ultima direccion, termino el loop
@@ -106,7 +116,7 @@ _identiy_map_memory_range:
 
     identity_map_end:
 
-    LDMFD   SP!, {LR}
+    LDMFD   SP!, {R0-R3, LR}
     BX LR
 
 /*
@@ -124,8 +134,8 @@ R2: Ejecutable (Si es 0 la pagina es marcada como nunca ejecutable (XN)
 */
 
 _identy_map_small_page:
-    STMFD   SP!, {R0-R3, LR}
-    MOV R5, R1 //R5: Ejecutable
+    STMFD   SP!, {R0-R4, LR}
+    MOV R5, R1 //R5: Configuracion
 
     LDR R1, =0xFFFFF000
     AND R0, R0, R1 //R0: Direccion de bloque de 4K que se busca mapear
@@ -176,14 +186,38 @@ _identy_map_small_page:
 
         ORR R1, R0, #(TT_SMALL_PAGE | TT_SMALL_PAGE_AP_0 |TT_SMALL_PAGE_AP_1) //R1: Entrada de la tabla L2
 
-        CMP R5, #0
-        BNE executable_page
+        
+        //Reviso propiedad de executable
+        TST R5, #IDNTY_MAP_EXECUTABLE
+        BNE skip_xn_bit
             ORR R1, R1, #(TT_SMALL_PAGE_XN)
-        executable_page:
+        skip_xn_bit:
+
+        
+        //Reviso propiedad de read/write
+        TST R5, #IDNTY_MAP_RW
+        BNE skip_ap2_bit
+            ORR R1, R1, #(TT_SMALL_PAGE_AP_2)
+        skip_ap2_bit:
+
+        
+        //Reviso propiedad de cacheable
+        TST R5, #IDNTY_MAP_CACHE_EN
+        BEQ skip_c_bit
+            ORR R1, R1, #(TT_SMALL_PAGE_C)
+        skip_c_bit:
+
+        //Reviso propiedad de globalidad
+        TST R5, #IDNTY_MAP_GLOBAL
+        BNE skip_ng_bit
+            ORR R1, R1, #(TT_SMALL_PAGE_NG)
+        skip_ng_bit:
+
 
         STR R1, [R3] //Escribo la entrada de la tabla L2
+   
 
-    LDMFD   SP!, {R0-R3, LR}
+    LDMFD   SP!, {R0-R4, LR}
     BX LR
 
 

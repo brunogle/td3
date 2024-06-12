@@ -10,7 +10,7 @@ Luego de esto, salta a la ejecucion del codigo del kernel.
 */
 
 
-.include "src/defines.s"
+.include "src/cpu_defines.s"
 
 .global _start
 

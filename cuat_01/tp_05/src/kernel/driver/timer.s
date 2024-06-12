@@ -1,4 +1,4 @@
-.include "src/defines.s"
+.include "src/cpu_defines.s"
 
 .section .text_kernel,"ax"@progbits
 

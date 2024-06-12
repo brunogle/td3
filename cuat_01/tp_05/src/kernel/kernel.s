@@ -3,7 +3,7 @@ Este archivo contiene el codigo del kernel.
 Que es copiado de ROM a RAM por el bootloader
 */
 
-.include "src/defines.s"
+.include "src/cpu_defines.s"
 
 .global kernel_start
 
