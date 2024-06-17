@@ -210,36 +210,23 @@ _identy_map_small_page:
         AND R1, R1, R0, LSR#10
         ADD R3, R3, R1 // R3: Direccion de entrada para la tabla L2
 
-
         ORR R1, R0, #(TT_SMALL_PAGE | TT_SMALL_PAGE_AP_0 |TT_SMALL_PAGE_AP_1) //R1: Entrada de la tabla L2
 
-        
         //Reviso propiedad de executable
         TST R5, #IDNTY_MAP_EXECUTABLE
-        BNE skip_xn_bit
-            ORR R1, R1, #(TT_SMALL_PAGE_XN)
-        skip_xn_bit:
-
+        ORREQ R1, R1, #(TT_SMALL_PAGE_XN)
         
         //Reviso propiedad de read/write
         TST R5, #IDNTY_MAP_RW
-        BNE skip_ap2_bit
-            ORR R1, R1, #(TT_SMALL_PAGE_AP_2)
-        skip_ap2_bit:
-
+        ORREQ R1, R1, #(TT_SMALL_PAGE_AP_2)
         
         //Reviso propiedad de cacheable
         TST R5, #IDNTY_MAP_CACHE_EN
-        BEQ skip_c_bit
-            ORR R1, R1, #(TT_SMALL_PAGE_C)
-        skip_c_bit:
+        ORRNE R1, R1, #(TT_SMALL_PAGE_C)
 
         //Reviso propiedad de globalidad
         TST R5, #IDNTY_MAP_GLOBAL
-        BNE skip_ng_bit
-            ORR R1, R1, #(TT_SMALL_PAGE_NG)
-        skip_ng_bit:
-
+        ORREQ R1, R1, #(TT_SMALL_PAGE_NG)
 
         STR R1, [R3] //Escribo la entrada de la tabla L2
    

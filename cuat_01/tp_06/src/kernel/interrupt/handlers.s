@@ -73,16 +73,38 @@ Interrupt Request Handler
 */
 _IRQ_Handler:
     SUB LR,LR,#4
-    STMFD SP!,{R0-R3,LR}
+    
+    PUSH {R0, R1, LR}
+    LDR R0, =(TIMER0_ADDR + TIMER_MIS_OFFSET)
+    LDR R1, [R0]
+    
 
-    //Clear de interrupcion del timer
-    LDR R0, =(TIMER0_ADDR + TIMER_INTCLT_OFFSET) 
-	STR R0, [R0]
+    TST R1, #0x1
+    BNE scheduler_tick
+    B other_irq
 
-    //Como pide la consigna, aumento R10 en 1
-    ADD R10, R10, #1
 
-    LDMFD SP!,{R0-R3,PC}^
+    scheduler_tick:
+
+        //Clear de interrupcion del timer
+        PUSH {R0, R1, LR}
+        LDR R0, =(TIMER0_ADDR + TIMER_INTCLT_OFFSET) 
+        STR R0, [R0]
+
+        //Aumento el systick
+        LDR R0, =systick_count
+        LDR R1, [R0]
+        ADD R1, R1, #1
+        STR R1, [R0]
+
+        POP {R0, R1, LR}
+        
+        BL _context_switch
+
+    other_irq:
+
+        POP {R0, R1, LR}
+        MOVS PC, LR
 
 /*
 Fast Interrupt Request Handler

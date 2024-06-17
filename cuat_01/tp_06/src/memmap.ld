@@ -17,12 +17,12 @@ _RAM_INIT = 0x70030000;
 /*
 Tamaños de los distintos stacks
 */
-C_STACK_SIZE   = 8K;
-IRQ_STACK_SIZE = 8K;
-FIQ_STACK_SIZE = 8K;
-SVC_STACK_SIZE = 8K;
-ABT_STACK_SIZE = 8K;
-UND_STACK_SIZE = 8K;
+C_STACK_SIZE   = 4K;
+IRQ_STACK_SIZE = 4K;
+FIQ_STACK_SIZE = 4K;
+SVC_STACK_SIZE = 4K;
+ABT_STACK_SIZE = 4K;
+UND_STACK_SIZE = 4K;
 
 /*
 Tamaño reservado para tablas de paginacion.
@@ -99,9 +99,9 @@ SECTIONS
     {
         *(.rodata*)
     } > ram AT>rom
-    _RODATA_INIT = ADDR(.data);
-    _RODATA_LOAD = LOADADDR(.data);
-    _RODATA_SIZE = SIZEOF(.data);
+    _RODATA_INIT = ADDR(.rodata);
+    _RODATA_LOAD = LOADADDR(.rodata);
+    _RODATA_SIZE = SIZEOF(.rodata);
 
 
     /*

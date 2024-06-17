@@ -3,9 +3,11 @@ Este archivo contiene el codigo del kernel.
 Que es copiado de ROM a RAM por el bootloader
 */
 
+
 .include "src/cpu_defines.s"
 
 .global kernel_start
+.global systick_count
 
 .extern _L1_PAGE_TABLES_INIT
 
@@ -16,6 +18,7 @@ Que es copiado de ROM a RAM por el bootloader
 	/* Codigo del kernel */
 	kernel_start:
 	
+
 	SWI 0  // Pruebo un SVC
 
 	// Configuro DACR
@@ -43,9 +46,21 @@ Que es copiado de ROM a RAM por el bootloader
 	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
 	BL _irq_enable
 
+	LDR R0, =_task1
+	BL _add_task
+
+	LDR R0, =_task2
+	BL _add_task
+
+	
+	BL _init_scheduler
+
 
 	interrupt_loop:
 		WFI
 		B interrupt_loop
 	 
 
+
+.section .data
+systick_count: .word 0
