@@ -87,7 +87,6 @@ _IRQ_Handler:
     scheduler_tick:
 
         //Clear de interrupcion del timer
-        PUSH {R0, R1, LR}
         LDR R0, =(TIMER0_ADDR + TIMER_INTCLT_OFFSET) 
         STR R0, [R0]
 
