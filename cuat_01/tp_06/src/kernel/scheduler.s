@@ -108,10 +108,26 @@ _context_switch:
     //R0: current_task_conext_addr
 
     /* Recupera TTBR0 */
-    LDR R1, [R0, #(4*16)]
+    LDR R3, [R0, #(4*16)]
+
+    //Cambio ASID a 0
+    MRC P15, 0, R2, C13, C0, 1
+    BIC R2, R2, #0xFF
+    MCR P15, 0, R2, C13, C0, 1
+
+    //Carga TTBR0 de la tarea nueva
     ISB
-    MCR P15, 0, R1, C2, C0, 0
+    MCR P15, 0, R3, C2, C0, 0
     ISB
+
+    //Cambia ASID al task id de la nueva tarea
+    MRC P15, 0, R2, C13, C0, 1
+    BIC R2, R2, #0xFF
+    AND R1, R1, #0xFF
+    ORR R2, R2, R1
+    MCR P15, 0, R2, C13, C0, 1
+
+
 
     /* Recupera los registros SP, LR, SPSR */
     CPS #SYS_MODE
@@ -144,7 +160,7 @@ y retorna la dirección de su TCB.
 
 Retorna:
     R0: Direccion del TCB de la siguiente tarea
-
+    R1: Task ID de la tarea nueva
 */
 _next_task:
     LDR R0, =current_task_id

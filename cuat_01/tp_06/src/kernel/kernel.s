@@ -22,7 +22,7 @@ Que es copiado de ROM a RAM por el bootloader
 	SWI 0  // Pruebo un SVC
 
 	// Configuro DACR
-	LDR R0, =0x55555555
+	LDR R0, =0x1
 	BL _mmu_write_dacr
 
 	// Configuro TTBR0
