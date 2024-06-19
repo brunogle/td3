@@ -1,22 +1,27 @@
+.global _start_scheduler
 .global _init_scheduler
 .global _context_switch
 .global _add_task
+.global _switch_to_sleep_task
 
 .include "src/cpu_defines.s"
 
 .section .text_kernel,"ax"@progbits
-/*
-Cambia de contexto
-R0: Numero de tarea a la que cambiar
-*/
+
 
 _init_scheduler:
+    PUSH {LR}
+
+    # La tarea 0 es la tarea de sleep
+    LDR R0, =_sleep_task
+    BL _add_task
+
+    POP {LR}
+    BX LR
+
+_start_scheduler:
     MOV R0, #0
     LDR R1, =current_task_id
-    STR R0, [R1]
-
-    MOV R0, #2
-    LDR R1, =total_running_tasks
     STR R0, [R1]
 
     LDR R0, =thread_control_blocks
@@ -24,6 +29,7 @@ _init_scheduler:
     STR R0, [R1]
 
     LDR LR, [R0, #(4*14)]
+
 
     MOV R0, #0
     MOV R1, #0
@@ -46,6 +52,9 @@ Subrutina _add_task
 
 Parametros:
     R0: Direccion de inicio de la tarea
+
+Retorna:
+    R0: Direccion del TCB
 */
 _add_task:
     
@@ -65,6 +74,8 @@ _add_task:
     ADD R2, R2, #1
     STR R2, [R3]
 
+    MOV R0, R1
+
     BX LR
 
 
@@ -81,6 +92,8 @@ Parametros:
     R0: Direccion del contexto de la tarea nueva
 
 */
+
+
 _context_switch:    
     /* Almacena los registros R0-R12 */    
     PUSH {R14}
@@ -151,6 +164,18 @@ _context_switch:
     /* Cargar la pila con el espacio de contexto de la tarea nueva
     */
 
+/*
+Subrutina _switch_to_sleep_task
+
+*/
+_switch_to_sleep_task:
+    PUSH {R0, R1}
+    MOV R0, #1
+    LDR R1, =sleep_mode
+    STR R0, [R1]
+    POP {R0, R1}
+    B _context_switch
+
 
 /*
 Subrutina _next_swtich
@@ -173,29 +198,54 @@ _next_task:
     //R2: =total_running_tasks
     //R3: cantidad total de tareas
 
-    ADD R1, R1, #1 // Incrementa el task ID
+    LDR R4, =sleep_mode
+    LDR R4, [R4]
+    CMP R4, #0
+    
+    BNE next_task_is_sleep
 
-    CMP R1,R3
-    MOVEQ R1, #0
+    next_task_is_not_sleep:
+        // Siguiente tarea en el ciclo:
+        ADD R1, R1, #1 // Incrementa el task ID
+        CMP R1,R3
+        MOVEQ R1, #1
+        STR R1, [R0]
+
+        LDR R0, =thread_control_blocks
+        ADD R0, R0, R1, LSL#9
+        LDR R2, =current_task_conext_addr
+        STR R0, [R2]
+
+        BX LR
+
+    next_task_is_sleep:
+
+        LDR R0, =thread_control_blocks
+        LDR R2, =current_task_conext_addr
+        STR R0, [R2]
+
+        MOV R1, #0
+        LDR R2, =sleep_mode
+        STR R1, [R2]
+        BX LR
+        
     //R1 : id de siguiente tarea
-    STR R1, [R0]
 
-    LDR R0, =thread_control_blocks
-    ADD R0, R0, R1, LSL#9
-    LDR R2, =current_task_conext_addr
-    STR R0, [R2]
 
-    BX LR
 
+_sleep_task:
+    WFI
+    B _sleep_task
 
     
+
 
 .section .data
 
 current_task_id: .word 0
 current_task_conext_addr: .word 0
 total_running_tasks: .word 0
-
+sleep_mode: .word 0
 
 .section .bss
 /*
@@ -209,4 +259,7 @@ PID: 4 bytes
 */
 thread_control_blocks:
     .space 128*4
+
+sleep_thread_control_block:
+    .space 128
 

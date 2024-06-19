@@ -46,6 +46,8 @@ Que es copiado de ROM a RAM por el bootloader
 	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
 	BL _irq_enable
 
+	BL _init_scheduler
+
 	LDR R0, =_task1
 	BL _add_task
 
@@ -53,7 +55,7 @@ Que es copiado de ROM a RAM por el bootloader
 	BL _add_task
 
 	
-	BL _init_scheduler
+	BL _start_scheduler
 
 
 	interrupt_loop:

@@ -39,11 +39,18 @@ _UND_Handler:
 Software Interrupt Handler
 */
 _SVC_Handler:
-    STMFD SP!,{R0-R3,LR}
+    PUSH {LR}
 
-    LDR R10, =0x00435653
+    CMP R0, #0
+    BEQ svc_yield
+    B svc_end
 
-    LDMFD SP!,{R0-R3,PC}^
+    svc_yield:
+        B _switch_to_sleep_task
+
+    svc_end:
+
+    MOVS PC, LR
 
 /*
 Prefetch Abort Handler
