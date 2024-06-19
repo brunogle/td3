@@ -46,6 +46,7 @@ _SVC_Handler:
     B svc_end
 
     svc_yield:
+        POP {LR}
         B _switch_to_sleep_task
 
     svc_end:

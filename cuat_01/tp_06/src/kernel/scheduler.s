@@ -202,9 +202,9 @@ _next_task:
     LDR R4, [R4]
     CMP R4, #0
     
-    BNE next_task_is_sleep
+    BNE voluntary_context_switch
 
-    next_task_is_not_sleep:
+    unvoluntary_context_switch:
         // Siguiente tarea en el ciclo:
         ADD R1, R1, #1 // Incrementa el task ID
         CMP R1,R3
@@ -218,9 +218,16 @@ _next_task:
 
         BX LR
 
-    next_task_is_sleep:
+    voluntary_context_switch:
+
+        // Siguiente tarea en el ciclo:
+        ADD R1, R1, #1 // Incrementa el task ID
+        CMP R1,R3
+        MOVEQ R1, #0
+        STR R1, [R0]
 
         LDR R0, =thread_control_blocks
+        ADD R0, R0, R1, LSL#9
         LDR R2, =current_task_conext_addr
         STR R0, [R2]
 
@@ -234,8 +241,10 @@ _next_task:
 
 
 _sleep_task:
+    NOP
+    sleep_task_loop:
     WFI
-    B _sleep_task
+    B sleep_task_loop
 
     
 
@@ -259,7 +268,3 @@ PID: 4 bytes
 */
 thread_control_blocks:
     .space 128*4
-
-sleep_thread_control_block:
-    .space 128
-
