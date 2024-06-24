@@ -27,7 +27,7 @@ Que es copiado de ROM a RAM por el bootloader
 	BL _mmu_write_ttbr0
 
 	// Escribo tablas de paginacion
-	BL _identity_map_all_sections
+	BL _identity_map_kernel_sections
 	BL _identity_map_task_memory
 
 	// Habilito MMU
