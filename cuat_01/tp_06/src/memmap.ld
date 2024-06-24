@@ -35,9 +35,9 @@ PAGE_TABLE_SIZE = 64K;
 MEMORY 
 {
     isr(rwx) : org = _ISR_INIT, len = 0x40
-    rom(rwx) : org = _ROM_INIT, len = 16k
-    stack(rw) : org = _STACK_INIT, len = 48k
-    ram(rwx) : org = _RAM_INIT, len = 8M
+    rom(rwx) : org = _ROM_INIT, len = 40k
+    stack(rw) : org = _STACK_INIT, len = 40k
+    ram(rwx) : org = _RAM_INIT, len = 0x1000000
 }
 
 
@@ -46,7 +46,7 @@ SECTIONS
     /*
     Esta es la unica seccion que tiene VMAs en la ROM.
     */
-    .bootloader : ALIGN(4K)
+    .bootloader :
     {
         *(.bootloader.main);
         *(.bootloader*);
@@ -60,7 +60,7 @@ SECTIONS
     */
     .text : ALIGN(4K)
     {
-        *(.text*);
+        *(.text_kernel);
     } >ram AT>rom
     _TEXT_INIT = ADDR(.text); /* VMA de .text */
     _TEXT_LOAD = LOADADDR(.text); /* LMA de .text */
@@ -71,11 +71,10 @@ SECTIONS
     */
     .bss : ALIGN(4K)
     {
-        *(.bss*)
-    } > ram
+        *(.bss);
+    } >ram
     _BSS_INIT = ADDR(.bss);
     _BSS_SIZE = SIZEOF(.bss);
-
 
     /*
     Variables globales y estaticas inicializadas.
@@ -84,7 +83,7 @@ SECTIONS
     */
     .data : ALIGN(4K)
     {
-        *(.data*)
+        *(.data);
     } > ram AT>rom
     _DATA_INIT = ADDR(.data);
     _DATA_LOAD = LOADADDR(.data);
@@ -97,7 +96,7 @@ SECTIONS
     */
     .rodata : ALIGN(4K)
     {
-        *(.rodata*)
+        *(.rodata);
     } > ram AT>rom
     _RODATA_INIT = ADDR(.rodata);
     _RODATA_LOAD = LOADADDR(.rodata);
@@ -110,25 +109,11 @@ SECTIONS
     */
     .isr_table : ALIGN(4K)
     {
-        *(.isr_table*);
+        *(.isr_table);
     } >isr AT>rom
     _ISR_LOAD = LOADADDR(.isr_table);
     _ISR_SIZE = SIZEOF(.isr_table);
 
-
-    /*
-    Tablas de paginacion.
-    Son escritas por el kernel
-    */
-    .page_tables : ALIGN(16K)
-    {
-        _L1_PAGE_TABLES_INIT = .; /* Comienzo de la tabla de L1 */
-        . += 4K*4; /* La primer tabla son 4096 entradas de 4 bytes cada una */
-        _L2_PAGE_TABLES_INIT = .; /* Comienzo de las tablas de L2 */
-        . = _L1_PAGE_TABLES_INIT + PAGE_TABLE_SIZE; /* Dejo espacio para la maxima cantidad posible de tablas de L2 */
-    } > ram
-    _PAGE_TABLES_INIT = ADDR(.page_tables);
-    _PAGE_TABLES_SIZE = SIZEOF(.page_tables);
 
 
     /*
@@ -162,9 +147,11 @@ SECTIONS
         __sys_stack_top__ = .;
 
         __stack_end__ = .;
-        } > stack
+        } > stack 
         _STACK_INIT = ADDR(.stack);
         _STACK_SIZE = SIZEOF(.stack);
+
+
 
 
 }

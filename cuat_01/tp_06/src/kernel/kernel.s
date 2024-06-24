@@ -17,9 +17,6 @@ Que es copiado de ROM a RAM por el bootloader
 
 	/* Codigo del kernel */
 	kernel_start:
-	
-
-	SWI 0  // Pruebo un SVC
 
 	// Configuro DACR
 	LDR R0, =0x1
@@ -31,17 +28,10 @@ Que es copiado de ROM a RAM por el bootloader
 
 	// Escribo tablas de paginacion
 	BL _identity_map_all_sections
+	BL _identity_map_task_memory
 
 	// Habilito MMU
 	BL _mmu_enable
-
-	//Preparo count y habilito timer
-	LDR R10,=0
-	BL _timer0_10ms_tick_enable
-
-	//Configuro y habilito GIC
-	BL _gic_timer_0_1_enable
-	BL _gic_enable 
 
 	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
 	BL _irq_enable
@@ -49,11 +39,16 @@ Que es copiado de ROM a RAM por el bootloader
 	BL _init_scheduler
 
 	LDR R0, =_task1
+	LDR R1, =_L1_PAGE_TABLES_INIT_TASK1
 	BL _add_task
 
 	LDR R0, =_task2
+	LDR R1, =_L1_PAGE_TABLES_INIT_TASK2
 	BL _add_task
 
+	//Configuro y habilito GIC
+	BL _gic_timer_0_1_enable
+	BL _gic_enable 
 	
 	BL _start_scheduler
 
@@ -66,3 +61,6 @@ Que es copiado de ROM a RAM por el bootloader
 
 .section .data
 systick_count: .word 0
+
+.section .rodata
+.space 4

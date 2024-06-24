@@ -12,7 +12,7 @@ OBJCOPY = $(TOOLCHAIN)-objcopy
 ################################################## FLAGS ##################################################
 
 ASFLAGS = -g
-LDFLAGS = -T $(LINKER_SCRIPT)
+LDFLAGS = -T $(LINKER_SCRIPT) -Map=my_program.map -T src/tasks/tasks.ld 
 OBJCOPYFLAGS = -O binary
 
 QEMUFLAGS = -M realview-pb-a8 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -S -gdb tcp::2159 -device loader,addr=0x70010000,cpu-num=0
@@ -29,7 +29,7 @@ LST_DIR = lst
 
 ################################################## ARCHIVOS ESPECIALES ##################################################
 
-LINKER_SCRIPT =  src/memmap.ld
+LINKER_SCRIPT =  src/memmap.ld 
 
 SRC_ISR = src/kernel/interrupt/isr_table.s # Este archivo no es compilado por la misma tarea que compila las otras fuentes
 

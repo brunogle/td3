@@ -2,7 +2,10 @@
 
 .global _identiy_map_memory_range
 .global _identity_map_all_sections
-
+.global _identity_map_task_memory
+.global _L1_PAGE_TABLES_INIT
+.global _L1_PAGE_TABLES_INIT_TASK1
+.global _L1_PAGE_TABLES_INIT_TASK2
 
 .section .text_kernel,"ax"@progbits
 
@@ -70,11 +73,6 @@ _identity_map_all_sections:
 	LDR R1, =_ISR_SIZE
 	BL _identiy_map_memory_range
 
-    //Page tables
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
-	LDR R0, =_PAGE_TABLES_INIT
-	LDR R1, =_PAGE_TABLES_SIZE
-	BL _identiy_map_memory_range
 
 
     POP {LR}
@@ -96,9 +94,45 @@ Cada sección es colocada en paginas distintas.
 
 Parametros:
     R0: Direccion de comienzo de .text
+    R1: Direccion de comienzo de .data
     R1: Tamaño de stack en bytes
 */
 _identity_map_task_memory:
+    PUSH {LR}
+
+    LDR R3, =_L1_PAGE_TABLES_INIT_TASK1
+
+    //Text (Codigo de bootloader)
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK1_TEXT_INIT
+	LDR R1, =_TASK1_TEXT_SIZE
+	BL _identiy_map_memory_range
+
+    //BSS
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK1_BSS_INIT
+	LDR R1, =_TASK1_BSS_SIZE
+	BL _identiy_map_memory_range
+
+    //Data
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK1_DATA_INIT
+	LDR R1, =_TASK1_DATA_SIZE
+	BL _identiy_map_memory_range
+
+    //RO-Data
+    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK1_RODATA_INIT
+	LDR R1, =_TASK1_RODATA_SIZE
+	BL _identiy_map_memory_range
+
+    //Stack (Contiene los 6 stacks)
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK1_STACK_INIT
+	LDR R1, =_TASK1_STACK_SIZE
+	BL _identiy_map_memory_range
+
+
     //Text (Codigo de bootloader)
     LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
 	LDR R0, =_TEXT_INIT
@@ -128,6 +162,108 @@ _identity_map_task_memory:
 	LDR R0, =_STACK_INIT
 	LDR R1, =_STACK_SIZE
 	BL _identiy_map_memory_range
+
+    //Registros GIC
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
+	LDR R0, =GIC_REGMAP_INIT
+	LDR R1, =GIC_REGMAP_SIZE
+	BL _identiy_map_memory_range
+
+    //Registros Timer
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
+	LDR R0, =TIMER_REGMAP_INIT
+	LDR R1, =TIMER_REGMAP_SIZE
+	BL _identiy_map_memory_range
+
+    //ISR
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
+	LDR R0, =_ISR_INIT
+	LDR R1, =_ISR_SIZE
+	BL _identiy_map_memory_range
+
+    LDR R3, =_L1_PAGE_TABLES_INIT_TASK2
+
+
+    //Text (Codigo de bootloader)
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK2_TEXT_INIT
+	LDR R1, =_TASK2_TEXT_SIZE
+	BL _identiy_map_memory_range
+
+    //BSS
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK2_BSS_INIT
+	LDR R1, =_TASK2_BSS_SIZE
+	BL _identiy_map_memory_range
+
+    //Data
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK2_DATA_INIT
+	LDR R1, =_TASK2_DATA_SIZE
+	BL _identiy_map_memory_range
+
+    //RO-Data
+    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK2_RODATA_INIT
+	LDR R1, =_TASK2_RODATA_SIZE
+	BL _identiy_map_memory_range
+
+    //Stack (Contiene los 6 stacks)
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK2_STACK_INIT
+	LDR R1, =_TASK2_STACK_SIZE
+	BL _identiy_map_memory_range
+
+    //Text (Codigo de bootloader)
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TEXT_INIT
+	LDR R1, =_TEXT_SIZE
+	BL _identiy_map_memory_range
+
+    //BSS
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_BSS_INIT
+	LDR R1, =_BSS_SIZE
+	BL _identiy_map_memory_range
+
+    //Data
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_DATA_INIT
+	LDR R1, =_DATA_SIZE
+	BL _identiy_map_memory_range
+
+    //RO-Data
+    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_RODATA_INIT
+	LDR R1, =_RODATA_SIZE
+	BL _identiy_map_memory_range
+
+    //Stack (Contiene los 6 stacks)
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_STACK_INIT
+	LDR R1, =_STACK_SIZE
+	BL _identiy_map_memory_range
+
+    //Registros GIC
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
+	LDR R0, =GIC_REGMAP_INIT
+	LDR R1, =GIC_REGMAP_SIZE
+	BL _identiy_map_memory_range
+
+    //Registros Timer
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL)
+	LDR R0, =TIMER_REGMAP_INIT
+	LDR R1, =TIMER_REGMAP_SIZE
+	BL _identiy_map_memory_range
+
+    //ISR
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL)
+	LDR R0, =_ISR_INIT
+	LDR R1, =_ISR_SIZE
+	BL _identiy_map_memory_range
+
+    POP {LR}
+    BX LR
 
 /*
 Subrutina _identiy_map_memory_range
@@ -287,8 +423,31 @@ _identy_map_small_page:
     BX LR
 
 
+.section .bss
+.align 14
+kernel_paging_tables:
+_L1_PAGE_TABLES_INIT:
+.space 0x4000
+_L2_PAGE_TABLES_INIT:
+.space 0x20000
+
+.align 14
+_L1_PAGE_TABLES_INIT_TASK1:
+.space 0x4000
+_L2_PAGE_TABLES_INIT_TASK1:
+.space 0x20000
+
+.align 14
+_L1_PAGE_TABLES_INIT_TASK2:
+.space 0x4000
+_L2_PAGE_TABLES_INIT_TASK2:
+.space 0x20000
+
+
 .section .data
 next_l2_table_addr: .word _L2_PAGE_TABLES_INIT 
+
+
 
 
 .end

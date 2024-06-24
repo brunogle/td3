@@ -13,8 +13,13 @@ _init_scheduler:
     PUSH {LR}
 
     # La tarea 0 es la tarea de sleep
+    LDR R1, =_L1_PAGE_TABLES_INIT
     LDR R0, =_sleep_task
     BL _add_task
+
+	//Preparo count y habilito timer
+	LDR R10,=0
+	BL _timer0_10ms_tick_enable
 
     POP {LR}
     BX LR
@@ -52,24 +57,24 @@ Subrutina _add_task
 
 Parametros:
     R0: Direccion de inicio de la tarea
+    R1: TTBR0
 
 Retorna:
     R0: Direccion del TCB
 */
 _add_task:
-    
+    MOV R4, R1
+
     /* Aumenta total_running_tasks en 1 */
     LDR R3, =total_running_tasks
     LDR R2, [R3]
 
     /* Guarda en el LR del PCB el punto de comienzo de ejecucion de la tarea */
     LDR R1, =thread_control_blocks
-    ADD R1, R1, R2, LSL#9
+    ADD R1, R1, R2, LSL#7
     STR R0, [R1, #(4*14)]
 
-    /* Usa el mismo TTBR0 por ahora */
-    MRC P15, 0, R0, C2, C0, 0
-    STR R0, [R1, #(4*16)]
+    STR R4, [R1, #(4*16)]
 
     ADD R2, R2, #1
     STR R2, [R3]
@@ -111,9 +116,6 @@ _context_switch:
     STR R1, [R0]
     CPS #IRQ_MODE
 
-    /* Almacena TTBR0 */
-    MRC P15, 0, R1, C2, C0, 0
-    STR R1, [R0, #8]
 
     PUSH {LR}
     BL _next_task
@@ -139,7 +141,6 @@ _context_switch:
     AND R1, R1, #0xFF
     ORR R2, R2, R1
     MCR P15, 0, R2, C13, C0, 1
-
 
 
     /* Recupera los registros SP, LR, SPSR */
@@ -212,7 +213,7 @@ _next_task:
         STR R1, [R0]
 
         LDR R0, =thread_control_blocks
-        ADD R0, R0, R1, LSL#9
+        ADD R0, R0, R1, LSL#7
         LDR R2, =current_task_conext_addr
         STR R0, [R2]
 
@@ -227,7 +228,7 @@ _next_task:
         STR R1, [R0]
 
         LDR R0, =thread_control_blocks
-        ADD R0, R0, R1, LSL#9
+        ADD R0, R0, R1, LSL#7
         LDR R2, =current_task_conext_addr
         STR R0, [R2]
 
@@ -249,14 +250,13 @@ _sleep_task:
     
 
 
-.section .data
+.section .bss
 
 current_task_id: .word 0
 current_task_conext_addr: .word 0
 total_running_tasks: .word 0
 sleep_mode: .word 0
 
-.section .bss
 /*
 TCB:
 Espacio de contexto (R0-R12): 64 bytes
