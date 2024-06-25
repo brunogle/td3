@@ -1,0 +1,416 @@
+.include "src/cpu_defines.s"
+
+.global _identiy_map_memory_range
+.global _identity_map_kernel_sections
+.global _identity_map_task_memory
+.global _L1_PAGE_TABLES_INIT
+.global _L1_PAGE_TABLES_INIT_TASK1
+.global _L1_PAGE_TABLES_INIT_TASK2
+
+.section .text.kernel
+
+.equ IDNTY_MAP_EXECUTABLE, 0x1
+.equ IDNTY_MAP_RW, 0x2
+.equ IDNTY_MAP_CACHE_EN, 0x4
+.equ IDNTY_MAP_GLOBAL, 0x8
+.equ IDNTY_MAP_UNPRIV_ACCESS, 0x100
+
+.equ IDNTY_MAP_DOMAIN_0, 0x00
+.equ IDNTY_MAP_DOMAIN_1, 0x10
+.equ IDNTY_MAP_DOMAIN_2, 0x20
+.equ IDNTY_MAP_DOMAIN_3, 0x30
+.equ IDNTY_MAP_DOMAIN_4, 0x40
+.equ IDNTY_MAP_DOMAIN_5, 0x50
+.equ IDNTY_MAP_DOMAIN_6, 0x60
+.equ IDNTY_MAP_DOMAIN_7, 0x70
+.equ IDNTY_MAP_DOMAIN_8, 0x80
+.equ IDNTY_MAP_DOMAIN_9, 0x90
+.equ IDNTY_MAP_DOMAIN_10, 0xA0
+.equ IDNTY_MAP_DOMAIN_11, 0xB0
+.equ IDNTY_MAP_DOMAIN_12, 0xC0
+.equ IDNTY_MAP_DOMAIN_13, 0xD0
+.equ IDNTY_MAP_DOMAIN_14, 0xE0
+.equ IDNTY_MAP_DOMAIN_15, 0xF0
+
+
+
+/*
+Subrutina _identity_map_kernel_sections
+
+Realiza un identity mapping de toda la memoria de interes.
+
+Parametros:
+    R0: Direccion de la tabla L1
+
+*/
+_identity_map_kernel_sections:
+    PUSH {LR}
+
+    MOV R3, R0
+
+    //Text (Codigo de bootloader)
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
+	LDR R0, =_TEXT_INIT
+	LDR R1, =_TEXT_SIZE
+	BL _identiy_map_memory_range
+
+    //BSS
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
+	LDR R0, =_BSS_INIT
+	LDR R1, =_BSS_SIZE
+	BL _identiy_map_memory_range
+
+    //Data
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
+	LDR R0, =_DATA_INIT
+	LDR R1, =_DATA_SIZE
+	BL _identiy_map_memory_range
+
+    //RO-Data
+    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
+	LDR R0, =_RODATA_INIT
+	LDR R1, =_RODATA_SIZE
+	BL _identiy_map_memory_range
+
+    //Stack (Contiene los 6 stacks)
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
+	LDR R0, =_STACK_INIT
+	LDR R1, =_STACK_SIZE
+	BL _identiy_map_memory_range
+
+    //Registros GIC
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
+	LDR R0, =GIC_REGMAP_INIT
+	LDR R1, =GIC_REGMAP_SIZE
+	BL _identiy_map_memory_range
+
+    //Registros Timer
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
+	LDR R0, =TIMER_REGMAP_INIT
+	LDR R1, =TIMER_REGMAP_SIZE
+	BL _identiy_map_memory_range
+
+    //ISR
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1|IDNTY_MAP_CACHE_EN)
+	LDR R0, =_ISR_INIT
+	LDR R1, =_ISR_SIZE
+	BL _identiy_map_memory_range
+
+
+
+    POP {LR}
+    BX LR
+
+
+/*
+Subrutina _identity_map_task_memory
+
+Mapea una region de memoria para ser utilizada por una tarea.
+El orden de las secciones es:
+.text
+.data
+.bss
+.rodata
+stack
+
+Cada sección es colocada en paginas distintas.
+
+Parametros:
+    R0: Direccion de comienzo de .text
+    R1: Direccion de comienzo de .data
+    R1: Tamaño de stack en bytes
+*/
+_identity_map_task_memory:
+    PUSH {LR}
+
+    LDR R4, =_L1_PAGE_TABLES_INIT_TASK1
+
+    MOV R0, R4
+    BL _identity_map_kernel_sections
+
+    //Text (Codigo de bootloader)
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK1_TEXT_INIT
+	LDR R1, =_TASK1_TEXT_SIZE
+	BL _identiy_map_memory_range
+
+    //BSS\
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK1_BSS_INIT
+	LDR R1, =_TASK1_BSS_SIZE
+	BL _identiy_map_memory_range
+
+    //Data
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK1_DATA_INIT
+	LDR R1, =_TASK1_DATA_SIZE
+	BL _identiy_map_memory_range
+
+    //RO-Data
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK1_RODATA_INIT
+	LDR R1, =_TASK1_RODATA_SIZE
+	BL _identiy_map_memory_range
+
+    //Stack (Contiene los 6 stacks)
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK1_STACK_INIT
+	LDR R1, =_TASK1_STACK_SIZE
+	BL _identiy_map_memory_range
+
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN)
+	LDR R0, =_TASK1_READINGAREA_INIT
+	LDR R1, =_TASK1_READINGAREA_SIZE
+	BL _identiy_map_memory_range
+
+    LDR R4, =_L1_PAGE_TABLES_INIT_TASK2
+
+    MOV R0, R4
+    BL _identity_map_kernel_sections
+
+
+    //Text (Codigo de bootloader)
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK2_TEXT_INIT
+	LDR R1, =_TASK2_TEXT_SIZE
+	BL _identiy_map_memory_range
+
+    //BSS
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK2_BSS_INIT
+	LDR R1, =_TASK2_BSS_SIZE
+	BL _identiy_map_memory_range
+
+    //Data
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK2_DATA_INIT
+	LDR R1, =_TASK2_DATA_SIZE
+	BL _identiy_map_memory_range
+
+    //RO-Data
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK2_RODATA_INIT
+	LDR R1, =_TASK2_RODATA_SIZE
+	BL _identiy_map_memory_range
+
+    //Stack (Contiene los 6 stacks)
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
+	LDR R0, =_TASK2_STACK_INIT
+	LDR R1, =_TASK2_STACK_SIZE
+	BL _identiy_map_memory_range
+
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN)
+	LDR R0, =_TASK2_READINGAREA_INIT
+	LDR R1, =_TASK2_READINGAREA_SIZE
+	BL _identiy_map_memory_range
+
+    POP {LR}
+    BX LR
+
+/*
+Subrutina _identiy_map_memory_range
+
+Realiza un identity mapping en una region de memoria alineada a 4KiB.
+Si ya existen las tablas L2, las reusa, y si no las crea.
+
+La direccion desde donde se comienza el mapeo debe estar alineada a 4KiB.
+Si el tamaño especificado no es multiplo de 4KiB, mapea la minima cantidad
+necesaria para cubrir la region especificada (mapea en multiplos de 4KiB).
+
+Esta subrutina puede aumentar el valor de next_l2_table_addr
+
+Parametros:
+    R0: Direccion desde donde paginar (0x-----000)
+    R1: Tamaño de memoria que se desea paginar (Multiplo de 4KiB)
+    R2: Configuracion:
+        Bit0:   Ejecutable, Si es 1 las paginas no son marcadas como nunca ejecutable (XN)
+        Bit1:   Read/Write, Si es 1 las paginas son marcadas con acceso de read/write
+        Bit2:   Cacheable,  Si es 1 la memoria es habilitada para ser almacenada en cache.
+        Bit3:   Global,     Si es 1 las paginas son marcadas como "Global" mediante el bit nG.
+        Bit4-7: Domain
+        Bit8:   Unpriv access
+    R3: Dirección de tabla L1.
+*/
+
+_identiy_map_memory_range:
+    PUSH {R4-R7, LR}
+
+    //Reviso la alineacion de la direccion de inicio
+    LDR R4, =0xFFF
+    TST R0, R4
+    BNE addr_not_aligned
+
+    
+    ADD R4, R1, R0 //R4: Ultima direccion que se busca mapear
+
+
+    MOV R5, R2 //R5: Configuracion
+    MOV R6, R0 //R6: Direccion desde donde paginar
+
+    identity_map_loop:
+        //Si me pase o ya llegue a la ultima direccion, termino el loop
+        CMP R6, R4
+        BGE identity_map_loop_end
+
+        //Mapeo el bloque de 4KiB ubicado en R0
+        MOV R1, R5 //R1: Configuracion
+        MOV R0, R6 //R0: Direccion de bloque que se debe mapear
+        BL _identy_map_small_page
+
+        //Avanzo al siguiente bloque
+        ADD R6, R6, #0x1000 //R6: Direccion de bloque que se debe mapear en el siguiente loop
+
+        B identity_map_loop
+
+    addr_not_aligned:
+        MOV R0, #0
+        B identity_map_end
+
+    identity_map_loop_end:
+        MOV R0, #1
+
+    identity_map_end:
+
+    POP {R4-R7, LR}
+    BX LR
+
+/*
+Definicion de _identy_map_small_page
+
+Crea una small page para paginar un bloque de 4KiB de memoria con un mapea
+de identity mapping. Primero revisa si existe la tabla L2 en la ubicacion
+correcta en L1. Si existe, agrega la entrada para un small page en la tabla
+L2. Si aun no existe, crea una nueva tabla en donde apunte el puntero
+"next_l2_table_addr" y avanza el puntero.
+
+Parametros:
+    R0: Direccion de bloque de 4K que se desea mapear (0x11122---)
+    R1: Configuracion:
+        Bit0:   Ejecutable, Si es 1 las paginas no son marcadas como nunca ejecutable (XN)
+        Bit1:   Read/Write, Si es 1 las paginas son marcadas con acceso de read/write
+        Bit2:   Cacheable,  Si es 1 la memoria es habilitada para ser almacenada en cache.
+        Bit3:   Global,     Si es 1 las paginas son marcadas como "Global" mediante el bit nG.
+        Bit4-7: Domain
+*/
+
+_identy_map_small_page:
+    PUSH {R4-R7, LR}
+    MOV R5, R1 //R5: Configuracion
+
+    LDR R1, =0xFFFFF000
+    AND R0, R0, R1 //R0: Direccion de bloque de 4K que se busca mapear
+
+    LSR R1, R0, #20 //R1: Indice de tabla L1
+
+    MOV R2, R3
+    ADD R2, R2, R1, LSL#2 //R2: Direccion de la entrada de la tabla L1
+
+    LDR R7, [R2] //R7: Entrada leida de la tabla L1
+    
+    AND R1, R7, #0b11 //R1: Ultimos 2 bits de la entrada de la tabla L1
+    CMP R1, #0b01
+
+    BEQ l2_table_found
+    l2_table_not_found:
+        //Si no se encuentra una tabla de L2, la crea
+        LDR R1, =next_l2_table_addr
+        LDR R7, [R1]//R7: Direccion de donde hay que crear la tabla L2
+
+        ADD R4, R7, #0x3FC
+        LDR R6, =0
+        l2_table_fill_zero:
+            STR R6, [R4]
+            SUB R4, R4, #004
+            CMP R4, R7
+            BGE l2_table_fill_zero
+
+        MOV R4, R7
+        ORR R4, R4, #(TT_PAGE_TABLE | TT_PAGE_TABLE_NS) //R4: Entrada para la tabla L1 que hay que escribir
+        AND R8, R5, #0xF0
+        LSL R8, R8, #1
+        ORR R4, R4, R8
+
+        STR R4, [R2] //Escribe la entrada en la tabla L1
+
+        ADD R4, R7, #(256*4) //R4: Direccion de la ubicacion donde estará la siguiente tabla L2
+        STR R4, [R1] //Actualizo next_l2_table_addr
+
+        B set_l2_table_entry
+    
+    l2_table_found:
+        LDR R2, =0xFFFFFC00
+        AND R7, R7, R2 //R7: Direccion donde se encuentra la tabla L2
+
+    set_l2_table_entry:
+        LDR R1, =0x3FC
+        AND R1, R1, R0, LSR#10
+        ADD R7, R7, R1 // R7: Direccion de entrada para la tabla L2
+
+        ORR R1, R0, #(TT_SMALL_PAGE | TT_SMALL_PAGE_AP_0) //R1: Entrada de la tabla L2
+
+        //Reviso propiedad de executable
+        TST R5, #IDNTY_MAP_EXECUTABLE
+        ORREQ R1, R1, #(TT_SMALL_PAGE_XN)
+        
+        //Reviso propiedad de read/write
+        TST R5, #IDNTY_MAP_RW
+        ORREQ R1, R1, #(TT_SMALL_PAGE_AP_2)
+        
+        //Reviso propiedad de cacheable
+        TST R5, #IDNTY_MAP_CACHE_EN
+        ORRNE R1, R1, #(TT_SMALL_PAGE_C)
+
+        //Reviso propiedad de globalidad
+        TST R5, #IDNTY_MAP_GLOBAL
+        ORREQ R1, R1, #(TT_SMALL_PAGE_NG)
+
+        TST R5, #IDNTY_MAP_UNPRIV_ACCESS
+        ORRNE R1, R1, #(TT_SMALL_PAGE_AP_1)
+
+        STR R1, [R7] //Escribo la entrada de la tabla L2
+   
+
+    POP {R4-R7, LR}
+    BX LR
+
+
+.section .bss
+.align 14
+kernel_paging_tables:
+_L1_PAGE_TABLES_INIT:
+.space 0x4000
+_L2_PAGE_TABLES_INIT:
+.space 0x20000
+
+.align 14
+_L1_PAGE_TABLES_INIT_TASK1:
+.space 0x4000
+_L2_PAGE_TABLES_INIT_TASK1:
+.space 0x20000
+
+.align 14
+_L1_PAGE_TABLES_INIT_TASK2:
+.space 0x4000
+_L2_PAGE_TABLES_INIT_TASK2:
+.space 0x20000
+
+
+.section .data
+next_l2_table_addr: .word _L2_PAGE_TABLES_INIT 
+
+
+
+
+.end
