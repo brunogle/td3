@@ -42,10 +42,12 @@ Que es copiado de ROM a RAM por el bootloader
 
 	LDR R0, =_task1
 	LDR R1, =_L1_PAGE_TABLES_INIT_TASK1
+	LDR R2, =_TASK1_STACK_INIT
 	BL _add_task
 
 	LDR R0, =_task2
 	LDR R1, =_L1_PAGE_TABLES_INIT_TASK2
+	LDR R2, =_TASK2_STACK_INIT
 	BL _add_task
 
 	//Configuro y habilito GIC

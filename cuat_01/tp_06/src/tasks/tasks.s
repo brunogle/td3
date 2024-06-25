@@ -4,7 +4,6 @@
 
 .section .text.task1
 _task1:
-    
     LDR R0, =task1_readingarea
     LDR R1, =task1_readingarea
     LDR R2, =0x10000

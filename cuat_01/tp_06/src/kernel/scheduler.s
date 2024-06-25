@@ -63,6 +63,7 @@ Subrutina _add_task
 Parametros:
     R0: Direccion de inicio de la tarea
     R1: TTBR0
+    R2: Direccion de stack
 
 Retorna:
     R0: Direccion del TCB
@@ -70,19 +71,19 @@ Retorna:
 _add_task:
     MOV R4, R1
 
-    /* Aumenta total_running_tasks en 1 */
     LDR R3, =total_running_tasks
-    LDR R2, [R3]
+    LDR R5, [R3]
 
-    /* Guarda en el LR del PCB el punto de comienzo de ejecucion de la tarea */
     LDR R1, =thread_control_blocks
-    ADD R1, R1, R2, LSL#7
-    STR R0, [R1, #(4*15)]
+    ADD R1, R1, R5, LSL#7
+    /* Guarda en el LR del PCB el punto de comienzo de ejecucion de la tarea */
+    
+    STR R0, [R1, #(4*15)] //Guarda la direccion de inicio de la tarea
+    STR R2, [R1, #(4*13)] //Guarda el stack pointer
+    STR R4, [R1, #(4*17)] //Guarda la TTBR0
 
-    STR R4, [R1, #(4*17)]
-
-    ADD R2, R2, #1
-    STR R2, [R3]
+    ADD R5, R5, #1 //Incrementa el thread_control_blocks en 1
+    STR R5, [R3]
 
     MOV R0, R1
 
