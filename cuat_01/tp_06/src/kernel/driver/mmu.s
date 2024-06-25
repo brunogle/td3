@@ -3,7 +3,7 @@
 .global _mmu_write_cr, _mmu_read_cr
 .global _mmu_enable, _mmu_disable
 
-.section .text_kernel,"ax"@progbits
+.section .text.kernel
 
 /*
 Subrutina _mmu_write_ttbr0

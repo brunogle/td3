@@ -2,11 +2,11 @@
 .global _init_scheduler
 .global _context_switch
 .global _add_task
-.global _switch_to_sleep_task
+.global _sched_yield
 
 .include "src/cpu_defines.s"
 
-.section .text_kernel,"ax"@progbits
+.section .text.kernel
 
 
 _init_scheduler:
@@ -33,7 +33,7 @@ _start_scheduler:
     LDR R1, =current_task_conext_addr
     STR R0, [R1]
 
-    LDR LR, [R0, #(4*14)]
+    LDR LR, [R0, #(4*15)]
 
 
     MOV R0, #0
@@ -72,9 +72,9 @@ _add_task:
     /* Guarda en el LR del PCB el punto de comienzo de ejecucion de la tarea */
     LDR R1, =thread_control_blocks
     ADD R1, R1, R2, LSL#7
-    STR R0, [R1, #(4*14)]
+    STR R0, [R1, #(4*15)]
 
-    STR R4, [R1, #(4*16)]
+    STR R4, [R1, #(4*17)]
 
     ADD R2, R2, #1
     STR R2, [R3]
@@ -100,30 +100,52 @@ Parametros:
 
 
 _context_switch:    
-    /* Almacena los registros R0-R12 */    
+    /*
+    Almacena los registros R0-R12 y de paso obtiene
+    la direccion de la TCB actual
+    */    
     PUSH {R14}
     LDR R14, =current_task_conext_addr
     LDR R14, [R14]
     STMEA R14!, {R0-R12}
-    MOV R0, R14
     POP {R14}
+    LDR R0, =current_task_conext_addr
+    LDR R0, [R0]
+    //R0 : Direccion de TCB actual
+        
+    /*
+    Almacena la direccion donde se detuvo la tarea (PC)
+    */
+    STR LR, [R0, #(4*15)]
+
+    /*
+    Cambia a modo SYS y guarda el modo de ejecucion
+    */
+    MRS R1, CPSR
+    AND R1, R1, #0x1f
+    CPS #SYS_MODE
+    //R1: Bits de modo de CPSR
 
     /* Almacena los registros SP, LR, SPSR */
-    CPS #SYS_MODE
-    STR SP, [R0]
-    STR LR, [R0, #4]
-    MRS R1, SPSR
-    STR R1, [R0]
-    CPS #IRQ_MODE
+    MRS R2, SPSR
+    STR SP, [R0, #(4*13)]
+    STR LR, [R0, #(4*14)]
+    STR R2, [R0, #(4*16)]
 
+    /* Retoma el modo anteorior (IRQ o SVC) */
+    MRS R2, CPSR
+    BIC R2, R2, #0x1f
+    ORR R2, R2, R1
+    MSR CPSR, R2
 
+    /* Encuentra la direccion del TCB de la siguiente tarea */
     PUSH {LR}
     BL _next_task
     POP {LR}
     //R0: current_task_conext_addr
 
     /* Recupera TTBR0 */
-    LDR R3, [R0, #(4*16)]
+    LDR R3, [R0, #(4*17)]
 
     //Cambio ASID a 0
     MRC P15, 0, R2, C13, C0, 1
@@ -142,20 +164,36 @@ _context_switch:
     ORR R2, R2, R1
     MCR P15, 0, R2, C13, C0, 1
 
+    /*
+    Cambia a modo SYS y guarda el modo de ejecucion
+    */
+    MRS R3, CPSR
+    AND R3, R3, #0x1f
+    CPS #SYS_MODE
 
     /* Recupera los registros SP, LR, SPSR */
-    CPS #SYS_MODE
     LDR SP, [R0, #(4*13)]
     LDR LR, [R0, #(4*14)]
-    LDR R1, [R0, #(4*15)]
+    LDR R1, [R0, #(4*16)]
     MSR SPSR, R1
     MOV R1, LR
-    CPS #IRQ_MODE
 
-    MOV LR, R1
-    MOV SP, R0
-    LDMFD SP!, {R0-R12}
-    
+    /* Retoma el modo anteorior (IRQ o SVC) */
+    MRS R2, CPSR
+    BIC R2, R2, #0x1f
+    ORR R2, R2, R3
+    MSR CPSR, R2
+
+    /* Recupera el valor de  */
+    LDR LR, [R0, #(4*15)]
+
+    /* Retoma el modo anteorior (IRQ o SVC) */
+    PUSH {R14}
+
+    MOV R14, R0
+    LDMFD R14!, {R0-R12}
+
+    POP {R14}
     MOVS PC, LR
 
 
@@ -166,15 +204,16 @@ _context_switch:
     */
 
 /*
-Subrutina _switch_to_sleep_task
+Subrutina _sched_yield
 
 */
-_switch_to_sleep_task:
+_sched_yield:
     PUSH {R0, R1}
     MOV R0, #1
-    LDR R1, =sleep_mode
+    LDR R1, =yielded_context_switch 
     STR R0, [R1]
     POP {R0, R1}
+    
     B _context_switch
 
 
@@ -199,7 +238,7 @@ _next_task:
     //R2: =total_running_tasks
     //R3: cantidad total de tareas
 
-    LDR R4, =sleep_mode
+    LDR R4, =yielded_context_switch 
     LDR R4, [R4]
     CMP R4, #0
     
@@ -233,7 +272,7 @@ _next_task:
         STR R0, [R2]
 
         MOV R1, #0
-        LDR R2, =sleep_mode
+        LDR R2, =yielded_context_switch 
         STR R1, [R2]
         BX LR
         
@@ -255,16 +294,17 @@ _sleep_task:
 current_task_id: .word 0
 current_task_conext_addr: .word 0
 total_running_tasks: .word 0
-sleep_mode: .word 0
+yielded_context_switch : .word 0
 
 /*
 TCB:
-Espacio de contexto (R0-R12): 64 bytes
-Stack Pointer (SP/R13): 4 bytes 
-Link Register (LR/R14): 4 bytes
-CPSR: 4 bytes
-TTBR0: 4 bytes
-PID: 4 bytes
+Espacio de contexto (R0-R12): 64 bytes (0-12)
+Stack Pointer (SP/R13): 4 bytes (13)
+Link Register (LR/R14): 4 bytes (14)
+Program Counter (PC): 4 bytes (15)
+CPSR: 4 bytes (16)
+TTBR0: 4 bytes (17)
+
 */
 thread_control_blocks:
     .space 128*4

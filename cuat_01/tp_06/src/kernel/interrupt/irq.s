@@ -1,6 +1,6 @@
 .global _irq_enable, _irq_disable
 
-.section .text_kernel,"ax"@progbits
+.section .text.kernel
 
 /*
 Subrutina _irq_enable

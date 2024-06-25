@@ -12,7 +12,7 @@ SECTIONS
     .text_task1 : ALIGN(4K)
     {
         *(.text.task1);
-    } >ram 
+    } >ram
     _TASK1_TEXT_INIT = ADDR(.text_task1);
     _TASK1_TEXT_LOAD = LOADADDR(.text_task1);
     _TASK1_TEXT_SIZE = SIZEOF(.text_task1);
@@ -47,6 +47,13 @@ SECTIONS
     _TASK1_RODATA_LOAD = LOADADDR(.rodata_task1);
     _TASK1_RODATA_SIZE = SIZEOF(.rodata_task1);
 
+    .readingArea_task1 0x70A00000 : ALIGN(4K)
+    {
+        *(.readingArea.task1);
+    } >ram 
+    _TASK1_READINGAREA_INIT = ADDR(.readingArea_task1);
+    _TASK1_READINGAREA_LOAD = LOADADDR(.readingArea_task1);
+    _TASK1_READINGAREA_SIZE = SIZEOF(.readingArea_task1);
 
 
 
@@ -87,5 +94,14 @@ SECTIONS
     _TASK2_RODATA_INIT = ADDR(.rodata_task2);
     _TASK2_RODATA_LOAD = LOADADDR(.rodata_task2);
     _TASK2_RODATA_SIZE = SIZEOF(.rodata_task2);
+
+
+    .readingArea_task2 0x70A10000 : ALIGN(4K)
+    {
+        *(.readingArea.task2);
+    } >ram 
+    _TASK2_READINGAREA_INIT = ADDR(.readingArea_task2);
+    _TASK2_READINGAREA_LOAD = LOADADDR(.readingArea_task2);
+    _TASK2_READINGAREA_SIZE = SIZEOF(.readingArea_task2);
 
 }

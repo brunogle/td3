@@ -5,7 +5,7 @@
 .global _gic_enable
 
 
-.section .text_kernel,"ax"@progbits
+.section .text.kernel
 
 /*
 Subrutina _gic_timer_0_1_enable

@@ -14,11 +14,10 @@ Luego de esto, salta a la ejecucion del codigo del kernel.
 
 .global _start
 
-.section .bootloader.main,"ax"@progbits
+.section .text.bootloader.start
 
 //Comienzo del main del bootloader
 _start:
-	main:
 	// Copia el kernel a RAM
  	LDR R0, =_TEXT_INIT //VMA del .text
 	LDR R1, =_TEXT_LOAD //LMA del .text

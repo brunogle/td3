@@ -1,6 +1,6 @@
 .include "src/cpu_defines.s"
 
-.section .text_kernel,"ax"@progbits
+.section .text.kernel
 
 .global _timer0_10ms_tick_enable
 
@@ -13,7 +13,7 @@ Configura y habilita el Timer0 para producir interrupciones cada 10ms
 */
 _timer0_10ms_tick_enable:
     LDR R0, =(TIMER0_ADDR + TIMER_LOAD_OFFSET) //Para ticks de 10ms si el clock es de 1MHz
-	LDR R1, =10000
+	LDR R1, =100000
 	STR R1, [R0]
 
     LDR R0, =(TIMER0_ADDR + TIMER_CTRL_OFFSET)

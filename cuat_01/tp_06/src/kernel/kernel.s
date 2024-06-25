@@ -12,11 +12,13 @@ Que es copiado de ROM a RAM por el bootloader
 .extern _L1_PAGE_TABLES_INIT
 
 
-.section .text_kernel,"ax"@progbits
+.section .text.kernel
 
 
 	/* Codigo del kernel */
 	kernel_start:
+
+	CPS #SYS_MODE
 
 	// Configuro DACR
 	LDR R0, =0x1

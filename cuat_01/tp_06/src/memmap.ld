@@ -48,8 +48,8 @@ SECTIONS
     */
     .bootloader :
     {
-        *(.bootloader.main);
-        *(.bootloader*);
+        *(.text.bootloader.start);
+        *(.text.bootloader);
     } >rom
     _BOOTLOADER_INIT = ADDR(.bootloader);
     _BOOTLOADER_SIZE = SIZEOF(.bootloader);
@@ -60,7 +60,7 @@ SECTIONS
     */
     .text : ALIGN(4K)
     {
-        *(.text_kernel);
+        *(.text.kernel);
     } >ram AT>rom
     _TEXT_INIT = ADDR(.text); /* VMA de .text */
     _TEXT_LOAD = LOADADDR(.text); /* LMA de .text */

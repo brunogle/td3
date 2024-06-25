@@ -17,7 +17,7 @@ exepciones.
 Esta sección contiene todos los handlers de execpciones e interrupciones
 */
 
-.section .text_kernel,"ax"@progbits
+.section .text.kernel
 
 /*
 Reset Vector
@@ -47,11 +47,11 @@ _SVC_Handler:
     
     svc_yield:
         POP {LR}
-        B _switch_to_sleep_task
+        B _sched_yield
 
     svc_end:
-
-    MOVS PC, LR
+        POP {LR}
+        MOVS PC, LR
 
 /*
 Prefetch Abort Handler
@@ -81,11 +81,11 @@ Interrupt Request Handler
 */
 _IRQ_Handler:
     SUB LR,LR,#4
-    
+
     PUSH {R0, R1, LR}
     LDR R0, =(TIMER0_ADDR + TIMER_MIS_OFFSET)
     LDR R1, [R0]
-    
+
 
     TST R1, #0x1
     BNE scheduler_tick
@@ -93,20 +93,18 @@ _IRQ_Handler:
 
 
     scheduler_tick:
-
-        //Clear de interrupcion del timer
-        LDR R0, =(TIMER0_ADDR + TIMER_INTCLT_OFFSET) 
-        STR R0, [R0]
-
         //Aumento el systick
         LDR R0, =systick_count
         LDR R1, [R0]
         ADD R1, R1, #1
         STR R1, [R0]
 
+        LDR R0, =(TIMER0_ADDR + TIMER_INTCLT_OFFSET) 
+        STR R0, [R0]
+
         POP {R0, R1, LR}
         
-        BL _context_switch
+        B _context_switch
 
     other_irq:
 

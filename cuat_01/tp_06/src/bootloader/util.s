@@ -1,4 +1,4 @@
-.section .bootloader,"ax"@progbits
+.section .text.bootloader
 
 .global _util_memcpy
 

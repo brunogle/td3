@@ -7,7 +7,7 @@
 .global _L1_PAGE_TABLES_INIT_TASK1
 .global _L1_PAGE_TABLES_INIT_TASK2
 
-.section .text_kernel,"ax"@progbits
+.section .text.kernel
 
 .equ IDNTY_MAP_EXECUTABLE, 0x1
 .equ IDNTY_MAP_RW, 0x2
@@ -143,6 +143,12 @@ _identity_map_task_memory:
 	LDR R1, =_TASK1_STACK_SIZE
 	BL _identiy_map_memory_range
 
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK1_READINGAREA_INIT
+	LDR R1, =_TASK1_READINGAREA_SIZE
+	BL _identiy_map_memory_range
+
     LDR R4, =_L1_PAGE_TABLES_INIT_TASK2
 
     MOV R0, R4
@@ -182,6 +188,12 @@ _identity_map_task_memory:
     LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
 	LDR R0, =_TASK2_STACK_INIT
 	LDR R1, =_TASK2_STACK_SIZE
+	BL _identiy_map_memory_range
+
+    MOV R3, R4
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL)
+	LDR R0, =_TASK2_READINGAREA_INIT
+	LDR R1, =_TASK2_READINGAREA_SIZE
 	BL _identiy_map_memory_range
 
     POP {LR}
