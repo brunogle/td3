@@ -47,6 +47,11 @@ _SVC_Handler:
     
     svc_yield:
         POP {LR}
+        PUSH {R0, R1}
+        LDR R0, =(TIMER0_ADDR + TIMER_VAL_OFFSET) 
+        LDR R1, =SCHED_TICK_TIMER_LOAD
+        STR R1, [R0]
+        POP {R0, R1}
         B _sched_yield
 
     svc_end:
@@ -104,7 +109,7 @@ _IRQ_Handler:
 
         POP {R0, R1, LR}
         
-        B _context_switch
+        B _sched_force_context_switch
 
     other_irq:
 

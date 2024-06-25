@@ -3,6 +3,7 @@
 .global _context_switch
 .global _add_task
 .global _sched_yield
+.global _sched_force_context_switch
 
 .include "src/cpu_defines.s"
 
@@ -32,6 +33,10 @@ _start_scheduler:
     LDR R0, =thread_control_blocks
     LDR R1, =current_task_conext_addr
     STR R0, [R1]
+
+    LDR R2, =all_tasks_yielded
+    MOV R1, #0x1
+    STR R1, [R2]
 
     LDR LR, [R0, #(4*15)]
 
@@ -208,14 +213,18 @@ Subrutina _sched_yield
 
 */
 _sched_yield:
-    PUSH {R0, R1}
-    MOV R0, #1
-    LDR R1, =yielded_context_switch 
-    STR R0, [R1]
-    POP {R0, R1}
-    
     B _context_switch
 
+_sched_force_context_switch:
+    PUSH {R0, R1}
+    LDR R0, =current_task_id
+    LDR R0, [R0]
+    CMP R0, #0
+    MOVNE R0, #0
+    LDRNE R1, =all_tasks_yielded 
+    STRNE R0, [R1]
+    POP {R0, R1}
+    B _context_switch
 
 /*
 Subrutina _next_swtich
@@ -238,45 +247,34 @@ _next_task:
     //R2: =total_running_tasks
     //R3: cantidad total de tareas
 
-    LDR R4, =yielded_context_switch 
-    LDR R4, [R4]
-    CMP R4, #0
+    ADD R1, R1, #1 // Incrementa el task ID
+    CMP R1,R3
+    BEQ round_robin_ended
+    round_robin_continues:
+        STR R1, [R0]
+        LDR R0, =thread_control_blocks
+        ADD R0, R0, R1, LSL#7
+        LDR R2, =current_task_conext_addr
+        STR R0, [R2]
+        BX LR
     
-    BNE voluntary_context_switch
+    round_robin_ended:
+        LDR R3, =all_tasks_yielded
+        LDR R2, [R3]
+        CMP R2, #1
+        MOVEQ R1, #0 //Si todas las tareas cedieron el control, puedo ir a sleep
 
-    unvoluntary_context_switch:
-        // Siguiente tarea en el ciclo:
-        ADD R1, R1, #1 // Incrementa el task ID
-        CMP R1,R3
-        MOVEQ R1, #1
+        MOVNE R1, #1 //Si no, continuo de la tarea 1
+        MOVNE R2, #0 //Seteo all_task_yielded en 1 nuevamente
+        STRNE R2, [R3]
+
         STR R1, [R0]
-
         LDR R0, =thread_control_blocks
         ADD R0, R0, R1, LSL#7
         LDR R2, =current_task_conext_addr
         STR R0, [R2]
 
         BX LR
-
-    voluntary_context_switch:
-
-        // Siguiente tarea en el ciclo:
-        ADD R1, R1, #1 // Incrementa el task ID
-        CMP R1,R3
-        MOVEQ R1, #0
-        STR R1, [R0]
-
-        LDR R0, =thread_control_blocks
-        ADD R0, R0, R1, LSL#7
-        LDR R2, =current_task_conext_addr
-        STR R0, [R2]
-
-        MOV R1, #0
-        LDR R2, =yielded_context_switch 
-        STR R1, [R2]
-        BX LR
-        
-    //R1 : id de siguiente tarea
 
 
 
@@ -294,7 +292,7 @@ _sleep_task:
 current_task_id: .word 0
 current_task_conext_addr: .word 0
 total_running_tasks: .word 0
-yielded_context_switch : .word 0
+all_tasks_yielded : .word 0
 
 /*
 TCB:
