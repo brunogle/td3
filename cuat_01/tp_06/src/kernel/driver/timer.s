@@ -5,7 +5,7 @@
 .global _timer0_10ms_tick_enable
 .global SCHED_TICK_TIMER_LOAD
 
-.equ SCHED_TICK_TIMER_LOAD, 15000 //100000=100ms
+.equ SCHED_TICK_TIMER_LOAD, 100000 //Scheduler timer tick rate en microsegundos
 
 
 
