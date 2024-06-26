@@ -47,28 +47,6 @@ _SVC_Handler:
     CMP R0, #0
     BEQ svc_yield
 
-    /*
-    Write Memory.
-
-    Parametros:
-        R1: Dato a escribir
-        R2: Direccion donde escribir
-    */
-    CMP R0, #1
-    BEQ svc_write_word
-
-    /*
-    Read Memory.
-
-    Parametros:
-        R1: Direccion donde leer
-    
-    Retorna:
-        R0: Dato leido
-    */
-    CMP R0, #2
-    BEQ svc_read_word
-
    
     B svc_end
     
@@ -79,14 +57,6 @@ _SVC_Handler:
         STR R1, [R0]
         POP {R0, R1}
         B _sched_yield
-
-    svc_write_word:
-        STR R1, [R2]
-        MOVS PC, LR
-
-    svc_read_word:
-        LDR R0, [R1]
-        MOVS PC, LR
 
     svc_end:
         MOVS PC, LR

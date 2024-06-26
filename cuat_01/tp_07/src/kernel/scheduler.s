@@ -111,11 +111,11 @@ _context_switch:
     Almacena los registros R0-R12 y de paso obtiene
     la direccion de la TCB actual
     */    
-    PUSH {R14}
-    LDR R14, =current_task_conext_addr
-    LDR R14, [R14]
-    STMEA R14!, {R0-R12}
-    POP {R14}
+    PUSH {LR}
+    LDR LR, =current_task_conext_addr
+    LDR LR, [LR]
+    STMEA LR!, {R0-R12}
+    POP {LR}
     LDR R0, =current_task_conext_addr
     LDR R0, [R0]
     //R0 : Direccion de TCB actual
@@ -195,12 +195,12 @@ _context_switch:
     LDR LR, [R0, #(4*15)]
 
     /* Retoma el modo anteorior (IRQ o SVC) */
-    PUSH {R14}
+    PUSH {LR}
 
-    MOV R14, R0
-    LDMFD R14!, {R0-R12}
+    MOV LR, R0
+    LDMFD LR!, {R0-R12}
 
-    POP {R14}
+    POP {LR}
     MOVS PC, LR
 
 
@@ -217,6 +217,10 @@ Subrutina _sched_yield
 _sched_yield:
     B _context_switch
 
+/*
+Subrutina _sched_force_context_switch
+
+*/
 _sched_force_context_switch:
     PUSH {R0, R1}
     LDR R0, =current_task_id

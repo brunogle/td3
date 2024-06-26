@@ -164,7 +164,7 @@ _identity_map_task_memory:
 	BL _identiy_map_memory_range
 
     MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN)
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
 	LDR R0, =_TASK1_READINGAREA_INIT
 	LDR R1, =_TASK1_READINGAREA_SIZE
 	BL _identiy_map_memory_range
@@ -211,7 +211,7 @@ _identity_map_task_memory:
 	BL _identiy_map_memory_range
 
     MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN)
+    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
 	LDR R0, =_TASK2_READINGAREA_INIT
 	LDR R1, =_TASK2_READINGAREA_SIZE
 	BL _identiy_map_memory_range
