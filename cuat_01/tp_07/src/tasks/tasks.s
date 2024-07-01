@@ -4,11 +4,11 @@
 
 .section .text.task1
 _task1:
-    LDR R0, =task1_readingarea
-    LDR R1, =task1_readingarea
-    LDR R2, =0x10000
+    LDR R0, =_TASK1_READINGAREA_INIT
+    LDR R1, =_TASK1_READINGAREA_INIT
+    LDR R2, =_TASK1_READINGAREA_SIZE
     ADD R1, R1, R2
-    LDR R2, =0x55AA55AA
+    LDR R2, =_TASK1_READINGAREA_INIT
     MOV R4, #1
     LDR R5, =memory_error_detected
     
@@ -62,9 +62,9 @@ NOP
 .section .text.task2
 _task2:
 
-    LDR R0, =task2_readingarea
-    LDR R1, =task2_readingarea
-    LDR R2, =0x10000
+    LDR R0, =_TASK2_READINGAREA_INIT
+    LDR R1, =_TASK2_READINGAREA_INIT
+    LDR R2, =_TASK2_READINGAREA_SIZE
     ADD R1, R1, R2
 
     inv_mem_loop:
