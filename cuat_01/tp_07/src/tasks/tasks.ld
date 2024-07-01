@@ -12,7 +12,7 @@ SECTIONS
     .text_task1 : ALIGN(4K)
     {
         *(.text.task1);
-    } >ram
+    } >ram AT>rom
     _TASK1_TEXT_INIT = ADDR(.text_task1);
     _TASK1_TEXT_LOAD = LOADADDR(.text_task1);
     _TASK1_TEXT_SIZE = SIZEOF(.text_task1);
@@ -20,7 +20,7 @@ SECTIONS
     .data_task1 : ALIGN(4K)
     {
         *(.data.task1);
-    } >ram 
+    } >ram  AT>rom
     _TASK1_DATA_INIT = ADDR(.data_task1);
     _TASK1_DATA_LOAD = LOADADDR(.data_task1);
     _TASK1_DATA_SIZE = SIZEOF(.data_task1);
@@ -42,7 +42,7 @@ SECTIONS
     .rodata_task1 : ALIGN(4K)
     {
         *(.rodata.task1*);
-    } >ram 
+    } >ram AT>rom
     _TASK1_RODATA_INIT = ADDR(.rodata_task1);
     _TASK1_RODATA_LOAD = LOADADDR(.rodata_task1);
     _TASK1_RODATA_SIZE = SIZEOF(.rodata_task1);
@@ -50,7 +50,7 @@ SECTIONS
     .readingArea_task1 0x70A00000 : ALIGN(4K)
     {
         *(.readingArea.task1);
-    } >ram 
+    } >ram
     _TASK1_READINGAREA_INIT = ADDR(.readingArea_task1);
     _TASK1_READINGAREA_LOAD = LOADADDR(.readingArea_task1);
     _TASK1_READINGAREA_SIZE = SIZEOF(.readingArea_task1);
@@ -60,7 +60,7 @@ SECTIONS
     .text_task2 : ALIGN(4K)
     {
         *(.text.task2);
-    } >ram 
+    } >ram AT>rom
     _TASK2_TEXT_INIT = ADDR(.text_task2);
     _TASK2_TEXT_LOAD = LOADADDR(.text_task2);
     _TASK2_TEXT_SIZE = SIZEOF(.text_task2);
@@ -68,7 +68,7 @@ SECTIONS
     .data_task2 : ALIGN(4K)
     {
         *(.data.task2);
-    } >ram 
+    } >ram AT>rom
     _TASK2_DATA_INIT = ADDR(.data_task2);
     _TASK2_DATA_LOAD = LOADADDR(.data_task2);
     _TASK2_DATA_SIZE = SIZEOF(.data_task2);
@@ -90,7 +90,7 @@ SECTIONS
     .rodata_task2 : ALIGN(4K)
     {
         *(.rodata.task2*);
-    } >ram 
+    } >ram AT>rom
     _TASK2_RODATA_INIT = ADDR(.rodata_task2);
     _TASK2_RODATA_LOAD = LOADADDR(.rodata_task2);
     _TASK2_RODATA_SIZE = SIZEOF(.rodata_task2);

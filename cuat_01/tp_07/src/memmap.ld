@@ -35,7 +35,7 @@ PAGE_TABLE_SIZE = 64K;
 MEMORY 
 {
     isr(rwx) : org = _ISR_INIT, len = 0x40
-    rom(rwx) : org = _ROM_INIT, len = 40k
+    rom(rwx) : org = _ROM_INIT, len = 0x10000
     stack(rw) : org = _STACK_INIT, len = 40k
     ram(rwx) : org = _RAM_INIT, len = 0x1000000
 }

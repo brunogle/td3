@@ -10,7 +10,7 @@ Que es copiado de ROM a RAM por el bootloader
 .global systick_count
 
 .extern _L1_PAGE_TABLES_INIT
-
+.extern TASK1_TEXT_LOAD
 
 .section .text.kernel
 
@@ -57,9 +57,10 @@ Que es copiado de ROM a RAM por el bootloader
 	BL _start_scheduler
 
 
-	interrupt_loop:
+
+	kernel_end:
 		WFI
-		B interrupt_loop
+		B kernel_end
 	 
 
 
