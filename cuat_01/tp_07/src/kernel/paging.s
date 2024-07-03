@@ -102,122 +102,7 @@ _identity_map_kernel_sections:
     BX LR
 
 
-/*
-Subrutina _identity_map_task_memory
 
-Mapea una region de memoria para ser utilizada por una tarea.
-El orden de las secciones es:
-.text
-.data
-.bss
-.rodata
-stack
-
-Cada sección es colocada en paginas distintas.
-
-Parametros:
-    R0: Direccion de comienzo de .text
-    R1: Direccion de comienzo de .data
-    R1: Tamaño de stack en bytes
-*/
-_identity_map_task_memory:
-    PUSH {LR}
-
-    LDR R4, =_L1_PAGE_TABLES_INIT_TASK1
-
-    MOV R0, R4
-    BL _identity_map_kernel_sections
-
-    //Text (Codigo de bootloader)
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK1_TEXT_INIT
-	LDR R1, =_TASK1_TEXT_SIZE
-	BL _identiy_map_memory_range
-
-    //BSS\
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK1_BSS_INIT
-	LDR R1, =_TASK1_BSS_SIZE
-	BL _identiy_map_memory_range
-
-    //Data
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK1_DATA_INIT
-	LDR R1, =_TASK1_DATA_SIZE
-	BL _identiy_map_memory_range
-
-    //RO-Data
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK1_RODATA_INIT
-	LDR R1, =_TASK1_RODATA_SIZE
-	BL _identiy_map_memory_range
-
-    //Stack (Contiene los 6 stacks)
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK1_STACK_INIT
-	LDR R1, =_TASK1_STACK_SIZE
-	BL _identiy_map_memory_range
-
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK1_READINGAREA_INIT
-	LDR R1, =_TASK1_READINGAREA_SIZE
-	BL _identiy_map_memory_range
-
-    LDR R4, =_L1_PAGE_TABLES_INIT_TASK2
-
-    MOV R0, R4
-    BL _identity_map_kernel_sections
-
-
-    //Text (Codigo de bootloader)
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK2_TEXT_INIT
-	LDR R1, =_TASK2_TEXT_SIZE
-	BL _identiy_map_memory_range
-
-    //BSS
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK2_BSS_INIT
-	LDR R1, =_TASK2_BSS_SIZE
-	BL _identiy_map_memory_range
-
-    //Data
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK2_DATA_INIT
-	LDR R1, =_TASK2_DATA_SIZE
-	BL _identiy_map_memory_range
-
-    //RO-Data
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK2_RODATA_INIT
-	LDR R1, =_TASK2_RODATA_SIZE
-	BL _identiy_map_memory_range
-
-    //Stack (Contiene los 6 stacks)
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK2_STACK_INIT
-	LDR R1, =_TASK2_STACK_SIZE
-	BL _identiy_map_memory_range
-
-    MOV R3, R4
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_UNPRIV_ACCESS)
-	LDR R0, =_TASK2_READINGAREA_INIT
-	LDR R1, =_TASK2_READINGAREA_SIZE
-	BL _identiy_map_memory_range
-
-    POP {LR}
-    BX LR
 
 /*
 Subrutina _identiy_map_memory_range
@@ -391,24 +276,14 @@ _identy_map_small_page:
 kernel_paging_tables:
 _L1_PAGE_TABLES_INIT:
 .space 0x4000
-_L2_PAGE_TABLES_INIT:
-.space 0x20000
 
-.align 14
-_L1_PAGE_TABLES_INIT_TASK1:
-.space 0x4000
-_L2_PAGE_TABLES_INIT_TASK1:
-.space 0x20000
-
-.align 14
-_L1_PAGE_TABLES_INIT_TASK2:
-.space 0x4000
-_L2_PAGE_TABLES_INIT_TASK2:
-.space 0x20000
+.align 10
+_L2_PAGE_TABLES:
+.space 0x10000
 
 
 .section .data
-next_l2_table_addr: .word _L2_PAGE_TABLES_INIT 
+next_l2_table_addr: .word _L2_PAGE_TABLES 
 
 
 

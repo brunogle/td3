@@ -52,10 +52,6 @@ task1_readingarea:
 memory_error_detected: .word 0
 num_memory_scans_performed: .word 0
 
-.section .bss.task1
-NOP
-.section .rodata.task1
-NOP
 
 
 
@@ -94,10 +90,3 @@ task2_readingarea:
 
 .section .data.task2
 num_mem_inversions_performed: .word 0
-
-
-.section .bss.task2
-NOP
-.section .rodata.task2
-NOP
-

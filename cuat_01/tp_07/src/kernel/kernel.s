@@ -20,6 +20,8 @@ Que es copiado de ROM a RAM por el bootloader
 
 	CPS #SYS_MODE
 
+	BL _copy_task_data
+
 	// Configuro DACR
 	LDR R0, =0xD
 	BL _mmu_write_dacr
@@ -37,8 +39,9 @@ Que es copiado de ROM a RAM por el bootloader
 
 	//Habilito IRQ (importante habilitarlo despues de configurar el GIC)
 	BL _irq_enable
-
+	
 	BL _init_scheduler
+
 
 	LDR R0, =_task1
 	LDR R1, =_L1_PAGE_TABLES_INIT_TASK1

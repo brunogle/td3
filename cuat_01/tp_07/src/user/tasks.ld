@@ -8,6 +8,11 @@ STACK_SIZE = 4K;
 SECTIONS
 {
     
+    /*
+    ===================================
+            Secciones Tarea 1
+    ===================================
+    */
     
     .text_task1 : ALIGN(4K)
     {
@@ -56,6 +61,11 @@ SECTIONS
     _TASK1_READINGAREA_SIZE = SIZEOF(.readingArea_task1);
 
 
+    /*
+    ===================================
+            Secciones Tarea 2
+    ===================================
+    */
 
     .text_task2 : ALIGN(4K)
     {
@@ -104,4 +114,53 @@ SECTIONS
     _TASK2_READINGAREA_LOAD = LOADADDR(.readingArea_task2);
     _TASK2_READINGAREA_SIZE = SIZEOF(.readingArea_task2);
 
+
+    /*
+    ===================================
+    Ejemplo de secciones para una tarea
+
+    Remplazar TASKNAME por nombre de tarea
+
+    ===================================
+    */
+
+    /*
+    .text_TASKNAME : ALIGN(4K)
+    {
+        *(.text.TASKNAME);
+    } >ram AT>rom
+    _TASKNAME_TEXT_INIT = ADDR(.text_TASKNAME);
+    _TASKNAME_TEXT_LOAD = LOADADDR(.text_TASKNAME);
+    _TASKNAME_TEXT_SIZE = SIZEOF(.text_TASKNAME);
+
+    .data_TASKNAME : ALIGN(4K)
+    {
+        *(.data.TASKNAME);
+    } >ram AT>rom
+    _TASKNAME_DATA_INIT = ADDR(.data_TASKNAME);
+    _TASKNAME_DATA_LOAD = LOADADDR(.data_TASKNAME);
+    _TASKNAME_DATA_SIZE = SIZEOF(.data_TASKNAME);
+
+    .stack_TASKNAME : ALIGN(4K)
+    {
+        . += STACK_SIZE;
+    } >ram
+    _TASKNAME_STACK_INIT = ADDR(.stack_TASKNAME);
+    _TASKNAME_STACK_SIZE = SIZEOF(.stack_TASKNAME);
+
+    .bss_TASKNAME : ALIGN(4K)
+    {
+        *(.bss.TASKNAME*);
+    } >ram
+    _TASKNAME_BSS_INIT = ADDR(.bss_TASKNAME);
+    _TASKNAME_BSS_SIZE = SIZEOF(.bss_TASKNAME);
+
+    .rodata_TASKNAME : ALIGN(4K)
+    {
+        *(.rodata.TASKNAME*);
+    } >ram AT>rom
+    _TASKNAME_RODATA_INIT = ADDR(.rodata_TASKNAME);
+    _TASKNAME_RODATA_LOAD = LOADADDR(.rodata_TASKNAME);
+    _TASKNAME_RODATA_SIZE = SIZEOF(.rodata_TASKNAME);
+    */
 }
