@@ -17,56 +17,93 @@ Luego de esto, salta a la ejecucion del codigo del kernel.
 .section .text.bootloader.start
 
 //Comienzo del main del bootloader
+//Punto de entrada del programa
 _start:
 
-	//* Copias de ROM a RAM del codigo y datos del kernel */
+	/*
+	Copia el kernel de ROM a RAM
+	*/
 
-	// Copia el kernel a RAM
- 	LDR R0, =_TEXT_INIT //VMA del .text
-	LDR R1, =_TEXT_LOAD //LMA del .text
-	LDR R2, =_TEXT_SIZE //Tamaño del .text
-	BL _util_memcpy
+ 	LDR R0, =_KERNEL_TEXT_INIT
+	LDR R1, =_KERNEL_TEXT_LOAD
+	LDR R2, =_KERNEL_TEXT_SIZE
+	BL _bootloader_memcpy
 
- 	LDR R0, =_DATA_INIT //VMA de .data
-	LDR R1, =_DATA_LOAD //LMA de .data
-	LDR R2, =_DATA_SIZE //Tamaño de .data
-	BL _util_memcpy
+ 	LDR R0, =_KERNEL_DATA_INIT
+	LDR R1, =_KERNEL_DATA_LOAD
+	LDR R2, =_KERNEL_DATA_SIZE
+	BL _bootloader_memcpy
 
- 	LDR R0, =_RODATA_INIT //VMA de .rodata
-	LDR R1, =_RODATA_LOAD //LMA de .rodata
-	LDR R2, =_RODATA_SIZE //Tamaño de .rodata
-	BL _util_memcpy
+ 	LDR R0, =_KERNEL_RODATA_INIT
+	LDR R1, =_KERNEL_RODATA_LOAD
+	LDR R2, =_KERNEL_RODATA_SIZE
+	BL _bootloader_memcpy
 
-	LDR R0, =_ISR_INIT //VMA del ISR
-	LDR R1, =_ISR_LOAD //LMA del ISR
-	LDR R2, =_ISR_SIZE //Tamaño del ISR
-	BL _util_memcpy
+	LDR R0, =_ISR_INIT 
+	LDR R1, =_ISR_LOAD 
+	LDR R2, =_ISR_SIZE
+	BL _bootloader_memcpy
 
 
-    /* Inicializamos los stack pointers para los diferentes modos de funcionamiento */
+    /*
+	Inicializacion de los stack pointers para los distintos modos
+	*/
     MSR cpsr_c,#(IRQ_MODE)
-    LDR SP,=__irq_stack_top__     /* IRQ stack pointer */
+    LDR SP,=_IRQ_STACK_END
     MSR cpsr_c,#(FIQ_MODE)
-    LDR SP,=__fiq_stack_top__     /* FIQ stack pointer */
+    LDR SP,=_FIQ_STACK_END
     MSR cpsr_c,#(SVC_MODE)
-    LDR SP,=__svc_stack_top__     /* SVC stack pointer */
+    LDR SP,=_SVC_STACK_END
     MSR cpsr_c,#(ABT_MODE)
-    LDR SP,=__abt_stack_top__     /* ABT stack pointer */
+    LDR SP,=_ABT_STACK_END
     MSR cpsr_c,#(UND_MODE)
-    LDR SP,=__und_stack_top__     /* UND stack pointer */
+    LDR SP,=_UND_STACK_END
     MSR cpsr_c,#(SYS_MODE)
-    LDR SP,=__sys_stack_top__     /* SYS stack pointer */
+    LDR SP,=_SYS_STACK_END
 
-	// Paso a ejecutar el kernel en su nueva ubicacion
-	LDR R0,=kernel_start
-	BX R0
+	// Paso a ejecutar el kernel en su nueva ubicacion en modo SYS
+	CPS #SYS_MODE
+	LDR PC,=kernel_start
 	
-_end:
+_bootloader_end:
 	B .
 //Fin del main del bootloader
 
 
-.end
 
+.section .text.bootloader
+
+/*
+Subrutina _bootloader_memcpy
+
+Copia una cierta cantidad de bytes partiendo de una
+direccion dada de memoria a otra direccion de memoria
+
+
+Parametros:
+	R0: Direccion de memoria destino
+	R1: Direccion de memoria fuente
+	R2: Cantidad de bytes que se deben copiar
+*/
+_bootloader_memcpy:
+	CMP R2, #0
+	BEQ bootloader_memcpy_end
+
+	bootloader_memcpy_loop:
+		LDRB R3, [R1], #1
+		STRB R3, [R0], #1
+		SUBS R2, R2, #1
+		BNE bootloader_memcpy_loop
+
+	bootloader_memcpy_end:
+	BX LR
+/*
+Fin de codigo de _bootloader_memcpy
+*/
+
+
+
+
+.end
 
 

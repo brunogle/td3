@@ -1,4 +1,4 @@
-.section .text.bootloader
+.section .text.kernel
 
 .global _util_memcpy
 
@@ -18,16 +18,16 @@ _util_memcpy:
 	CMP R2, #0
 	BEQ util_memcpy_end
 
-util_memcpy_loop:
-	LDRB R3, [R1], #1
-	STRB R3, [R0], #1
-	SUBS R2, R2, #1
-	BNE util_memcpy_loop
+	util_memcpy_loop:
+		LDRB R3, [R1], #1
+		STRB R3, [R0], #1
+		SUBS R2, R2, #1
+		BNE util_memcpy_loop
 
-util_memcpy_end:
+	util_memcpy_end:
 	BX LR
 /*
-Fin de codigo de util_memcpy
+Fin de codigo de _util_memcpy
 */
 
 

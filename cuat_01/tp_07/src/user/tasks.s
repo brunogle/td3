@@ -2,6 +2,7 @@
 
 .global _task1, _task2
 
+
 .section .text.task1
 _task1:
     LDR R0, =_TASK1_READINGAREA_INIT

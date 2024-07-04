@@ -2,21 +2,19 @@
 
 .section .text.kernel
 
-.global _timer0_10ms_tick_enable
+.global _timer0_100ms_tick_enable
 .global SCHED_TICK_TIMER_LOAD
 
 .equ SCHED_TICK_TIMER_LOAD, 100000 //Scheduler timer tick rate en microsegundos
 
 
-
-
 /*
 Subrutina _timer0_10ms_tick_enable
 
-Configura y habilita el Timer0 para producir interrupciones cada 10ms
+Configura y habilita el Timer0 para producir interrupciones cada 100ms
 (asumiendo clock de 1MHz).
 */
-_timer0_10ms_tick_enable:
+_timer0_100ms_tick_enable:
     LDR R0, =(TIMER0_ADDR + TIMER_LOAD_OFFSET) //Para ticks de 10ms si el clock es de 1MHz
 	LDR R1, =SCHED_TICK_TIMER_LOAD
 	STR R1, [R0]

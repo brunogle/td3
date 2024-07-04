@@ -3,104 +3,10 @@
 .global _identiy_map_memory_range
 .global _identity_map_kernel_sections
 .global _identity_map_task_memory
-.global _L1_PAGE_TABLES_INIT
-.global _L1_PAGE_TABLES_INIT_TASK1
-.global _L1_PAGE_TABLES_INIT_TASK2
+.global _KERNEL_L1_PAGE_TABLES_INIT
+
 
 .section .text.kernel
-
-.equ IDNTY_MAP_EXECUTABLE, 0x1
-.equ IDNTY_MAP_RW, 0x2
-.equ IDNTY_MAP_CACHE_EN, 0x4
-.equ IDNTY_MAP_GLOBAL, 0x8
-.equ IDNTY_MAP_UNPRIV_ACCESS, 0x100
-
-.equ IDNTY_MAP_DOMAIN_0, 0x00
-.equ IDNTY_MAP_DOMAIN_1, 0x10
-.equ IDNTY_MAP_DOMAIN_2, 0x20
-.equ IDNTY_MAP_DOMAIN_3, 0x30
-.equ IDNTY_MAP_DOMAIN_4, 0x40
-.equ IDNTY_MAP_DOMAIN_5, 0x50
-.equ IDNTY_MAP_DOMAIN_6, 0x60
-.equ IDNTY_MAP_DOMAIN_7, 0x70
-.equ IDNTY_MAP_DOMAIN_8, 0x80
-.equ IDNTY_MAP_DOMAIN_9, 0x90
-.equ IDNTY_MAP_DOMAIN_10, 0xA0
-.equ IDNTY_MAP_DOMAIN_11, 0xB0
-.equ IDNTY_MAP_DOMAIN_12, 0xC0
-.equ IDNTY_MAP_DOMAIN_13, 0xD0
-.equ IDNTY_MAP_DOMAIN_14, 0xE0
-.equ IDNTY_MAP_DOMAIN_15, 0xF0
-
-
-
-/*
-Subrutina _identity_map_kernel_sections
-
-Realiza un identity mapping de toda la memoria de interes.
-
-Parametros:
-    R0: Direccion de la tabla L1
-
-*/
-_identity_map_kernel_sections:
-    PUSH {LR}
-
-    MOV R3, R0
-
-    //Text (Codigo de bootloader)
-    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
-	LDR R0, =_TEXT_INIT
-	LDR R1, =_TEXT_SIZE
-	BL _identiy_map_memory_range
-
-    //BSS
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
-	LDR R0, =_BSS_INIT
-	LDR R1, =_BSS_SIZE
-	BL _identiy_map_memory_range
-
-    //Data
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
-	LDR R0, =_DATA_INIT
-	LDR R1, =_DATA_SIZE
-	BL _identiy_map_memory_range
-
-    //RO-Data
-    LDR R2, =(IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
-	LDR R0, =_RODATA_INIT
-	LDR R1, =_RODATA_SIZE
-	BL _identiy_map_memory_range
-
-    //Stack (Contiene los 6 stacks)
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_CACHE_EN|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
-	LDR R0, =_STACK_INIT
-	LDR R1, =_STACK_SIZE
-	BL _identiy_map_memory_range
-
-    //Registros GIC
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
-	LDR R0, =GIC_REGMAP_INIT
-	LDR R1, =GIC_REGMAP_SIZE
-	BL _identiy_map_memory_range
-
-    //Registros Timer
-    LDR R2, =(IDNTY_MAP_RW|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1)
-	LDR R0, =TIMER_REGMAP_INIT
-	LDR R1, =TIMER_REGMAP_SIZE
-	BL _identiy_map_memory_range
-
-    //ISR
-    LDR R2, =(IDNTY_MAP_EXECUTABLE|IDNTY_MAP_GLOBAL|IDNTY_MAP_DOMAIN_1|IDNTY_MAP_CACHE_EN)
-	LDR R0, =_ISR_INIT
-	LDR R1, =_ISR_SIZE
-	BL _identiy_map_memory_range
-
-
-
-    POP {LR}
-    BX LR
-
 
 
 
@@ -272,9 +178,17 @@ _identy_map_small_page:
 
 
 .section .bss
+
+/*
+Tablas de paginacion
+*/
+
+/*
+Tabla L1 para el kernel. Las otras tablas L1 estan declaradas
+en 
+*/
 .align 14
-kernel_paging_tables:
-_L1_PAGE_TABLES_INIT:
+_KERNEL_L1_PAGE_TABLES_INIT:
 .space 0x4000
 
 .align 10

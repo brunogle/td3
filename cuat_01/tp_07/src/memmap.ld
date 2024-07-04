@@ -36,7 +36,7 @@ MEMORY
 {
     isr(rwx) : org = _ISR_INIT, len = 0x40
     rom(rwx) : org = _ROM_INIT, len = 0x10000
-    stack(rw) : org = _STACK_INIT, len = 40k
+    stack(rw) : org = _STACK_INIT, len = 0x10000
     ram(rwx) : org = _RAM_INIT, len = 0x1000000
 }
 
@@ -62,19 +62,19 @@ SECTIONS
     {
         *(.text.kernel);
     } >ram AT>rom
-    _TEXT_INIT = ADDR(.text); /* VMA de .text */
-    _TEXT_LOAD = LOADADDR(.text); /* LMA de .text */
-    _TEXT_SIZE = SIZEOF(.text); /* size de .text */
+    _KERNEL_TEXT_INIT = ADDR(.text); /* VMA de .text */
+    _KERNEL_TEXT_LOAD = LOADADDR(.text); /* LMA de .text */
+    _KERNEL_TEXT_SIZE = SIZEOF(.text); /* size de .text */
 
     /*
     Variables globales y estaticas no inicializadas.
     */
     .bss : ALIGN(4K)
     {
-        *(.bss);
+        *(.bss.kernel);
     } >ram
-    _BSS_INIT = ADDR(.bss);
-    _BSS_SIZE = SIZEOF(.bss);
+    _KERNEL_BSS_INIT = ADDR(.bss);
+    _KERNEL_BSS_SIZE = SIZEOF(.bss);
 
     /*
     Variables globales y estaticas inicializadas.
@@ -83,11 +83,11 @@ SECTIONS
     */
     .data : ALIGN(4K)
     {
-        *(.data);
+        *(.data.kernel);
     } > ram AT>rom
-    _DATA_INIT = ADDR(.data);
-    _DATA_LOAD = LOADADDR(.data);
-    _DATA_SIZE = SIZEOF(.data);
+    _KERNEL_DATA_INIT = ADDR(.data);
+    _KERNEL_DATA_LOAD = LOADADDR(.data);
+    _KERNEL_DATA_SIZE = SIZEOF(.data);
 
     /*
     Datos constantes.
@@ -96,11 +96,11 @@ SECTIONS
     */
     .rodata : ALIGN(4K)
     {
-        *(.rodata);
+        *(.rodata.kernel);
     } > ram AT>rom
-    _RODATA_INIT = ADDR(.rodata);
-    _RODATA_LOAD = LOADADDR(.rodata);
-    _RODATA_SIZE = SIZEOF(.rodata);
+    _KERNEL_RODATA_INIT = ADDR(.rodata);
+    _KERNEL_RODATA_LOAD = LOADADDR(.rodata);
+    _KERNEL_RODATA_SIZE = SIZEOF(.rodata);
 
 
     /*
@@ -121,35 +121,33 @@ SECTIONS
     */
     .stack : ALIGN(4K)
         {
-        __stack_start__ = .;
         . += IRQ_STACK_SIZE;
         . = ALIGN(4);
-        __irq_stack_top__ = .;
+        _IRQ_STACK_END = .;
 
         . += FIQ_STACK_SIZE;
         . = ALIGN(4);
-        __fiq_stack_top__ = .;
+        _FIQ_STACK_END = .;
 
         . += SVC_STACK_SIZE;
         . = ALIGN(4);
-        __svc_stack_top__ = .;
+        _SVC_STACK_END = .;
 
         . += ABT_STACK_SIZE;
         . = ALIGN(4);
-        __abt_stack_top__ = .;
+        _ABT_STACK_END = .;
 
         . += UND_STACK_SIZE;
         . = ALIGN(4);
-        __und_stack_top__ = .;
+        _UND_STACK_END = .;
 
         . += C_STACK_SIZE;
         . = ALIGN(4);
-        __sys_stack_top__ = .;
+        _SYS_STACK_END = .;
 
-        __stack_end__ = .;
         } > stack 
-        _STACK_INIT = ADDR(.stack);
-        _STACK_SIZE = SIZEOF(.stack);
+        _KERNEL_STACK_INIT = ADDR(.stack);
+        _KERNEL_STACK_SIZE = SIZEOF(.stack);
 
 
 

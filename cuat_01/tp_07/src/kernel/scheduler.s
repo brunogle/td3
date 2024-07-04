@@ -10,22 +10,28 @@
 .section .text.kernel
 
 
-_init_scheduler:
+/*
+Subrutina _start_scheduler
+
+Esta subrutina configura el scheduler y comienza a ejecutar las tareas en un roundrobbin.
+*/
+_start_scheduler:
     PUSH {LR}
 
     # La tarea 0 es la tarea de sleep
-    LDR R1, =_L1_PAGE_TABLES_INIT
+    LDR R4, =_KERNEL_L1_PAGE_TABLES_INIT
     LDR R0, =_sleep_task
-    BL _add_task
+    MOV R5, #0
 
-	//Preparo count y habilito timer
-	LDR R10,=0
-	BL _timer0_10ms_tick_enable
+    LDR R1, =thread_control_blocks
+    ADD R1, R1, R5, LSL#7
+    /* Guarda en el LR del PCB el punto de comienzo de ejecucion de la tarea */
+    
+    STR R0, [R1, #(4*15)] //Guarda la direccion de inicio de la tarea
+    STR R2, [R1, #(4*13)] //Guarda el stack pointer
+    STR R4, [R1, #(4*17)] //Guarda la TTBR0
 
-    POP {LR}
-    BX LR
 
-_start_scheduler:
     MOV R0, #0
     LDR R1, =current_task_id
     STR R0, [R1]
@@ -40,6 +46,9 @@ _start_scheduler:
 
     LDR LR, [R0, #(4*15)]
 
+	//Preparo count y habilito timer
+	BL _timer0_100ms_tick_enable
+    POP {LR}
 
     MOV R0, #0
     MOV R1, #0
@@ -55,6 +64,7 @@ _start_scheduler:
     MOV R11, #0
     MOV R12, #0
     CPS #USR_MODE
+    NOP
     BX LR
 
 
@@ -70,10 +80,13 @@ Retorna:
     R0: Direccion del TCB
 */
 _add_task:
+    PUSH {R4, R5}
+
     MOV R4, R1
 
     LDR R3, =total_running_tasks
     LDR R5, [R3]
+   
 
     LDR R1, =thread_control_blocks
     ADD R1, R1, R5, LSL#7
@@ -88,6 +101,7 @@ _add_task:
 
     MOV R0, R1
 
+    POP {R4, R5}
     BX LR
 
 
@@ -293,11 +307,11 @@ _sleep_task:
     
 
 
-.section .bss
+.section .data
 
 current_task_id: .word 0
 current_task_conext_addr: .word 0
-total_running_tasks: .word 0
+total_running_tasks: .word 1
 all_tasks_yielded : .word 0
 
 /*

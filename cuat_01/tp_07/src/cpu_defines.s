@@ -130,3 +130,31 @@
 .equ F_BIT,    0x40
 
 
+/*
+=============================================
+Definiciones propias del SO
+=============================================
+*/
+.equ IDNTY_MAP_EXECUTABLE, 0x1
+.equ IDNTY_MAP_RW, 0x2
+.equ IDNTY_MAP_CACHE_EN, (0x4 | 0x8) 
+.equ IDNTY_MAP_GLOBAL, 0x8
+.equ IDNTY_MAP_UNPRIV_ACCESS, 0x100
+
+.equ IDNTY_MAP_DOMAIN_0, 0x00
+.equ IDNTY_MAP_DOMAIN_1, 0x10
+.equ IDNTY_MAP_DOMAIN_2, 0x20
+.equ IDNTY_MAP_DOMAIN_3, 0x30
+.equ IDNTY_MAP_DOMAIN_4, 0x40
+.equ IDNTY_MAP_DOMAIN_5, 0x50
+.equ IDNTY_MAP_DOMAIN_6, 0x60
+.equ IDNTY_MAP_DOMAIN_7, 0x70
+.equ IDNTY_MAP_DOMAIN_8, 0x80
+.equ IDNTY_MAP_DOMAIN_9, 0x90
+.equ IDNTY_MAP_DOMAIN_10, 0xA0
+.equ IDNTY_MAP_DOMAIN_11, 0xB0
+.equ IDNTY_MAP_DOMAIN_12, 0xC0
+.equ IDNTY_MAP_DOMAIN_13, 0xD0
+.equ IDNTY_MAP_DOMAIN_14, 0xE0
+.equ IDNTY_MAP_DOMAIN_15, 0xF0
+
