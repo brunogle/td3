@@ -16,11 +16,8 @@ kernel_start:
 
 	/*
 	Configuracion DACR:
-	Domain 0: Client
-	Domain 1: Manager
-	Domain 2-15: No Access
 	*/
-	LDR R0, =0xD
+	LDR R0, =DACR_VALUE
 	BL _mmu_write_dacr
 
 
@@ -29,7 +26,7 @@ kernel_start:
 	El kernel solamente se mapea a si mismo, en modo manager.
 	*/
 	LDR R0,=_KERNEL_L1_PAGE_TABLES_INIT
-	LDR R1, =IDNTY_MAP_DOMAIN_1
+	LDR R1, =KERNEL_DOMAIN
 	BL _identity_map_kernel_sections
 
 	/*
@@ -222,7 +219,7 @@ _identity_map_task_memory:
     LDR R6, =_list_task_pagetables
     task_pagetable_kernel_map_loop:
         LDR R0, [R6]
-        LDR R1, =IDNTY_MAP_DOMAIN_0
+        LDR R1, =USER_DOMAIN
         BL _identity_map_kernel_sections
         ADD R4, R4, #1
         CMP R4, R5

@@ -81,7 +81,7 @@ Direcciones de las tablas de paginacion definidas mas abajo.
 _list_task_pagetables: .word TASK1_L1_PAGE_TABLES_INIT, TASK2_L1_PAGE_TABLES_INIT
 
 /*
-Acordata de actualizar la cantidad de tareas que se estaran ejecutando!
+Acordate de actualizar la cantidad de tareas definidas!
 */
 task_count: .word 2
 

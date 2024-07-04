@@ -1,4 +1,4 @@
-.include "src/cpu_defines.s"
+.include "src/kernel/config.s"
 
 .global _identiy_map_memory_range
 .global _identity_map_kernel_sections
@@ -197,7 +197,7 @@ En este espacio se van a colocar TODAS las tablas L2
 */
 .align 10
 _L2_PAGE_TABLES:
-.space 0x10000
+.space L2_PAGES_MEMORY_SIZE
 
 
 .section .data.kernel

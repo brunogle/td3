@@ -5,7 +5,7 @@
 .global _sched_yield
 .global _sched_force_context_switch
 
-.include "src/cpu_defines.s"
+.include "src/kernel/config.s"
 
 .section .text.kernel
 
@@ -206,15 +206,10 @@ _context_switch:
     MOVS PC, LR
 
 
-
-    /* Copiar la pila al espacio de contexto de la tarea vieja */
-    /* Cambiar TTBR0 para que apunte a nueva tabla */
-    /* Cargar la pila con el espacio de contexto de la tarea nueva
-    */
-
 /*
 Subrutina _sched_yield
 
+Esta es la subrutina que se debe llamar si la tarea cedio su ejecucion
 */
 _sched_yield:
     B _context_switch
@@ -222,6 +217,7 @@ _sched_yield:
 /*
 Subrutina _sched_force_context_switch
 
+Esta es la tarea que se debe llamar si la tarea fue interrumpida por el timer.
 */
 _sched_force_context_switch:
     PUSH {R0, R1}
@@ -239,6 +235,8 @@ Subrutina _next_swtich
 
 Esta subrutina encuentra la siguiente tarea que se debe ejecutar
 y retorna la dirección de su TCB.
+
+Solamente se debe llamar desde _context_switch y solo se debe ejecutar una vez
 
 Retorna:
     R0: Direccion del TCB de la siguiente tarea
@@ -285,7 +283,9 @@ _next_task:
         BX LR
 
 
-
+/*
+Esta es la "tarea" a la que se entra si se cumplen las condiciones para sleep.
+*/
 _sleep_task:
     NOP
     sleep_task_loop:
@@ -297,10 +297,13 @@ _sleep_task:
 
 .section .data
 
-current_task_id: .word 0
-current_task_conext_addr: .word thread_control_blocks
-total_running_tasks: .word 1
-all_tasks_yielded : .word 1
+current_task_id: .word 0 //Numero de la tarea que se esta ejecutando actualmente
+current_task_conext_addr: .word thread_control_blocks //TCB de la tarea que se esta ejecutando actualmente
+total_running_tasks: .word 1 //Cantidad total de tareas (incluyendo el sleep)
+all_tasks_yielded : .word 1 //Esta variable se pone en 0 si una de las subrutinas fue interrumpida
+
+.section .bss
+
 
 /*
 TCB:
@@ -312,7 +315,7 @@ CPSR: 4 bytes (16)
 TTBR0: 4 bytes (17)
 */
 thread_control_blocks:
-    .space 128*64
+    .space TCB_MEMORY_SIZE
 
 
 .end
