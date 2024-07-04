@@ -12,7 +12,7 @@ OBJCOPY = $(TOOLCHAIN)-objcopy
 ################################################## FLAGS ##################################################
 
 ASFLAGS = -g
-LDFLAGS = -T $(LINKER_SCRIPT) -Map=my_program.map -T src/user/tasks.ld 
+LDFLAGS = -T $(LINKER_SCRIPT_KERNEL) -T $(LINKER_SCRIPT_TASKS) 
 OBJCOPYFLAGS = -O binary
 
 QEMUFLAGS = -M realview-pb-a8 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -S -gdb tcp::2159 -device loader,addr=0x70010000,cpu-num=0
@@ -29,7 +29,8 @@ LST_DIR = lst
 
 ################################################## ARCHIVOS ESPECIALES ##################################################
 
-LINKER_SCRIPT =  src/memmap.ld 
+LINKER_SCRIPT_KERNEL =  src/memmap.ld 
+LINKER_SCRIPT_TASKS =  src/user/tasks.ld
 
 SRC_ISR = src/kernel/interrupt/isr_table.s # Este archivo no es compilado por la misma tarea que compila las otras fuentes
 
@@ -55,6 +56,7 @@ LST_FILES := $(patsubst $(SRC_DIR)/%.s,$(LST_DIR)/%.o,$(SRC_FILES))
 
 ################################################## VARIABLES DEFAULT ##################################################
 
+GEN_LISTS = 0
 EXCEPTIONS = 1
 IRQ = 1
 FIQ = 1
@@ -71,9 +73,12 @@ all: $(TARGET_BIN)
 ## Tarea para todos los objetos menos OBJ_ISR
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
 	@mkdir -p $(dir $@)
+ifeq (GEN_LISTS, 1)
 	@mkdir -p $(dir $(LST_DIR)/$*.lst)
 	$(AS) $(ASFLAGS) -al=$(LST_DIR)/$*.lst -o $@ $<
-
+else
+	$(AS) $(ASFLAGS) -o $@ $<
+endif
 
 ## Tarea especial para OBJ_ISR
 ## Se fuerza el assembly del ISR para asegurar que se cumple las condiciones de EXCEPTIONS=0, etc. si se pasa

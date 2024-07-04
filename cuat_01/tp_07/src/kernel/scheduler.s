@@ -16,40 +16,24 @@ Subrutina _start_scheduler
 Esta subrutina configura el scheduler y comienza a ejecutar las tareas en un roundrobbin.
 */
 _start_scheduler:
-    PUSH {LR}
 
-    # La tarea 0 es la tarea de sleep
-    LDR R4, =_KERNEL_L1_PAGE_TABLES_INIT
+    //Escribe los datos de la tarea de sleep en el TLB
     LDR R0, =_sleep_task
-    MOV R5, #0
-
     LDR R1, =thread_control_blocks
-    ADD R1, R1, R5, LSL#7
-    /* Guarda en el LR del PCB el punto de comienzo de ejecucion de la tarea */
-    
+    LDR R2, =_KERNEL_L1_PAGE_TABLES_INIT
+
     STR R0, [R1, #(4*15)] //Guarda la direccion de inicio de la tarea
-    STR R2, [R1, #(4*13)] //Guarda el stack pointer
-    STR R4, [R1, #(4*17)] //Guarda la TTBR0
+    STR R2, [R1, #(4*17)] //Guarda la TTBR0
 
-
-    MOV R0, #0
-    LDR R1, =current_task_id
-    STR R0, [R1]
-
-    LDR R0, =thread_control_blocks
-    LDR R1, =current_task_conext_addr
-    STR R0, [R1]
-
-    LDR R2, =all_tasks_yielded
-    MOV R1, #0x1
-    STR R1, [R2]
-
-    LDR LR, [R0, #(4*15)]
+    MOV LR, R0 //Quiero ir a la direccion de la tarea de sleep cuando salga de esta subrutina
 
 	//Preparo count y habilito timer
-	BL _timer0_100ms_tick_enable
+    PUSH {LR}
+	BL _timer0_tick_enable
     POP {LR}
 
+
+    //Quiero comenzar con todos los registros en cero.
     MOV R0, #0
     MOV R1, #0
     MOV R2, #0
@@ -63,8 +47,12 @@ _start_scheduler:
     MOV R10, #0
     MOV R11, #0
     MOV R12, #0
+
+    //Paso a modo USR para la ejecucion de las tareas
     CPS #USR_MODE
-    NOP
+
+
+    //Cuando se salga de esta subrutina, ira a la tarea "0" (el sleep).
     BX LR
 
 
@@ -310,9 +298,9 @@ _sleep_task:
 .section .data
 
 current_task_id: .word 0
-current_task_conext_addr: .word 0
+current_task_conext_addr: .word thread_control_blocks
 total_running_tasks: .word 1
-all_tasks_yielded : .word 0
+all_tasks_yielded : .word 1
 
 /*
 TCB:
@@ -322,7 +310,9 @@ Link Register (LR/R14): 4 bytes (14)
 Program Counter (PC): 4 bytes (15)
 CPSR: 4 bytes (16)
 TTBR0: 4 bytes (17)
-
 */
 thread_control_blocks:
-    .space 128*4
+    .space 128*64
+
+
+.end

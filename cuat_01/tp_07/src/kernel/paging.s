@@ -177,7 +177,7 @@ _identy_map_small_page:
     BX LR
 
 
-.section .bss
+.section .bss.kernel
 
 /*
 Tablas de paginacion
@@ -185,21 +185,23 @@ Tablas de paginacion
 
 /*
 Tabla L1 para el kernel. Las otras tablas L1 estan declaradas
-en 
+en src/user/task_setup.s
 */
 .align 14
 _KERNEL_L1_PAGE_TABLES_INIT:
 .space 0x4000
 
+
+/*
+En este espacio se van a colocar TODAS las tablas L2
+*/
 .align 10
 _L2_PAGE_TABLES:
 .space 0x10000
 
 
-.section .data
+.section .data.kernel
 next_l2_table_addr: .word _L2_PAGE_TABLES 
-
-
 
 
 .end

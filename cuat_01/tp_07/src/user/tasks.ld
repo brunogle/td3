@@ -1,6 +1,6 @@
 
 /*
-Tamaño del stack de la tarea
+Tamaño del stack de las tareas
 */
 STACK_SIZE = 4K;
 

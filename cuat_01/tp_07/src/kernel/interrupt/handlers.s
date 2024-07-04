@@ -11,7 +11,7 @@ exepciones.
 .global _IRQ_Handler
 .global _FIQ_Handler
 
-.include "src/cpu_defines.s"
+.include "src/kernel/config.s"
 
 /*
 Esta sección contiene todos los handlers de execpciones e interrupciones
