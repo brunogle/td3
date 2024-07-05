@@ -24,7 +24,7 @@ Esta carpeta contiene todo el sistema operativo, no debe ser modificado por el u
 - `src/user/tasks.ld` Este linkerscript debe ser modificado por el usuario para agregar las secciones que se necesiten para las tareas.
 - `src/user/tasks.s` Este archivo contiene tareas de ejemplo. Puede ser eliminado y remplazado por una estructura de archivos que le sea más útil al usuario.
 
-## Lógica del scheduler
+# Lógica del scheduler
 
 El kernel ejecuta todas las tareas en una secuencia "roundrobbin". Cada tarea se ejecuta hasta que ocurra alguno de los siguientes
 eventos:
@@ -34,11 +34,11 @@ eventos:
 
 Cuando se cambie de tarea, se pasará a ejecutar la siguiente tarea en la lista definida en `task_setup.s`. Una vez que se terminó de ejecutar la última tarea en la lista, el scheduler evalúa si todos los cambios de tarea ocurrieron voluntariamente (por syscall). En el caso de que sí, se considera que ninguna de las tareas requiere de más tiempo de CPU, entonces el scheduler entrará en una tarea de sleep por 100ms y luego retomará con la primera tarea de la lista. En el caso de que una o más tareas hayan sido interrumpidas, se considera que las tareas requieren de más atención y continua con la primera tarea inmediatamente después de la última tarea sin pasar por el sleep.
 
-## Como agregar una tarea al SO
+# Como agregar una tarea al SO
 
 Los únicos archivos que se deben modificar si se desea agregar una tarea son `src/kernel/task_setup.s` y `src/user/tasks.ld`.
 
-### Linkerscript: `src/user/tasks.ld`
+## Linkerscript: `src/user/tasks.ld`
 
 En `src/user/tasks.ld` se deben definir las nuevas secciones agregando las siguientes líneas dentro de `SECIONS { }`, cambiando `TASKNAME` por el nombre de la tarea.
 
@@ -84,7 +84,7 @@ En `src/user/tasks.ld` se deben definir las nuevas secciones agregando las sigui
 
 Es importante respetar las ubicaciones en ROM y RAM y para cada tarea definir todas las secciones (text, data, bss, stack, rodata)
 
-### Task Setup: `src/user/task_setup.s`
+## Task Setup: `src/user/task_setup.s`
 
 En `src/user/task_setup.s` se deben agregar:
 
