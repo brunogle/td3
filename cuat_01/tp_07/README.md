@@ -1,6 +1,6 @@
 # Descripción del proyecto
 
-Este proyecto trata de un sistema operativo básico que permite la ejecución concurrente de tareas.
+Este proyecto consiste de un sistema operativo básico que permite la ejecución concurrente de tareas.
 
 El kernel fue implementado completamente en ARM Assembly.
 
@@ -13,12 +13,12 @@ Esta carpeta contiene el único código que se ejecuta directamente desde ROM. T
 
 ## Código de kernel: `src/kernel`
 Esta carpeta contiene todo el sistema operativo, no debe ser modificado por el usuario.
-- `src/kernel/kernel.s` Contiene el punto de entrada del kernel y las subrutinas que inicializan las tareas en memoria (paginación, permisos, copia de ROM a RAM)
-- `src/kernel/paging.s` Contiene las subrutinas con la lógica para escribir en memoria las tablas de paginación L1 y L2. Provee un nivel abstracción para poder cargar las paginas en memoria de forma más simple.
+- `src/kernel/kernel.s` Contiene el punto de entrada del kernel y las subrutinas que inicializan las tareas en memoria (paginación, permisos, copia de ROM a RAM, inicialización del scheduler)
+- `src/kernel/paging.s` Contiene las subrutinas con la lógica para escribir en memoria las tablas de paginación L1 y L2. Provee un nivel abstracción para poder cargar las páginas en memoria de forma más simple. Solamente soporta identity mapping.
 - `src/kernel/scheduler.s` Contiene todo lo relacionado con el scheduler, incluyendo la lógica que determina la siguiente tarea que se debe ejecutar, una tarea de sleep que permite ahorrar energía si ninguna tarea requiere atención, el código para realizar un cambio de contexto y las subrutinas necesarias para utilizarlo.
 - `src/kernel/config.s` Contiene definiciones que permiten cambiar el comportamiento del kernel.
 
-## Codigo de usuario: `src/user`
+## Código de usuario: `src/user`
 
 - `src/user/task_setup.s` En este archivo se especifican todas las direcciones de memoria relacionadas con las tareas. Debe ser modificado por el usuario cuando desee agregar una tarea.
 - `src/user/tasks.ld` Este linkerscript debe ser modificado por el usuario para agregar las secciones que se necesiten para las tareas.
@@ -42,7 +42,7 @@ Los únicos archivos que se deben modificar si se desea agregar una tarea son `s
 
 En `src/user/tasks.ld` se deben definir las nuevas secciones agregando las siguientes líneas dentro de `SECIONS { }`, cambiando `TASKNAME` por el nombre de la tarea.
 
-```
+```json
     .text_TASKNAME : ALIGN(4K)
     {
         *(.text.TASKNAME);
@@ -91,7 +91,7 @@ En `src/user/task_setup.s` se deben agregar:
 
 - TODAS las direcciones a los arrays definiddos en el archivo:
 
-```
+```c
 _list_task_text_init: .word ..., _TASKNAME_TEXT_INIT
 _list_task_text_load: .word ..., _TASKNAME_TEXT_LOAD
 _list_task_text_size: .word ..., _TASKNAME_TEXT_SIZE
@@ -114,14 +114,14 @@ _list_task_rodata_size: .word ..., _TASKNAME_RODATA_SIZE
 
 - Los puntos de entrada:
 
-```
+```c
 _list_task_entrypoint: .word ..., _taskname
 
 ```
 
 - Agregar una sección para la tabla de paginación L1:
 
-```
+```c
 .align 14
 TASKNAME_L1_PAGE_TABLES_INIT:
 .space 0x4000
@@ -129,12 +129,39 @@ TASKNAME_L1_PAGE_TABLES_INIT:
 
 - Agregar la dirección de la tabla L1 a:
 
-```
+```c
 _list_task_pagetables: .word ..., TASKNAME_L1_PAGE_TABLES_INIT
 ```
 
 - Aumentar `task_count` por 1.
 
-```
+```c
 task_count: .word [numero de tareas]
 ```
+
+
+# Makefile
+
+### Tareas:
+
+`make`: Ensambla de todo el codigo incluido en src, escribe los objetos en `obj/` y linkea para producir `output.bin` y `output.elf` que contienen el SO y las tareas.
+
+`make qemu`: Recompila el proyecto entero, y ejecuta el binario en QEMU con los argumentos especificados en la variable `QEMUFLAGS`.
+
+`make debug`: Recompila el proyecto entero, lo ejecuta como en `make qemu` y inicializa DDD para debugear la ejecución.
+
+`make clean`: Elimina las carpetas `obj/`, `lst/` y `bin/`
+
+`make help`:  Imprime un mensaje de ayuda
+
+### Argumentos opcionales:
+
+`EXCEPTIONS=0` no se ejecutara el handler de ninguna excepción
+
+`IRQ=0` no se ejecutara el handler de IRQ
+
+`FIQ=0` no se ejecutara el handler de FIQ
+
+`SVC=0` deshabilita SVC
+
+`GEN_LISTS=1` genera archivos "lists"

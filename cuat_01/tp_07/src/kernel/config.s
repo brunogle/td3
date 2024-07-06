@@ -24,4 +24,4 @@
 
 .equ L2_PAGES_MEMORY_SIZE, 4096*128 //Cada tabla L2 ocupa 4K, esto define la maxima cantidad de tablas L2 que se pueden escrivir
 
-.equ TCB_MEMORY_SIZE, 128*64 //Cada TCB ocupa 128B, esto define la maxima cantidad de tareas que se pueden ejecutar
+.equ TCB_MEMORY_SIZE, 128*64 //Cada TCB ocupa 128B, esto define la maxima cantidad de tareas que se pueden ejecutar 

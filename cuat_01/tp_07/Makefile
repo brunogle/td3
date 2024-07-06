@@ -29,10 +29,12 @@ LST_DIR = lst
 
 ################################################## ARCHIVOS ESPECIALES ##################################################
 
-LINKER_SCRIPT_KERNEL =  src/memmap.ld 
+LINKER_SCRIPT_KERNEL =  src/memmap.ld
 LINKER_SCRIPT_TASKS =  src/user/tasks.ld
 
 SRC_ISR = src/kernel/interrupt/isr_table.s # Este archivo no es compilado por la misma tarea que compila las otras fuentes
+
+SRC_CONFIG = src/kernel/config.s #Si este archivo se modifica, el makefile recompila TODAS las fuentes
 
 TARGET_ELF = $(BIN_DIR)/output.elf
 TARGET_BIN = $(BIN_DIR)/output.bin
@@ -71,7 +73,7 @@ all: $(TARGET_BIN)
 ################################################## TAREAS DE ASSEMBLER ##################################################
 
 ## Tarea para todos los objetos menos OBJ_ISR
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s $(SRC_CONFIG)
 	@mkdir -p $(dir $@)
 ifeq (GEN_LISTS, 1)
 	@mkdir -p $(dir $(LST_DIR)/$*.lst)
@@ -83,7 +85,7 @@ endif
 ## Tarea especial para OBJ_ISR
 ## Se fuerza el assembly del ISR para asegurar que se cumple las condiciones de EXCEPTIONS=0, etc. si se pasa
 
-$(OBJ_ISR): $(SRC_ISR) .FORCE
+$(OBJ_ISR): $(SRC_ISR) $(SRC_CONFIG) .FORCE
 	@mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) --defsym _EXCEPTIONS_ENABLED=$(EXCEPTIONS) --defsym _IRQ_ENABLED=$(IRQ) --defsym _FIQ_ENABLED=$(FIQ) -o $(OBJ_ISR) $(SRC_ISR)
 
@@ -114,16 +116,19 @@ clean:
 # Help
 .PHONY: help
 help:
-	@echo $(OBJ_FILES)
 	@echo "Este makefile posee las siguientes tareas:"
 	@echo "    make all   : Ensambla el binario"
 	@echo "    make qemu  : Ensambla el binario y lo corre en qemu"
 	@echo "    make debug : Ensambla el binario, lo corre en qemu y abre el ddd y ejecuta los comandos en gdb_init_ddd.txt"
+	@echo "    make clean : Elimina los directorios bin, obj y lst"
+	@echo "    make help  : Imprime este mensaje"
 	@echo ""
 	@echo "Argumentos opcionales:"
 	@echo "    EXCEPTIONS=0 en cualquier tarea, no se ejecutara el handler de ninguna exepcion"
 	@echo "    IRQ=0 en cualquier tarea, no se ejecutara el handler de IRQ"
 	@echo "    FIQ=0 en cualquier tarea, no se ejecutara el handler de FIQ"
+	@echo "    SVC=0 en cualquier tarea, deshabilita las SVC"
+	@echo "    GEN_LISTS=1 en cualquier tarea, genera arhcivos \"lists\" durante el assembly"
 
 ################################################## TAREAS DE EJECUCION ##################################################
 
