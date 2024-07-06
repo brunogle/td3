@@ -6,6 +6,29 @@ El kernel fue implementado completamente en ARM Assembly.
 
 Se utiliza paginación para aislar las tareas, pero todo el mapeo que se realiza es de identidad (Dir virtual = Dir fisica).
 
+# Dependencias
+
+
+## Para compilar
+### ARM Toolchain
+https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain
+
+## Para Ejecutar
+### QEMU
+https://www.qemu.org/docs/master/index.html
+
+## Para debugear
+### GDB ARM
+https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain
+
+### Front end (opción A)
+https://www.gnu.org/software/ddd/
+
+### Front end (opcion B)
+https://code.visualstudio.com/
+https://marketplace.visualstudio.com/items?itemName=webfreak.debug
+
+
 # Estructura del proyecto
 
 ## Bootloader: `src/bootloader`
@@ -165,3 +188,19 @@ task_count: .word [numero de tareas]
 `SVC=0` deshabilita SVC
 
 `GEN_LISTS=1` genera archivos "lists"
+
+
+
+# Debugging con VSCode+Native Debug (recomendado)
+
+Para debugear con VSCode, se debe instalar la extensión "Native Debug" especificado en las dependencias.
+
+Luego, se puede abrir la carpeta `cuat_01/tp_07` en VSCode y ejecutar la configuración de arranque "Debug QEMU".
+
+Esta tarea ejecuta `make qemu` y conecta el front end de GDB de la extensión "Native Debug" al servidor de GDB de QEMU.
+
+Para visualizar la ejecución de las tareas se pueden ubicar breakpoints en ellas, y comenzar la ejecución presionando F5.
+
+# Debugging con DDD
+
+Para debugear con DDD simplemente se puede ejecutar `make debug`
