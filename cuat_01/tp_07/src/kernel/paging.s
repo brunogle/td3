@@ -128,7 +128,7 @@ _identy_map_small_page:
             BGE l2_table_fill_zero
 
         MOV R4, R7
-        ORR R4, R4, #(TT_PAGE_TABLE | TT_PAGE_TABLE_NS) //R4: Entrada para la tabla L1 que hay que escribir
+        ORR R4, R4, #(TT_PAGE_TABLE) //R4: Entrada para la tabla L1 que hay que escribir
         AND R8, R5, #0xF0
         LSL R8, R8, #1
         ORR R4, R4, R8

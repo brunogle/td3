@@ -1,0 +1,3 @@
+/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/build/CMakeFiles/server.dir
+/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/build/CMakeFiles/edit_cache.dir
+/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/build/CMakeFiles/rebuild_cache.dir
