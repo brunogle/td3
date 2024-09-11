@@ -14,11 +14,14 @@
 #include <semaphore.h>
 #include <errno.h>
 
-#define PORT 8080
-#define RECV_BUFF_SIZE 16*1024
-#define MAX_CONNECTIONS 10
-#define HTML_FILENAME "index.html"
-#define URL_SIZE 2048
+#define PORT 8080 // Puerto default
+
+#define MAX_CONNECTIONS 10          
+
+#define RECV_BUFF_SIZE 8192
+#define WRITE_BUFF_SIZE 512
+#define URL_SIZE 2024
+
 
 
 #define STR_(X) #X
@@ -170,6 +173,14 @@ int http_not_found_404(int socket_fd){
     return 0;
 }
 
+int http_payload_too_large_413(int socket_fd){
+    char response[] = "HTTP/1.1 413 Payload Too Large\nContent-Length: 21\n\n413 Payload Too Large";
+
+    write(socket_fd, response, strlen(response));
+
+    return 0;   
+}
+
 int http_uri_too_long_414(int socket_fd){
     char response[] = "HTTP/1.1 414 URI Too Long\nContent-Length: 16\n\n414 URI Too Long";
 
@@ -189,6 +200,14 @@ int http_not_implemented_501(int socket_fd){
 
 int http_internal_server_error_500(int socket_fd){
     char response[] = "HTTP/1.1 500 Internal Server Error\nContent-Length: 19\n\n500 Internal Server Error";
+
+    write(socket_fd, response, strlen(response));
+
+    return 0;
+}
+
+int http_service_unavailable(int socket_fd){
+    char response[] = "HTTP/1.1 503 Service Unavailable\nContent-Length: 23\n\n503 Service Unavailable";
 
     write(socket_fd, response, strlen(response));
 
@@ -271,6 +290,22 @@ int handle_ajax_request(int client_socket, char * request){
 /*
 Handler del cliente. Se ejecuta siempre en un proceso hijo
 */
+
+int parse_request(char * request, char * path, char * parameters){
+    char * delimeter = strchr(request, '?');
+    
+    if (delimeter != NULL) {
+        size_t path_length = delimeter - request;
+        strncpy(path, request, path_length);
+        path[path_length] = '\0';
+        strcpy(parameters, delimeter + 1);
+    } else {
+        strcpy(path, request);
+        parameters[0] = '\0';
+    }
+    return 0;
+}
+
 void client_handler(int client_socket, int connection_id) {
 
 
@@ -281,7 +316,8 @@ void client_handler(int client_socket, int connection_id) {
     //char * sh_mem = (char*) mmap(0, shm_size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
 
     char recv_buffer[RECV_BUFF_SIZE];
-    char url[URL_SIZE+1];
+    char url[URL_SIZE+16];
+    char http_version[16];
     char method[16];
 
     while(1){
@@ -295,46 +331,51 @@ void client_handler(int client_socket, int connection_id) {
         else if(bytes_read == 0){
             break;
         }
-        else if(bytes_read == RECV_BUFF_SIZE){
+        else if(bytes_read == RECV_BUFF_SIZE - 1){
             perror("ERROR: receive bufer is full. Ignoring request\n");
+            http_payload_too_large_413(client_socket);
             continue;
         }
 
-        //printf("%s\n", recv_buffer);
+        char * end_of_request = strchr(recv_buffer, '\n');
+        if (end_of_request == NULL) {
+            http_bad_request_400(client_socket);
+            continue; 
+        }
 
-
-        if(sscanf(recv_buffer, "%15s", method) < 1){
+        int url_start, url_end;
+        if(sscanf(recv_buffer, "%15s %n%"STR(URL_SIZE)"s%n %15s", method, &url_start, url, &url_end, http_version) != 3){
             http_bad_request_400(client_socket);
             continue;
         }
 
-        if(strcmp(method, "GET") == 0){
-            int url_size;
+        if(url_end - url_start >= URL_SIZE){
+            http_uri_too_long_414(client_socket);
+            continue;
+        }
 
-            if(sscanf(&recv_buffer[4], "%"STR(URL_SIZE)"s%n", url, &url_size) < 1){
-                http_bad_request_400(client_socket);
-                continue;
-            }
-            if(url_size == URL_SIZE){
-                http_uri_too_long_414(client_socket);
-                continue;
-            }
-        
-            char file_path[URL_SIZE+5];
-            if(strcmp(url, "/") == 0){
-                strcpy(file_path, "./index.html");
+        if(strcmp(method, "GET") == 0){
+
+            char path[URL_SIZE];
+            char parameters[URL_SIZE];
+
+            parse_request(url, path, parameters);
+
+
+            if(strcmp(path, "/") == 0){
+                strcpy(path, "./www/index.html");
             }
             else{
-                sprintf(file_path, ".%s", url);
+                sprintf(path, "./www%s", url);
             }
-
+            
             int response = 0;
 
             if(strncmp(url, "/ajax", 5) == 0){
                 response = handle_ajax_request(client_socket, url);
             }
             else{
-                response = http_serve_file(client_socket, file_path);
+                response = http_serve_file(client_socket, path);
             }
             printf("Handled Request from Client ID %d: %s %-20s       Response: %d\n", connection_id, method, url, response);
 
@@ -479,6 +520,7 @@ int main(int argc, char *argv[]){
             printf("Max Connections Reached (%d), closing connection\n", MAX_CONNECTIONS);
             printf(COLOR_RESET);  
             fflush(stdout);  
+            http_service_unavailable(client_socket);
             close(client_socket);
             continue;
         }

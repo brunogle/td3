@@ -8,7 +8,7 @@
             "program": "${workspaceFolder}/build/bin/server",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "terminal": "external"
+            "terminal": "integrated"
         }
     ]
 }

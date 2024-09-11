@@ -1,8 +1,12 @@
 # Ignore all 
 * 
 
-# Unignore all with extensions *.c *.h *.txt y con Makefile 
-!*.c 
+# Unignore all with extensions *.c *.h *.txt y con Makefile
+!**/www/
+!**/www/**/
+!**/www/**/*
+
+!*.c
 !*.h 
 !Makefile 
 !*.txt
