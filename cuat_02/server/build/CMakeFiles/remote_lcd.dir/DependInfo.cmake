@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.c" "CMakeFiles/server.dir/src/events.c.o" "gcc" "CMakeFiles/server.dir/src/events.c.o.d"
-  "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/main.c" "CMakeFiles/server.dir/src/main.c.o" "gcc" "CMakeFiles/server.dir/src/main.c.o.d"
-  "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.c" "CMakeFiles/server.dir/src/server.c.o" "gcc" "CMakeFiles/server.dir/src/server.c.o.d"
+  "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.c" "CMakeFiles/remote_lcd.dir/src/events.c.o" "gcc" "CMakeFiles/remote_lcd.dir/src/events.c.o.d"
+  "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/main.c" "CMakeFiles/remote_lcd.dir/src/main.c.o" "gcc" "CMakeFiles/remote_lcd.dir/src/main.c.o.d"
+  "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.c" "CMakeFiles/remote_lcd.dir/src/server.c.o" "gcc" "CMakeFiles/remote_lcd.dir/src/server.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

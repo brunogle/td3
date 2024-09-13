@@ -1,17 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <script src="main.js"></script>
+<head>
+    <style>
+        textarea {
+            font-size: 25px; /* Larger font size */
+            padding: 10px;
+            width: 400px; /* Makes the textbox wider */
+            height: 200px; /* Makes the textbox taller */
+            margin-left: 100px; /* Align the button with the textbox */
+            margin-top: 10px;  /* Add some space between the textbox and button */
+            resize: none; /* Prevents resizing */
+        }
+        button {
+            font-size: 16px;   /* Larger font for the button */
+            margin-left: 200px; /* Align the button with the textbox */
+            margin-top: 10px;  /* Add some space between the textbox and button */
+            padding: 10px 20px; /* Padding inside the button */
+        }
+    </style>
+</head>
 <body>
 
-    <h1>Hello Client</h1>
+    <h1>LCD Controler</h1>
     
-    <p>bablablablabla</p>
-
-    <img src="image.jpg" width=600>
+    <label for="textbox">Enter text (Max 16x4):</label><br>
+    <textarea id="textbox" name="textbox" rows="4" cols="16" maxlength="67"
+        oninput="limitTextArea(this)" placeholder="Enter desired LCD text here">Enter Text Here</textarea><br>
+    <button onclick="send_lcd_update()">Update LCD</button>
 
     <br>
-
-    <button onclick="theButtonPressed()">The Button</button>
 
 </body>
 </html>

@@ -1,4 +1,8 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/server.dir/src/events.c.o"
+  "CMakeFiles/server.dir/src/events.c.o.d"
+  "CMakeFiles/server.dir/src/main.c.o"
+  "CMakeFiles/server.dir/src/main.c.o.d"
   "CMakeFiles/server.dir/src/server.c.o"
   "CMakeFiles/server.dir/src/server.c.o.d"
   "bin/server"

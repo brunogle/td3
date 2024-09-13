@@ -117,24 +117,72 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named server
+# Target rules for targets named remote_lcd
 
 # Build rule for target.
-server: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 server
-.PHONY : server
+remote_lcd: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 remote_lcd
+.PHONY : remote_lcd
 
 # fast build rule for target.
-server/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
-.PHONY : server/fast
+remote_lcd/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/build
+.PHONY : remote_lcd/fast
+
+src/events.o: src/events.c.o
+.PHONY : src/events.o
+
+# target to build an object file
+src/events.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/events.c.o
+.PHONY : src/events.c.o
+
+src/events.i: src/events.c.i
+.PHONY : src/events.i
+
+# target to preprocess a source file
+src/events.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/events.c.i
+.PHONY : src/events.c.i
+
+src/events.s: src/events.c.s
+.PHONY : src/events.s
+
+# target to generate assembly for a file
+src/events.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/events.c.s
+.PHONY : src/events.c.s
+
+src/main.o: src/main.c.o
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/main.c.o
+.PHONY : src/main.c.o
+
+src/main.i: src/main.c.i
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/main.c.i
+.PHONY : src/main.c.i
+
+src/main.s: src/main.c.s
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/main.c.s
+.PHONY : src/main.c.s
 
 src/server.o: src/server.c.o
 .PHONY : src/server.o
 
 # target to build an object file
 src/server.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/server.c.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/server.c.o
 .PHONY : src/server.c.o
 
 src/server.i: src/server.c.i
@@ -142,7 +190,7 @@ src/server.i: src/server.c.i
 
 # target to preprocess a source file
 src/server.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/server.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/server.c.i
 .PHONY : src/server.c.i
 
 src/server.s: src/server.c.s
@@ -150,7 +198,7 @@ src/server.s: src/server.c.s
 
 # target to generate assembly for a file
 src/server.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/server.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/server.c.s
 .PHONY : src/server.c.s
 
 # Help Target
@@ -161,7 +209,13 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... server"
+	@echo "... remote_lcd"
+	@echo "... src/events.o"
+	@echo "... src/events.i"
+	@echo "... src/events.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"
