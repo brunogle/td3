@@ -13,8 +13,8 @@ typedef struct child_desc_node {
 } child_desc_node;
 
 
-typedef int (* ajax_handler_callback_t)(char * request, char * response, unsigned int * response_len, char * payload, int payload_size);
+typedef int (* ajax_handler_callback_t)(char * request, char * response, unsigned int * response_len, char * payload, int payload_size, void * context);
 
-int http_server_start(int port, int max_connections, ajax_handler_callback_t ajax_handler_callback_);
+int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax_handler_callback_, void * ajax_handler_context);
 
 #endif

@@ -63,6 +63,7 @@
 
 static child_desc_node * child_desc_node_ll; // Linked list para mantener registro de procesos client handler
 static ajax_handler_callback_t ajax_handler_callback; // Esta funcion se ejecuta cuando llega un request de AJAX
+static void * ajax_handler_context;
 
 
 /*********************************************************************
@@ -282,7 +283,7 @@ int handle_ajax_request(int client_socket, char * request, char * payload, int p
     unsigned int response_len;
 
     
-    char success = ajax_handler_callback(&request[6], response, &response_len, payload, payload_size);
+    char success = ajax_handler_callback(&request[6], response, &response_len, payload, payload_size, ajax_handler_context);
 
     if(success){
 
@@ -351,6 +352,8 @@ int handle_http_request(int client_socket,  char * method, char * path, char * u
     else{
         response = http_not_implemented_501(client_socket);
     }
+
+    return response;
 
 }
 
@@ -542,9 +545,10 @@ void sigchld_handler(int signum) {
 
 
 
-int http_server_start(int port, int max_connections, ajax_handler_callback_t ajax_handler_callback_){
+int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax_handler_callback_, void * ajax_handler_context_){
 
     ajax_handler_callback = ajax_handler_callback_;
+    ajax_handler_context = ajax_handler_context_;
     
 
     /*

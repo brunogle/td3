@@ -129,6 +129,30 @@ remote_lcd/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/build
 .PHONY : remote_lcd/fast
 
+lib/nxjson.o: lib/nxjson.c.o
+.PHONY : lib/nxjson.o
+
+# target to build an object file
+lib/nxjson.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/nxjson.c.o
+.PHONY : lib/nxjson.c.o
+
+lib/nxjson.i: lib/nxjson.c.i
+.PHONY : lib/nxjson.i
+
+# target to preprocess a source file
+lib/nxjson.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/nxjson.c.i
+.PHONY : lib/nxjson.c.i
+
+lib/nxjson.s: lib/nxjson.c.s
+.PHONY : lib/nxjson.s
+
+# target to generate assembly for a file
+lib/nxjson.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/nxjson.c.s
+.PHONY : lib/nxjson.c.s
+
 src/events.o: src/events.c.o
 .PHONY : src/events.o
 
@@ -152,6 +176,30 @@ src/events.s: src/events.c.s
 src/events.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/events.c.s
 .PHONY : src/events.c.s
+
+src/handler.o: src/handler.c.o
+.PHONY : src/handler.o
+
+# target to build an object file
+src/handler.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/handler.c.o
+.PHONY : src/handler.c.o
+
+src/handler.i: src/handler.c.i
+.PHONY : src/handler.i
+
+# target to preprocess a source file
+src/handler.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/handler.c.i
+.PHONY : src/handler.c.i
+
+src/handler.s: src/handler.c.s
+.PHONY : src/handler.s
+
+# target to generate assembly for a file
+src/handler.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/handler.c.s
+.PHONY : src/handler.c.s
 
 src/main.o: src/main.c.o
 .PHONY : src/main.o
@@ -210,9 +258,15 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... remote_lcd"
+	@echo "... lib/nxjson.o"
+	@echo "... lib/nxjson.i"
+	@echo "... lib/nxjson.s"
 	@echo "... src/events.o"
 	@echo "... src/events.i"
 	@echo "... src/events.s"
+	@echo "... src/handler.o"
+	@echo "... src/handler.i"
+	@echo "... src/handler.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

@@ -1,32 +1,60 @@
 #include "events.h"
-#include <stdio.h>
-#include <string.h>
-
-#define DISPLAY_WIDTH 16
-#define DISPLAY_HEIGHT 4
 
 
-typedef struct event_web_to_dev{
-    char text_display[DISPLAY_HEIGHT][DISPLAY_WIDTH];
-} event_web_to_dev;
+void write_web_to_dev(event_buffer_t * buffer, event_web_to_dev event){
+    sem_wait(&buffer->web_to_dev_write_sem); // Espera a que haya lugar en el buffer
+
+    buffer->web_to_dev_shm[buffer->web_to_dev_write_idx] = event;
+    buffer->web_to_dev_write_idx = (buffer->web_to_dev_write_idx + 1) % BUFFER_SIZE; 
+
+    sem_post(&buffer->web_to_dev_read_sem); // Hay un evento para leer
+}
+
+event_web_to_dev read_web_to_dev(event_buffer_t * buffer){
+    event_web_to_dev ret;
+
+    sem_wait(&buffer->web_to_dev_read_sem); // Espera a que haya lugar en el buffer
+
+    ret = buffer->web_to_dev_shm[buffer->web_to_dev_read_idx];
+    buffer->web_to_dev_read_idx = (buffer->web_to_dev_read_idx + 1) % BUFFER_SIZE; 
+
+    sem_post(&buffer->web_to_dev_write_sem); // Hay un evento para leer
+
+    return ret;
+
+}
 
 
-int ajax_handler_callback(char * request, char * response, unsigned int * response_len, char * payload, int payload_size){
-    
-    if(strcmp(request, "update_lcd") == 0){
-        
-        char text[1024];
-        memcpy(text, payload, payload_size);
-        text[payload_size] = '\0';
 
+event_buffer_t * init_buffer(){
 
-        printf("Request:%s\n", text);
+    event_buffer_t * ret;
+
+    int shm_fp = shm_open(WEB_TO_DEV_NAME, O_CREAT | O_RDWR, 0666);
+    if (shm_fp == -1) {
+        perror("FATAL: shm_open failed");
+        exit(EXIT_FAILURE);
     }
 
+    if (ftruncate(shm_fp, sizeof(event_buffer_t)) == -1) {
+        perror("FATAL: ftruncate failed");
+        exit(EXIT_FAILURE);
+    }
 
+    ret = (event_buffer_t*)mmap(0, sizeof(event_buffer_t), PROT_READ | PROT_WRITE, MAP_SHARED, shm_fp, 0);
+    if (ret == MAP_FAILED) {
+        perror("FATAL: mmap failed");
+        exit(EXIT_FAILURE);
+    }
 
-    response = "123";
-    *response_len = 3;
+    sem_init(&ret->web_to_dev_write_sem, 1, BUFFER_SIZE);
+    sem_init(&ret->web_to_dev_read_sem, 1, 0);
 
-    return 1;
+    ret->web_to_dev_write_idx = 0;
+    ret->web_to_dev_read_idx = 0;
+    ret->web_to_dev_fp = shm_fp;
+
+    return ret;
+
 }
+

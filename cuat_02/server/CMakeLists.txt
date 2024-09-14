@@ -10,9 +10,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 set(CMAKE_EXE_LINKER_FLAGS "")
 
+
 #### EXECUTABLE ####
 
 add_executable(remote_lcd)
+
+target_include_directories(remote_lcd PRIVATE ${CMAKE_SOURCE_DIR}/lib ${CMAKE_SOURCE_DIR}/src)
+
 
 #### SOURCES #####
 
@@ -21,4 +25,7 @@ target_sources(remote_lcd
         src/server.c
         src/events.c
         src/main.c
+        src/handler.c
+
+        lib/nxjson.c
 )

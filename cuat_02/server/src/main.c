@@ -14,12 +14,61 @@
 #include <sys/stat.h>
 #include <semaphore.h>
 #include <ctype.h>
+#include "nxjson.h"
 
 #include "server.h"
 #include "events.h"
+#include "handler.h"
 
 #define DEFAULT_PORT 8080
-#define DEFAULT_MAX_CONNECTIONS 10          
+#define DEFAULT_MAX_CONNECTIONS 10
+
+
+int ajax_handler_callback(char * request, char * response, unsigned int * response_len, char * payload, int payload_size, void * context){
+    
+    event_buffer_t * buffer = (event_buffer_t *)context;
+
+    if(strcmp(request, "update_lcd") == 0){
+        event_web_to_dev event;
+
+        for(int i = 0; i < 4; i++)
+            memset(event.text_display[i], 0, 16);
+
+        char json_text[1024];
+        memcpy(json_text, payload, payload_size);
+        json_text[payload_size] = '\0';
+        
+        //printf("%s\n", text);
+
+        const nx_json * json = nx_json_parse(json_text, 0);
+        if (!json) {
+            fprintf(stderr, "Failed to parse JSON\n");
+            return 1;
+        }
+
+        // Access JSON data
+        const char * text = nx_json_get(json, "text")->text_value;
+
+        char * ch = strtok((char *)text, "\n");
+        int line = 0;
+        while (ch != NULL) {
+            strcpy(event.text_display[line], ch);
+            ch = strtok(NULL, "\n");
+            line++;
+        }
+
+        write_web_to_dev(buffer, event);
+
+        // Print data
+    }
+
+    
+
+    response = "123\0";
+    *response_len = 4;
+
+    return 1;
+}
 
 int main(int argc, char *argv[]){
 
@@ -79,6 +128,7 @@ int main(int argc, char *argv[]){
         sscanf(max_connections_str, "%i", &max_connections);
     }    
 
+    event_buffer_t * event_buffer = init_buffer();
 
     /*
     Comienzo ejecucion del server en un proceso separado
@@ -95,14 +145,14 @@ int main(int argc, char *argv[]){
         Este proceso abre un socket, espera conexiones HTTP, hostea los conteidos del directorio "www"
         y los requests de AJAX las maneja el callback "ajax_handler_callback".
         */
-        http_server_start(port, max_connections, ajax_handler_callback);
+        http_server_proc(port, max_connections, ajax_handler_callback, event_buffer);
     }
     else{
         /*
         Proceso parent
         */
         while(1){
-            sleep(1000);
+            handler_proc(event_buffer);
         }
     }
 

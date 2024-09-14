@@ -4,7 +4,7 @@
 # compile C with /usr/bin/gcc
 C_DEFINES = 
 
-C_INCLUDES = 
+C_INCLUDES = -I/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib -I/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src
 
 C_FLAGS = -g
 
