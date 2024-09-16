@@ -14,11 +14,12 @@ async function send_lcd_update() {
         })
         
         if (!response.ok) {
-            alert('Failed to send text.');
+            //alert('Failed to send text.');
             throw new Error(`Response status: ${response.status}`);
         }
     }
     catch (error) {
+        alert('Failed to send text.');
         console.error(error.message);
     }
 
