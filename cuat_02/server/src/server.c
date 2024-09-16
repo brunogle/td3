@@ -250,7 +250,13 @@ int http_serve_file(int socket_fd, char * file_path){
         strcpy(type, "image/jpeg");
     } else if (strstr(file_path, ".png")) {
         strcpy(type, "image/png");
-    } else {
+    } else if (strstr(file_path, ".js")){
+        strcpy(type, "text/javascript");
+    } else if(strstr(file_path, ".ttf")){
+        strcpy(type, "font/ttf");
+    }
+    
+    else {
         strcpy(type, "application/octet-stream");
     }
 

@@ -32,7 +32,7 @@ int ajax_handler_callback(char * request, char * response, unsigned int * respon
         event_web_to_dev event;
 
         for(int i = 0; i < 4; i++)
-            memset(event.text_display[i], 0, 16);
+            memset(event.text_display[i], 0, DISPLAY_WIDTH);
 
         char json_text[1024];
         memcpy(json_text, payload, payload_size);
@@ -48,12 +48,25 @@ int ajax_handler_callback(char * request, char * response, unsigned int * respon
 
         // Access JSON data
         const char * text = nx_json_get(json, "text")->text_value;
+        const int text_len = strlen(text);
 
-        char * ch = strtok((char *)text, "\n");
         int line = 0;
-        while (ch != NULL) {
-            strcpy(event.text_display[line], ch);
-            ch = strtok(NULL, "\n");
+        int line_idx = 0;
+        int text_idx = 0;
+        
+        while(line < DISPLAY_HEIGHT && text_idx < text_len){
+            line_idx = 0;
+            while(text_idx < text_len && line_idx < DISPLAY_WIDTH){
+                event.text_display[line][line_idx] = text[text_idx];
+                text_idx++;
+                line_idx++;
+                if(text[text_idx] == '\n'){
+                    text_idx++;
+                    line_idx++;
+                    break;             
+                }
+            }
+
             line++;
         }
 
@@ -62,10 +75,8 @@ int ajax_handler_callback(char * request, char * response, unsigned int * respon
         // Print data
     }
 
-    
-
-    response = "123\0";
-    *response_len = 4;
+    response = "";
+    *response_len = 0;
 
     return 1;
 }
@@ -131,7 +142,7 @@ int main(int argc, char *argv[]){
     event_buffer_t * event_buffer = init_buffer();
 
     /*
-    Comienzo ejecucion del server en un proceso separado
+    El fork crea un proceso child que sera el servidor
     */
 
     int pid = fork();
@@ -143,13 +154,17 @@ int main(int argc, char *argv[]){
         /*
         Proceso child (Proceso server)
         Este proceso abre un socket, espera conexiones HTTP, hostea los conteidos del directorio "www"
-        y los requests de AJAX las maneja el callback "ajax_handler_callback".
+        y los requests de AJAX las maneja el callback "ajax_handler_callback". El callback necesita un
+        contexto, en este caso, el buffer donde se escriben los eventos para controlar el LCD (event_buffer)
         */
         http_server_proc(port, max_connections, ajax_handler_callback, event_buffer);
     }
     else{
         /*
         Proceso parent
+
+        Este proceso continua leyendo del buffer los eventos, y enviandolos al LCD
+
         */
         while(1){
             handler_proc(event_buffer);

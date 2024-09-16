@@ -24,6 +24,7 @@ async function send_lcd_update() {
 
 }
 function limitTextArea(textarea) {
+
     const lines = textarea.value.split("\n");
     const maxLines = 4;
     const maxCharsPerLine = 16;
@@ -40,4 +41,5 @@ function limitTextArea(textarea) {
     if (truncated !== textarea.value) {
         textarea.value = truncated.slice(0, -1); // Remove the last new line
     }
+
 }

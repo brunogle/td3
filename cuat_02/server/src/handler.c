@@ -1,3 +1,6 @@
+#include <stdio.h>
+
+
 #include "handler.h"
 #include "events.h"
 

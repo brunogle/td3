@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
 <script src="main.js"></script>
@@ -25,11 +26,78 @@
     <h1>LCD Controler</h1>
     
     <label for="textbox">Enter text (Max 16x4):</label><br>
-    <textarea id="textbox" name="textbox" rows="4" cols="16" maxlength="67"
+    <textarea id="textbox" name="textbox" rows="4" cols="16"1
         oninput="limitTextArea(this)" placeholder="Enter desired LCD text here">Enter Text Here</textarea><br>
     <button onclick="send_lcd_update()">Update LCD</button>
 
     <br>
+
+</body>
+</html>
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<script src="main.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Website</title>
+    <style>
+
+        @font-face{
+            font-family: '5x8 LCD HD44780U A02 Regular';
+            src: url('./lcd-dot-matrix-hd44780u.otf');
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: left;
+            padding: 30px;
+            color: #FFFFFF;
+            background-color: #333333;
+        }
+
+        textarea {
+            font-size: 35px;
+            height: 190px; 
+            width: 445px;
+            font-family:'5x8 LCD HD44780U A02 Regular';
+            resize: none;
+            padding: 10px;
+            background-color: #002ef5;
+            justify-content: center;
+            box-sizing: border-box;
+            text-align: left; /* Left-align the text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #b2bbf9;
+        }
+
+        button {
+            font-size: 16px;   /* Larger font for the button */
+            margin-top: 10px;  /* Add some space between the textbox and button */
+            padding: 10px 20px; /* Padding inside the button */
+            font-family: 'Courier New', monospace;
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <script>0</script>
+    <h1>Beaglebone LCD Controller</h1>
+
+    <textarea placeholder="Enter text..." id="textbox" name="textbox" rows="4" cols="16" oninput="limitTextArea(this)"
+    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+>Line1
+Line2
+Line3
+Line4</textarea><br><br>
+    
+    <button onclick="send_lcd_update()">Update LCD</button>
+
 
 </body>
 </html>

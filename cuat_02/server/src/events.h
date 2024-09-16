@@ -2,9 +2,6 @@
 #define EVENTS_H
 
 #include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/mman.h> // for mmap and shm_open
 #include <sys/stat.h> // for mode constants
 #include <fcntl.h>    // for O_* constants
