@@ -1,54 +1,52 @@
-#include <getopt.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 #include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <semaphore.h>
 #include <ctype.h>
-#include "nxjson.h"
 
+
+#include "nxjson.h"
 #include "server.h"
-#include "events.h"
+#include "buffer.h"
 #include "handler.h"
 
 #define DEFAULT_PORT 8080
 #define DEFAULT_MAX_CONNECTIONS 10
 
 
-int ajax_handler_callback(char * request, char * response, unsigned int * response_len, char * payload, int payload_size, void * context){
-    
-    event_buffer_t * buffer = (event_buffer_t *)context;
+/*
+Callback usado para atender requests de AJAX.
+Escribe el buffer circular con el texto contenido en el JSON del payload.
+Esta funcion es invocada solamente por procesos hijos del server.
+*/
+int ajax_handler_callback(http_request_t http_request, ajax_response_t * ajax_response, void * context){
 
-    if(strcmp(request, "update_lcd") == 0){
+    //El unico tipo de request que atiende es "/update_lcd"
+    if(strcmp(http_request.url, "/update_lcd") == 0){
+ 
+        //Preparo un event_web_to_dev para escribir en el buffer
         event_web_to_dev event;
-
         for(int i = 0; i < 4; i++)
             memset(event.text_display[i], 0, DISPLAY_WIDTH);
 
+        //Parsing del JSON
         char json_text[1024];
-        memcpy(json_text, payload, payload_size);
-        json_text[payload_size] = '\0';
-        
-        //printf("%s\n", text);
+
+        memcpy(json_text, http_request.body, http_request.body_size);
+        json_text[http_request.body_size] = '\0';
 
         const nx_json * json = nx_json_parse(json_text, 0);
         if (!json) {
-            fprintf(stderr, "Failed to parse JSON\n");
-            return 1;
+            perror("ERROR: Failed to parse JSON in update_lcd request\n");
+            return 0;
         }
-
-        // Access JSON data
         const char * text = nx_json_get(json, "text")->text_value;
+        if (!text) {
+            perror("ERROR: \"text\" request not found in JSON in update_lcd request\n");
+            return 0;
+        }
         const int text_len = strlen(text);
+
+        //Separo el texto en lineas, y las pongo en el event_web_to_dev
 
         int line = 0;
         int line_idx = 0;
@@ -70,25 +68,22 @@ int ajax_handler_callback(char * request, char * response, unsigned int * respon
             line++;
         }
 
+
+        //Escribe el evento en el buffer
+        event_buffer_t * buffer = (event_buffer_t *)context;
         write_web_to_dev(buffer, event);
 
-        // Print data
+        //Respuesta HTTP
+        char * response_str = "LCD Update Command Processed Correctly";
+        strcpy(ajax_response->response, response_str);
+        ajax_response->response_len = strlen(response_str);
     }
 
-    response = "";
-    *response_len = 0;
 
     return 1;
 }
 
-int main(int argc, char *argv[]){
-
-    int port = DEFAULT_PORT;
-    int max_connections = DEFAULT_MAX_CONNECTIONS;
-
-    /*
-    Parsing de argumentos
-    */
+int parse_arguments(int argc, char *argv[], int * port, int * max_connections){
     char * port_str = NULL;
     char * max_connections_str = NULL;
     char c;
@@ -126,20 +121,37 @@ int main(int argc, char *argv[]){
                     "Unknown option character `\\x%x'.\n",
                     optopt);
             }
-            exit(EXIT_FAILURE);
+            return 1;
 
         default:
-            exit(EXIT_FAILURE);
+            return 1;
         }
     }
     if(port_str != NULL){
-        sscanf(port_str, "%i", &port);
+        sscanf(port_str, "%i", port);
     }
     if(max_connections_str != NULL){
-        sscanf(max_connections_str, "%i", &max_connections);
-    }    
+        sscanf(max_connections_str, "%i", max_connections);
+    }
+
+    return 0;
+}
+
+int main(int argc, char *argv[]){
+
+    int port = DEFAULT_PORT;
+    int max_connections = DEFAULT_MAX_CONNECTIONS;
+
+    /*
+    Parsing de argumentos
+    */
+    if(parse_arguments(argc, argv, &port, &max_connections) != 0){
+        perror("FATAL: Argument parsing errors\n");
+        exit(EXIT_FAILURE);
+    }
 
     event_buffer_t * event_buffer = init_buffer();
+
 
     /*
     El fork crea un proceso child que sera el servidor
@@ -148,6 +160,7 @@ int main(int argc, char *argv[]){
     int pid = fork();
     if (pid < 0) {
         perror("ERROR: fork failed\n");
+        free_buffer(event_buffer);
         exit(EXIT_FAILURE);
     }
     else if(pid == 0){
@@ -158,12 +171,18 @@ int main(int argc, char *argv[]){
         contexto, en este caso, el buffer donde se escriben los eventos para controlar el LCD (event_buffer)
         */
         http_server_proc(port, max_connections, ajax_handler_callback, event_buffer);
+
+        //Si el servidor termina, entonces hubo un error
+
+        //TODO: Liberar sockets
+        free_buffer(event_buffer);
+        exit(EXIT_FAILURE);
     }
     else{
         /*
         Proceso parent
 
-        Este proceso continua leyendo del buffer los eventos, y enviandolos al LCD
+        Este proceso continua leyendo del buffer los eventos, y enviandolos al LCD mediante el server
 
         */
         while(1){

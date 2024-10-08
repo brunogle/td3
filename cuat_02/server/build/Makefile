@@ -153,29 +153,29 @@ lib/nxjson.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/nxjson.c.s
 .PHONY : lib/nxjson.c.s
 
-src/events.o: src/events.c.o
-.PHONY : src/events.o
+src/buffer.o: src/buffer.c.o
+.PHONY : src/buffer.o
 
 # target to build an object file
-src/events.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/events.c.o
-.PHONY : src/events.c.o
+src/buffer.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/buffer.c.o
+.PHONY : src/buffer.c.o
 
-src/events.i: src/events.c.i
-.PHONY : src/events.i
+src/buffer.i: src/buffer.c.i
+.PHONY : src/buffer.i
 
 # target to preprocess a source file
-src/events.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/events.c.i
-.PHONY : src/events.c.i
+src/buffer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/buffer.c.i
+.PHONY : src/buffer.c.i
 
-src/events.s: src/events.c.s
-.PHONY : src/events.s
+src/buffer.s: src/buffer.c.s
+.PHONY : src/buffer.s
 
 # target to generate assembly for a file
-src/events.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/events.c.s
-.PHONY : src/events.c.s
+src/buffer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/buffer.c.s
+.PHONY : src/buffer.c.s
 
 src/handler.o: src/handler.c.o
 .PHONY : src/handler.o
@@ -261,9 +261,9 @@ help:
 	@echo "... lib/nxjson.o"
 	@echo "... lib/nxjson.i"
 	@echo "... lib/nxjson.s"
-	@echo "... src/events.o"
-	@echo "... src/events.i"
-	@echo "... src/events.s"
+	@echo "... src/buffer.o"
+	@echo "... src/buffer.i"
+	@echo "... src/buffer.s"
 	@echo "... src/handler.o"
 	@echo "... src/handler.i"
 	@echo "... src/handler.s"

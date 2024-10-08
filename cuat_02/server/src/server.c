@@ -1,56 +1,23 @@
+#include "server.h"
+
+#include <complex.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/mman.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 #include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <semaphore.h>
 #include <errno.h>
 
-#include "server.h"
+#define USE_COLORS
+#include "colors.h"
 
 
-#define RECV_BUFF_SIZE 8192
-#define WRITE_BUFF_SIZE 512
-#define URL_SIZE 2024
-
-//#define VERBOSE
+// #define VERBOSE
 
 
 #define STR_(X) #X
 #define STR(X) STR_(X)
-
-
-#define USE_COLORS
-
-#ifdef USE_COLORS
-#define COLOR_RESET   "\033[0m"
-#define COLOR_BLACK   "\033[0;30m"
-#define COLOR_RED     "\033[0;31m"
-#define COLOR_GREEN   "\033[0;32m"
-#define COLOR_YELLOW  "\033[0;33m"
-#define COLOR_BLUE    "\033[0;34m"
-#define COLOR_MAGENTA "\033[0;35m"
-#define COLOR_CYAN    "\033[0;36m"
-#define COLOR_WHITE   "\033[0;37m"
-#else
-#define COLOR_RESET   ""
-#define COLOR_BLACK   ""
-#define COLOR_RED     ""
-#define COLOR_GREEN   ""
-#define COLOR_YELLOW  ""
-#define COLOR_BLUE    ""
-#define COLOR_MAGENTA ""
-#define COLOR_CYAN    ""
-#define COLOR_WHITE   ""
-#endif
 
 
 
@@ -60,10 +27,8 @@
  *                                                                   *
  *********************************************************************/
 
+child_desc_node * child_desc_node_ll; // Linked list para mantener registro de procesos client handler
 
-static child_desc_node * child_desc_node_ll; // Linked list para mantener registro de procesos client handler
-static ajax_handler_callback_t ajax_handler_callback; // Esta funcion se ejecuta cuando llega un request de AJAX
-static void * ajax_handler_context;
 
 
 /*********************************************************************
@@ -73,7 +38,7 @@ static void * ajax_handler_context;
  *********************************************************************
 
     Para mantener registro de los procesos se utiliza una lista enlazada. El nodo base esta apuntado por
-    child_desc_node_ll y se puede interacutar con  insert_process, remove_process_by_pid, get_process_by_pid y
+    child_desc_node_ll y se puede interacutar con insert_process, remove_process_by_pid, get_process_by_pid y
     count_processes.
 
  */
@@ -99,6 +64,8 @@ void insert_process(child_desc_node ** head, child_desc_node node) {
         }
         current->next = new_node;
     }
+
+    printf("Process %d inserted\n", node.pid);
 }
 
 void remove_process_by_pid(child_desc_node **head, pid_t pid) {
@@ -123,6 +90,8 @@ void remove_process_by_pid(child_desc_node **head, pid_t pid) {
 
     free(current);
     
+    printf("Process %d removed\n", pid);
+
     return;
 }
 
@@ -229,19 +198,19 @@ int http_service_unavailable_503(int socket_fd){
 int http_serve_file(int socket_fd, char * file_path){
     FILE * file_fd;
     
-
     file_fd = fopen(file_path, "rb");
 
     if (file_fd == NULL) {
         if (errno == ENOENT) {
             return http_not_found_404(socket_fd);
-        } else {
+        }
+        else {
             perror("ERROR: fopen failed\n");
             return http_internal_server_error_500(socket_fd);
         }
     }
 
-    char content[512];
+    // Obtiene el mime type en base a la extension del archivo
     char type[256];
 
     if (strstr(file_path, ".html")) {
@@ -254,65 +223,64 @@ int http_serve_file(int socket_fd, char * file_path){
         strcpy(type, "text/javascript");
     } else if(strstr(file_path, ".ttf")){
         strcpy(type, "font/ttf");
-    }
-    
-    else {
+    } else {
         strcpy(type, "application/octet-stream");
     }
 
+    // Obtiene el tamaño del archivo
+    int content_size = 0;
+
     fseek(file_fd, 0, SEEK_END);
-    int content_size = ftell(file_fd);
+    content_size = ftell(file_fd);
     fseek(file_fd, 0, SEEK_SET);
 
-    sprintf(content,
+    char write_buffer[WRITE_BUFF_SIZE];
+
+    sprintf(write_buffer,
             "HTTP/1.1 200 OK\n"
             "Content-Type: %s\n"
             "Content-Length: %u\n\n",
             type, content_size);
 
-    write(socket_fd, content, strlen(content));
+    // Envia el header HTTP
+    write(socket_fd, write_buffer, strlen(write_buffer));
 
-
+    // Envia el contenido del arhcivo de a tramos
     int file_bytesread;
-    int bytes_sent = 0;
-    while((file_bytesread = fread(content, 1, 512, file_fd)) > 0){
-        write(socket_fd, content, file_bytesread);
-        bytes_sent += file_bytesread;
+    while((file_bytesread = fread(write_buffer, 1, WRITE_BUFF_SIZE, file_fd)) > 0){
+        write(socket_fd, write_buffer, file_bytesread);
     }
+
     return 200;
 
 }
 
-int handle_ajax_request(int client_socket, char * request, char * payload, int payload_size){
+int handle_ajax_request(int client_socket, http_request_t http_request, ajax_handler_callback_t ajax_handler_callback, void * ajax_handler_context){
     
-    char response[2048];
-    unsigned int response_len;
+    ajax_response_t ajax_response;
 
+    char success = ajax_handler_callback(http_request, &ajax_response, ajax_handler_context);
     
-    char success = ajax_handler_callback(&request[6], response, &response_len, payload, payload_size, ajax_handler_context);
-
     if(success){
-
-        char header_f[] =
-            "HTTP/1.1 200 OK\n"
-            "Content-Type: application/json\n"
-            "Content-Length: %u\n\n";
-
         char header[256];
 
-        sprintf(header, header_f, response_len);
+        sprintf(header,
+            "HTTP/1.1 200 OK\n"
+            "Content-Type: application/json\n"
+            "Content-Length: %u\n\n",
+            ajax_response.response_len);
 
+        // Envia el header de la respuesta
         write(client_socket, header, strlen(header));
 
-        write(client_socket, response, response_len);
+        // Envia la respuesta
+        write(client_socket, ajax_response.response, ajax_response.response_len);
 
+        return 200;
     }
     else{
-        http_internal_server_error_500(client_socket);
+        return http_internal_server_error_500(client_socket);
     }
-
-    
-    return 200;
 }
 
 /*********************************************************************
@@ -325,31 +293,31 @@ int handle_ajax_request(int client_socket, char * request, char * payload, int p
 
  */
 
-int handle_http_request(int client_socket,  char * method, char * path, char * url, char * payload, int payload_size){
+int handle_http_request(int client_socket, http_request_t http_request, void * ajax_handler_context, ajax_handler_callback_t ajax_handler_callback){
 
     int response = 0;
 
-    if(strcmp(method, "GET") == 0){
+    if(strcmp(http_request.method, "GET") == 0){
 
-        if(strcmp(path, "/") == 0){
-            strcpy(path, "./www/index.html");
+        if(http_request.ajax_request){
+            response = handle_ajax_request(client_socket, http_request, ajax_handler_callback, ajax_handler_context);
+        }
+        else if(strcmp(http_request.path, "/") == 0){
+            strcpy(http_request.path, "./www/index.html");
+            response = http_serve_file(client_socket, http_request.path);
         }
         else{
-            sprintf(path, "./www%s", url);
-        }
-
-        if(strncmp(url, "/ajax_", 6) == 0){
-            response = handle_ajax_request(client_socket, url, payload, payload_size);
-        }
-        else{
-            response = http_serve_file(client_socket, path);
-        }
+            sprintf(http_request.path, "./www%s", http_request.url);
+            response = http_serve_file(client_socket, http_request.path);
+        }   
+    
         
 
     }
-    else if(strcmp(method, "POST") == 0){
-        if(strncmp(url, "/ajax_", 6) == 0){
-            response = handle_ajax_request(client_socket, url, payload, payload_size);
+    else if(strcmp(http_request.method, "POST") == 0){
+        if(http_request.ajax_request){
+
+            response = handle_ajax_request(client_socket, http_request, ajax_handler_callback, ajax_handler_context);
         }
         else{
             response = http_not_found_404(client_socket);
@@ -383,139 +351,161 @@ int handle_http_request(int client_socket,  char * method, char * path, char * u
 
  */
 
-void client_handler(int client_socket, int connection_id) {
+void client_handler(int client_socket, int connection_id, ajax_handler_callback_t ajax_handler_callback, void * ajax_handler_context) {
 
     char recv_buffer[RECV_BUFF_SIZE];
 
 
+    int bytes_read = read(client_socket, recv_buffer, RECV_BUFF_SIZE - 1);
 
-    while(1){
-
-        int bytes_read = read(client_socket, recv_buffer, RECV_BUFF_SIZE - 1);
-        if(bytes_read < 0){
-            perror("FATAL: read failed\n");
-            close(client_socket);
-            exit(EXIT_FAILURE);
-        }
-        else if(bytes_read == 0){
-            // El cliente cerro la conexion
-            break;
-        }
-        else if(bytes_read == RECV_BUFF_SIZE - 1){
-            //Si la cantidad de bytes recibidos es igual a la maxima cantidad que se puede recibir,
-            //es porque seugramente haya mas datos por leer. En este caso, termino la conexion.
-            //En el futuro se puede mejorar para recibir mensajes aribrariamente grandes para poder recibir
-            //bloques de datos grandes.
-            perror("ERROR: receive bufer is full. Ignoring request\n");
-            http_payload_too_large_413(client_socket);
-            continue;
-        }
-
-
-        int response = 0;
-        char request_failed = 0;
-
-        /*****************************************************************************
-        * Obtiene las distintas partes del request line (Method, URL y version HTTP) *
-        *****************************************************************************/
-
-        char method[16];
-        char url[URL_SIZE+16];
-        char http_version[16];
-
-        int url_start, url_end;
-
-        // %15s : String de maximo 15 caraceres para el request
-        // %n%sX%n : Posicion de comienzo de URL, string de URL limitado a X caracteres, posicion de fin de URL
-        if(!request_failed && sscanf(recv_buffer, "%15s %n%"STR(URL_SIZE)"s%n %15s", method, &url_start, url, &url_end, http_version) != 3){
-            response = http_bad_request_400(client_socket);
-            request_failed = 1;
-        }
-
-        //Revisa que el URL se haya leido entero
-        if(!request_failed && url_end - url_start >= URL_SIZE){
-            response = http_uri_too_long_414(client_socket);
-            request_failed = 1;
-        }
-
-        url[url_end] = '\0';
-
-        /*****************************************************************************
-        *          Obtiene la direccion de comienzo del body y su tamano             *
-        *****************************************************************************/
-        
-        if(!request_failed){
-
-            unsigned int body_pos = 0;
-            int body_size = 0;
-            char * body = NULL;
-            char contains_body = 1;
-
-            // Busca la posicion donde se encuenten el doble LF o CRLF
-            const char *double_lf_ptr = strstr(recv_buffer, "\n\n");
-            const char *double_crlf_ptr = strstr(recv_buffer, "\r\n\r\n");
-            if(double_crlf_ptr != NULL){
-                body_pos = double_crlf_ptr - recv_buffer + 4;
-            }
-            else if(double_lf_ptr != NULL){
-                body_pos = double_crlf_ptr - recv_buffer + 2;
-            }
-            else{
-                contains_body = 0;
-            }
-
-            if(contains_body){
-                //Busca el Content-Length en el header para obtener el largo del body
-                const char * content_length_ptr = strstr(recv_buffer, "Content-Length: ");
-                if(content_length_ptr != NULL && content_length_ptr - recv_buffer < body_pos){
-                    sscanf(&content_length_ptr[16], "%d", &body_size);
-                }
-                //Crea el pointer al body
-                body = recv_buffer + bytes_read - body_size;
-            } 
-
-
-
-            /*****************************************************************************
-            *          Parsing del URL para obtener el path y los parametros             *
-            *****************************************************************************/
-
-
-            char path[URL_SIZE];
-            char parameters[URL_SIZE];
-
-            char * delimeter = strchr(url, '?');
-            
-            if (delimeter != NULL) {
-                //Si el URL tiene ?, tiene parametros
-                size_t path_length = delimeter - url;
-                strncpy(path, url, path_length);
-                path[path_length] = '\0';
-                strcpy(parameters, delimeter + 1);
-            } else {
-                //Si no, el URL es el path
-                strcpy(path, url);
-                parameters[0] = '\0';
-            }
-
-            response = handle_http_request(client_socket, method, path, url, body, body_size);
-            
-        }
-        
-        #ifdef VERBOSE
-        printf("Handled Request from Client ID %d:\n%s\nResponse: %d\n", connection_id, recv_buffer, response);
-        #else
-        printf("Handled Request from Client ID %d: %s %-20s       Response: %d\n", connection_id, method, url, response);
-        #endif
-
+    if(bytes_read < 0){
+        perror("FATAL: read failed\n");
+        close(client_socket);
+        exit(EXIT_FAILURE);
+    }
+    else if(bytes_read == 0){
+        // El cliente cerro la conexion
+        exit(EXIT_SUCCESS);
+    }
+    else if(bytes_read == RECV_BUFF_SIZE - 1){
+        /*
+        Si la cantidad de bytes recibidos es igual a la maxima cantidad que se puede recibir,
+        es porque seugramente haya mas datos por leer. En este caso, termino la conexion.
+        En el futuro se puede mejorar para recibir mensajes aribrariamente grandes para poder recibir
+        bloques de datos grandes.
+        */
+        perror("ERROR: receive bufer is full. Ignoring request\n");
+        http_payload_too_large_413(client_socket);
+        exit(EXIT_FAILURE);
     }
 
+
+
+
+    /*****************************************************************************
+    * Obtiene las distintas partes del request line (Method, URL y version HTTP) *
+    *****************************************************************************/
+
+    http_request_t http_request;
+
+    int url_start, url_end;
+
+    int response = 0;
+    char request_failed = 0;
+
+    // Parsing del method, url y version
+
+    int vars_read = sscanf(recv_buffer,
+    "%15s %n%2048s%n %15s", // Retorna: method (%15s), url_start (%n), url (%2048s), url_end (%n), http_version (%15s)
+    http_request.method, &url_start, http_request.url, &url_end, http_request.http_version);
+
+    if(vars_read != 3){
+        // No se leyo bien el method, url y http_version
+        response = http_bad_request_400(client_socket);
+        request_failed = 1;
+    }
+    if(!request_failed && url_end - url_start >= URL_SIZE){
+        // Si el URL que se leyo es el maximo
+        response =  http_uri_too_long_414(client_socket);
+        request_failed = 1;
+    }
+
+    http_request.url[url_end] = '\0';
+
+
+
+    /*****************************************************************************
+    *          Obtiene la direccion de comienzo del body y su tamano             *
+    *****************************************************************************/
+    
+    if(!request_failed){
+        // Si no fallo el parsing, procedo con el resto
+
+        unsigned int body_pos = 0;
+        char contains_body = 1;
+
+        // Busca la posicion donde se encuenten el doble LF o CRLF
+        const char *double_lf_ptr = strstr(recv_buffer, "\n\n");
+        const char *double_crlf_ptr = strstr(recv_buffer, "\r\n\r\n");
+        if(double_crlf_ptr != NULL){
+            body_pos = double_crlf_ptr - recv_buffer + 4;
+        }
+        else if(double_lf_ptr != NULL){
+            body_pos = double_crlf_ptr - recv_buffer + 2;
+        }
+        else{
+            contains_body = 0;
+        }
+
+        if(contains_body){
+            //Busca el Content-Length en el header para obtener el largo del body
+            const char * content_length_ptr = strstr(recv_buffer, "Content-Length: ");
+            if(content_length_ptr != NULL && content_length_ptr - recv_buffer < body_pos){
+                sscanf(&content_length_ptr[16], "%d", &http_request.body_size);
+            }
+            //Crea el pointer al body
+            http_request.body = recv_buffer + bytes_read - http_request.body_size;
+        } 
+
+
+    /*****************************************************************************
+    *          Determina informacion adicional del request (Si es un AJAX)       *
+    *****************************************************************************/
+    
+    http_request.ajax_request = 0;
+
+    char header_arg[64];
+
+    char * content_type_ptr = strstr(recv_buffer, "Content-Type: ");
+
+    if(content_type_ptr != NULL && content_type_ptr - recv_buffer < body_pos){
+        if(sscanf(content_type_ptr + 14, "%63s", header_arg) == 1){
+            if(strcmp(header_arg, "application/json") == 0){
+                http_request.ajax_request = 1;
+            }   
+        }
+    }
+
+
+
+        /*****************************************************************************
+        *          Parsing del URL para obtener el path y los parametros             *
+        *****************************************************************************/
+
+
+        char parameters[URL_SIZE];
+
+        char * delimeter = strchr(http_request.url, '?');
+        
+        if (delimeter != NULL) {
+            //Si el URL tiene ?, tiene parametros
+            size_t path_length = delimeter - http_request.url;
+            strncpy(http_request.path, http_request.url, path_length);
+            http_request.path[path_length] = '\0';
+            strcpy(parameters, delimeter + 1);
+        } else {
+            //Si no, el URL es el path
+            strcpy(http_request.path, http_request.url);
+            parameters[0] = '\0';
+        }
+
+        response = handle_http_request(client_socket, http_request, ajax_handler_context, ajax_handler_callback);
+        
+    }
+    
+    #ifdef VERBOSE
+    printf("Handled Request from Client ID %d:\n%s\nResponse: %d\n", connection_id, recv_buffer, response);
+    #else
+    printf("Handled Request from Client ID %d: %s %-20s       Response: %d\n", connection_id, http_request.method, http_request.url, response);
+    #endif
+
     close(client_socket);
-    exit(0);
+    exit(EXIT_SUCCESS);
 
 }
 
 void sigchld_handler(int signum) {
+    
     (void)signum;  // Escribo esto para que no genere warnings de que no se usa este param
     int status;
 
@@ -536,11 +526,13 @@ void sigchld_handler(int signum) {
         }
         else if(pid == 0){
             //Sigue habiendo childs que tienen que ser manejados
-            continue;
+            //continue;
         }
 
         child_desc_node * ended_node = get_process_by_pid(child_desc_node_ll, pid);
-        remove_process_by_pid(&child_desc_node_ll, pid);
+        if(ended_node != NULL){
+            remove_process_by_pid(&child_desc_node_ll, pid);
+        }
         printf(COLOR_YELLOW);
         printf("Client %d disconnected. Current connections: %d\n", ended_node->connection_id, count_processes(child_desc_node_ll));
         printf(COLOR_RESET);
@@ -551,26 +543,7 @@ void sigchld_handler(int signum) {
 
 
 
-int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax_handler_callback_, void * ajax_handler_context_){
-
-    ajax_handler_callback = ajax_handler_callback_;
-    ajax_handler_context = ajax_handler_context_;
-    
-
-    /*
-    Crea memoria comparida para enviar datos a proceso hijo
-    */
-    char * circ_buff;
-    int circ_buff_fd;
-    if((circ_buff_fd = shm_open("/td3_bruserver", O_CREAT | O_RDWR, 0666)) == -1){
-        perror("FATAL: shm_open");
-        exit(EXIT_FAILURE);
-    }
-    ftruncate(circ_buff_fd, 1000);
-    if((circ_buff = (char*) mmap(0, 1000, PROT_READ | PROT_WRITE, MAP_SHARED, circ_buff_fd, 0)) == (char*)-1){
-        perror("FATAL: mmap");
-        exit(EXIT_FAILURE);  
-    }
+int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax_handler_callback, void * ajax_handler_context){
 
 
     /*
@@ -605,18 +578,21 @@ int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax
     int opt = 1;
     if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
         perror("FATAL: setsockopt failed\n");
+        close(server_socket);
         exit(EXIT_FAILURE);
-    }
+    }   
 
     /*
     Bind del socket
     */
     if (bind(server_socket, (struct sockaddr *)&client_address, sizeof(client_address)) == -1) {
         perror("FATAL: bind failed\n");
+        close(server_socket);
         exit(EXIT_FAILURE);
     }
-    if (listen(server_socket, 2) == -1) {
+    if (listen(server_socket, max_connections) == -1) {
         perror("FATAL: listen failed\n");
+        close(server_socket);
         exit(EXIT_FAILURE);
     }
 
@@ -669,7 +645,7 @@ int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax
             close(server_socket);
 
             while(1){
-                client_handler(client_socket, connection_id_counter);
+                client_handler(client_socket, connection_id_counter, ajax_handler_callback, ajax_handler_context);
                 //El handler nunca deberia terminar!!
                 perror("ERROR: client_handler returned\n");
                 exit(EXIT_FAILURE);
@@ -679,7 +655,6 @@ int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax
             /*
             Codigo Parent
             */
-            close(client_socket);
 
             // Agrega proceso hijo al administrador de procesos
             child_desc_node new_node;
@@ -687,9 +662,8 @@ int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax
             new_node.connection_id = connection_id_counter;
             insert_process(&child_desc_node_ll, new_node);
             
+            close(client_socket);
         }
-
-        close(client_socket);
         
     }
 

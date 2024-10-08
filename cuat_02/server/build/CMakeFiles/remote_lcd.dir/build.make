@@ -83,19 +83,19 @@ CMakeFiles/remote_lcd.dir/src/server.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/remote_lcd.dir/src/server.c.s"
 	/usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.c -o CMakeFiles/remote_lcd.dir/src/server.c.s
 
-CMakeFiles/remote_lcd.dir/src/events.c.o: CMakeFiles/remote_lcd.dir/flags.make
-CMakeFiles/remote_lcd.dir/src/events.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.c
-CMakeFiles/remote_lcd.dir/src/events.c.o: CMakeFiles/remote_lcd.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/remote_lcd.dir/src/events.c.o"
-	/usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/remote_lcd.dir/src/events.c.o -MF CMakeFiles/remote_lcd.dir/src/events.c.o.d -o CMakeFiles/remote_lcd.dir/src/events.c.o -c /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.c
+CMakeFiles/remote_lcd.dir/src/buffer.c.o: CMakeFiles/remote_lcd.dir/flags.make
+CMakeFiles/remote_lcd.dir/src/buffer.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.c
+CMakeFiles/remote_lcd.dir/src/buffer.c.o: CMakeFiles/remote_lcd.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/remote_lcd.dir/src/buffer.c.o"
+	/usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/remote_lcd.dir/src/buffer.c.o -MF CMakeFiles/remote_lcd.dir/src/buffer.c.o.d -o CMakeFiles/remote_lcd.dir/src/buffer.c.o -c /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.c
 
-CMakeFiles/remote_lcd.dir/src/events.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/remote_lcd.dir/src/events.c.i"
-	/usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.c > CMakeFiles/remote_lcd.dir/src/events.c.i
+CMakeFiles/remote_lcd.dir/src/buffer.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/remote_lcd.dir/src/buffer.c.i"
+	/usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.c > CMakeFiles/remote_lcd.dir/src/buffer.c.i
 
-CMakeFiles/remote_lcd.dir/src/events.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/remote_lcd.dir/src/events.c.s"
-	/usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.c -o CMakeFiles/remote_lcd.dir/src/events.c.s
+CMakeFiles/remote_lcd.dir/src/buffer.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/remote_lcd.dir/src/buffer.c.s"
+	/usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.c -o CMakeFiles/remote_lcd.dir/src/buffer.c.s
 
 CMakeFiles/remote_lcd.dir/src/main.c.o: CMakeFiles/remote_lcd.dir/flags.make
 CMakeFiles/remote_lcd.dir/src/main.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/main.c
@@ -142,7 +142,7 @@ CMakeFiles/remote_lcd.dir/lib/nxjson.c.s: cmake_force
 # Object files for target remote_lcd
 remote_lcd_OBJECTS = \
 "CMakeFiles/remote_lcd.dir/src/server.c.o" \
-"CMakeFiles/remote_lcd.dir/src/events.c.o" \
+"CMakeFiles/remote_lcd.dir/src/buffer.c.o" \
 "CMakeFiles/remote_lcd.dir/src/main.c.o" \
 "CMakeFiles/remote_lcd.dir/src/handler.c.o" \
 "CMakeFiles/remote_lcd.dir/lib/nxjson.c.o"
@@ -151,7 +151,7 @@ remote_lcd_OBJECTS = \
 remote_lcd_EXTERNAL_OBJECTS =
 
 bin/remote_lcd: CMakeFiles/remote_lcd.dir/src/server.c.o
-bin/remote_lcd: CMakeFiles/remote_lcd.dir/src/events.c.o
+bin/remote_lcd: CMakeFiles/remote_lcd.dir/src/buffer.c.o
 bin/remote_lcd: CMakeFiles/remote_lcd.dir/src/main.c.o
 bin/remote_lcd: CMakeFiles/remote_lcd.dir/src/handler.c.o
 bin/remote_lcd: CMakeFiles/remote_lcd.dir/lib/nxjson.c.o

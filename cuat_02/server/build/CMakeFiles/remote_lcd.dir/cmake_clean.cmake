@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/remote_lcd.dir/lib/nxjson.c.o"
   "CMakeFiles/remote_lcd.dir/lib/nxjson.c.o.d"
-  "CMakeFiles/remote_lcd.dir/src/events.c.o"
-  "CMakeFiles/remote_lcd.dir/src/events.c.o.d"
+  "CMakeFiles/remote_lcd.dir/src/buffer.c.o"
+  "CMakeFiles/remote_lcd.dir/src/buffer.c.o.d"
   "CMakeFiles/remote_lcd.dir/src/handler.c.o"
   "CMakeFiles/remote_lcd.dir/src/handler.c.o.d"
   "CMakeFiles/remote_lcd.dir/src/main.c.o"

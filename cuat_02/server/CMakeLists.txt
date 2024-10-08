@@ -23,7 +23,7 @@ target_include_directories(remote_lcd PRIVATE ${CMAKE_SOURCE_DIR}/lib ${CMAKE_SO
 target_sources(remote_lcd
     PRIVATE 
         src/server.c
-        src/events.c
+        src/buffer.c
         src/main.c
         src/handler.c
 

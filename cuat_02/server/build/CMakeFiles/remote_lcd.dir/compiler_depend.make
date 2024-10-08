@@ -74,8 +74,8 @@ CMakeFiles/remote_lcd.dir/lib/nxjson.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stddef.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdint.h
 
-CMakeFiles/remote_lcd.dir/src/events.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.c \
-  /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.h \
+CMakeFiles/remote_lcd.dir/src/buffer.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.c \
+  /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/bitsperlong.h \
   /usr/include/asm-generic/posix_types.h \
@@ -173,7 +173,7 @@ CMakeFiles/remote_lcd.dir/src/events.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stddef.h
 
 CMakeFiles/remote_lcd.dir/src/handler.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/handler.c \
-  /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.h \
+  /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.h \
   /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/handler.h \
   /usr/include/asm-generic/bitsperlong.h \
   /usr/include/asm-generic/posix_types.h \
@@ -268,11 +268,10 @@ CMakeFiles/remote_lcd.dir/src/handler.c.o: /home/bruno/git/utn/r5051-GLECER-BRUN
 
 CMakeFiles/remote_lcd.dir/src/main.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/main.c \
   /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib/nxjson.h \
-  /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.h \
+  /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.h \
   /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/handler.h \
   /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.h \
   /usr/include/alloca.h \
-  /usr/include/arpa/inet.h \
   /usr/include/asm-generic/bitsperlong.h \
   /usr/include/asm-generic/posix_types.h \
   /usr/include/asm-generic/socket.h \
@@ -293,12 +292,8 @@ CMakeFiles/remote_lcd.dir/src/main.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/c
   /usr/include/bits/floatn-common.h \
   /usr/include/bits/floatn.h \
   /usr/include/bits/getopt_core.h \
-  /usr/include/bits/getopt_ext.h \
   /usr/include/bits/getopt_posix.h \
   /usr/include/bits/in.h \
-  /usr/include/bits/ipc-perm.h \
-  /usr/include/bits/ipc.h \
-  /usr/include/bits/ipctypes.h \
   /usr/include/bits/libc-header-start.h \
   /usr/include/bits/long-double.h \
   /usr/include/bits/mman-linux.h \
@@ -311,23 +306,9 @@ CMakeFiles/remote_lcd.dir/src/main.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/c
   /usr/include/bits/pthreadtypes.h \
   /usr/include/bits/select.h \
   /usr/include/bits/semaphore.h \
-  /usr/include/bits/shm.h \
-  /usr/include/bits/shmlba.h \
-  /usr/include/bits/sigaction.h \
-  /usr/include/bits/sigcontext.h \
-  /usr/include/bits/sigevent-consts.h \
-  /usr/include/bits/siginfo-arch.h \
-  /usr/include/bits/siginfo-consts.h \
-  /usr/include/bits/signal_ext.h \
-  /usr/include/bits/signum-arch.h \
-  /usr/include/bits/signum-generic.h \
-  /usr/include/bits/sigstack.h \
-  /usr/include/bits/sigstksz.h \
-  /usr/include/bits/sigthread.h \
   /usr/include/bits/sockaddr.h \
   /usr/include/bits/socket.h \
   /usr/include/bits/socket_type.h \
-  /usr/include/bits/ss_flags.h \
   /usr/include/bits/stat.h \
   /usr/include/bits/stdint-intn.h \
   /usr/include/bits/stdint-least.h \
@@ -348,24 +329,14 @@ CMakeFiles/remote_lcd.dir/src/main.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/c
   /usr/include/bits/types/__locale_t.h \
   /usr/include/bits/types/__mbstate_t.h \
   /usr/include/bits/types/__sigset_t.h \
-  /usr/include/bits/types/__sigval_t.h \
   /usr/include/bits/types/clock_t.h \
   /usr/include/bits/types/clockid_t.h \
   /usr/include/bits/types/cookie_io_functions_t.h \
-  /usr/include/bits/types/idtype_t.h \
   /usr/include/bits/types/locale_t.h \
-  /usr/include/bits/types/sig_atomic_t.h \
-  /usr/include/bits/types/sigevent_t.h \
-  /usr/include/bits/types/siginfo_t.h \
   /usr/include/bits/types/sigset_t.h \
-  /usr/include/bits/types/sigval_t.h \
-  /usr/include/bits/types/stack_t.h \
   /usr/include/bits/types/struct_FILE.h \
   /usr/include/bits/types/struct_iovec.h \
   /usr/include/bits/types/struct_osockaddr.h \
-  /usr/include/bits/types/struct_shmid64_ds.h \
-  /usr/include/bits/types/struct_shmid_ds.h \
-  /usr/include/bits/types/struct_sigstack.h \
   /usr/include/bits/types/struct_timespec.h \
   /usr/include/bits/types/struct_timeval.h \
   /usr/include/bits/types/time_t.h \
@@ -382,14 +353,12 @@ CMakeFiles/remote_lcd.dir/src/main.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/c
   /usr/include/fcntl.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
-  /usr/include/getopt.h \
   /usr/include/gnu/stubs-64.h \
   /usr/include/gnu/stubs.h \
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/netinet/in.h \
   /usr/include/semaphore.h \
-  /usr/include/signal.h \
   /usr/include/stdc-predef.h \
   /usr/include/stdint.h \
   /usr/include/stdio.h \
@@ -397,21 +366,18 @@ CMakeFiles/remote_lcd.dir/src/main.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/c
   /usr/include/string.h \
   /usr/include/strings.h \
   /usr/include/sys/cdefs.h \
-  /usr/include/sys/ipc.h \
   /usr/include/sys/mman.h \
   /usr/include/sys/select.h \
-  /usr/include/sys/shm.h \
   /usr/include/sys/socket.h \
   /usr/include/sys/stat.h \
   /usr/include/sys/types.h \
-  /usr/include/sys/ucontext.h \
-  /usr/include/sys/wait.h \
   /usr/include/unistd.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdarg.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stddef.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdint.h
 
 CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.c \
+  /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib/colors.h \
   /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.h \
   /usr/include/alloca.h \
   /usr/include/arpa/inet.h \
@@ -429,35 +395,24 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/include/asm/sockios.h \
   /usr/include/bits/atomic_wide_counter.h \
   /usr/include/bits/byteswap.h \
+  /usr/include/bits/cmathcalls.h \
   /usr/include/bits/confname.h \
   /usr/include/bits/endian.h \
   /usr/include/bits/endianness.h \
   /usr/include/bits/environments.h \
   /usr/include/bits/errno.h \
-  /usr/include/bits/fcntl-linux.h \
-  /usr/include/bits/fcntl.h \
   /usr/include/bits/floatn-common.h \
   /usr/include/bits/floatn.h \
   /usr/include/bits/getopt_core.h \
   /usr/include/bits/getopt_posix.h \
   /usr/include/bits/in.h \
-  /usr/include/bits/ipc-perm.h \
-  /usr/include/bits/ipc.h \
-  /usr/include/bits/ipctypes.h \
   /usr/include/bits/libc-header-start.h \
   /usr/include/bits/long-double.h \
-  /usr/include/bits/mman-linux.h \
-  /usr/include/bits/mman-map-flags-generic.h \
-  /usr/include/bits/mman-shared.h \
-  /usr/include/bits/mman.h \
-  /usr/include/bits/mman_ext.h \
+  /usr/include/bits/mathdef.h \
   /usr/include/bits/posix_opt.h \
   /usr/include/bits/pthreadtypes-arch.h \
   /usr/include/bits/pthreadtypes.h \
   /usr/include/bits/select.h \
-  /usr/include/bits/semaphore.h \
-  /usr/include/bits/shm.h \
-  /usr/include/bits/shmlba.h \
   /usr/include/bits/sigaction.h \
   /usr/include/bits/sigcontext.h \
   /usr/include/bits/sigevent-consts.h \
@@ -473,14 +428,12 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/include/bits/socket.h \
   /usr/include/bits/socket_type.h \
   /usr/include/bits/ss_flags.h \
-  /usr/include/bits/stat.h \
   /usr/include/bits/stdint-intn.h \
   /usr/include/bits/stdint-uintn.h \
   /usr/include/bits/stdio_lim.h \
   /usr/include/bits/stdlib-float.h \
   /usr/include/bits/struct_mutex.h \
   /usr/include/bits/struct_rwlock.h \
-  /usr/include/bits/struct_stat.h \
   /usr/include/bits/thread-shared-types.h \
   /usr/include/bits/time64.h \
   /usr/include/bits/timesize.h \
@@ -507,8 +460,6 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/include/bits/types/struct_FILE.h \
   /usr/include/bits/types/struct_iovec.h \
   /usr/include/bits/types/struct_osockaddr.h \
-  /usr/include/bits/types/struct_shmid64_ds.h \
-  /usr/include/bits/types/struct_shmid_ds.h \
   /usr/include/bits/types/struct_sigstack.h \
   /usr/include/bits/types/struct_timespec.h \
   /usr/include/bits/types/struct_timeval.h \
@@ -520,9 +471,9 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/include/bits/waitflags.h \
   /usr/include/bits/waitstatus.h \
   /usr/include/bits/wordsize.h \
+  /usr/include/complex.h \
   /usr/include/endian.h \
   /usr/include/errno.h \
-  /usr/include/fcntl.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
   /usr/include/gnu/stubs-64.h \
@@ -531,7 +482,6 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/include/linux/posix_types.h \
   /usr/include/linux/stddef.h \
   /usr/include/netinet/in.h \
-  /usr/include/semaphore.h \
   /usr/include/signal.h \
   /usr/include/stdc-predef.h \
   /usr/include/stdio.h \
@@ -539,12 +489,8 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/include/string.h \
   /usr/include/strings.h \
   /usr/include/sys/cdefs.h \
-  /usr/include/sys/ipc.h \
-  /usr/include/sys/mman.h \
   /usr/include/sys/select.h \
-  /usr/include/sys/shm.h \
   /usr/include/sys/socket.h \
-  /usr/include/sys/stat.h \
   /usr/include/sys/types.h \
   /usr/include/sys/ucontext.h \
   /usr/include/sys/wait.h \
@@ -553,25 +499,15 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
   /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stddef.h
 
 
-/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.c:
-
-/usr/include/sys/shm.h:
-
-/usr/include/sys/ipc.h:
-
 /usr/include/signal.h:
 
-/usr/include/getopt.h:
+/usr/include/complex.h:
 
 /usr/include/bits/types/struct_sigstack.h:
-
-/usr/include/bits/types/struct_shmid64_ds.h:
 
 /usr/include/bits/types/siginfo_t.h:
 
 /usr/include/bits/types/sigevent_t.h:
-
-/usr/include/bits/types/idtype_t.h:
 
 /usr/include/bits/types/__sigval_t.h:
 
@@ -586,10 +522,6 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 /usr/include/bits/signal_ext.h:
 
 /usr/include/bits/siginfo-arch.h:
-
-/usr/include/bits/types/stack_t.h:
-
-/usr/include/bits/sigevent-consts.h:
 
 /usr/include/bits/sigaction.h:
 
@@ -613,9 +545,11 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 
 /usr/include/bits/types/struct_timeval.h:
 
-/usr/include/bits/ipc-perm.h:
-
 /usr/include/bits/types/struct_timespec.h:
+
+/usr/include/bits/types/stack_t.h:
+
+/usr/include/bits/sigevent-consts.h:
 
 /usr/include/bits/ss_flags.h:
 
@@ -638,8 +572,6 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 /usr/include/bits/siginfo-consts.h:
 
 /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib/nxjson.h:
-
-/usr/include/bits/getopt_ext.h:
 
 /usr/include/bits/types/__FILE.h:
 
@@ -665,8 +597,6 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 
 /home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.h:
 
-/usr/include/asm-generic/errno.h:
-
 /usr/include/asm-generic/errno-base.h:
 
 /usr/include/bits/errno.h:
@@ -681,17 +611,15 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 
 /usr/include/bits/in.h:
 
-/usr/include/bits/types/struct_shmid_ds.h:
-
 /usr/include/bits/types/__sigset_t.h:
 
-/usr/include/ctype.h:
+/usr/include/bits/types/idtype_t.h:
 
-/usr/include/bits/waitflags.h:
-
-/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib/nxjson.c:
+/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib/colors.h:
 
 /usr/include/bits/byteswap.h:
+
+/usr/include/bits/cmathcalls.h:
 
 /usr/include/bits/libc-header-start.h:
 
@@ -711,6 +639,8 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 
 /usr/include/bits/long-double.h:
 
+/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.c:
+
 /usr/include/asm-generic/posix_types.h:
 
 /usr/include/stdc-predef.h:
@@ -722,6 +652,8 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 /usr/include/asm-generic/socket.h:
 
 /usr/include/bits/types/__fpos64_t.h:
+
+/usr/include/bits/select.h:
 
 /usr/include/gnu/stubs-64.h:
 
@@ -763,13 +695,11 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 
 /usr/include/sys/types.h:
 
-/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.h:
-
 /usr/include/linux/stddef.h:
 
 /usr/lib/gcc/x86_64-pc-linux-gnu/14.2.1/include/stdarg.h:
 
-/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/events.c:
+/usr/include/bits/types/struct_iovec.h:
 
 /usr/include/bits/wchar.h:
 
@@ -782,6 +712,10 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 /usr/include/asm/bitsperlong.h:
 
 /usr/include/bits/sigcontext.h:
+
+/usr/include/asm/posix_types.h:
+
+/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.h:
 
 /usr/include/asm/posix_types_64.h:
 
@@ -835,8 +769,6 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 
 /usr/include/bits/struct_stat.h:
 
-/usr/include/bits/types/struct_iovec.h:
-
 /usr/include/gnu/stubs.h:
 
 /usr/include/bits/pthreadtypes-arch.h:
@@ -849,16 +781,16 @@ CMakeFiles/remote_lcd.dir/src/server.c.o: /home/bruno/git/utn/r5051-GLECER-BRUNO
 
 /usr/include/unistd.h:
 
+/usr/include/bits/waitflags.h:
+
+/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib/nxjson.c:
+
+/usr/include/ctype.h:
+
+/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/server.c:
+
 /usr/include/arpa/inet.h:
 
-/usr/include/bits/ipc.h:
+/usr/include/asm-generic/errno.h:
 
-/usr/include/bits/select.h:
-
-/usr/include/bits/ipctypes.h:
-
-/usr/include/asm/posix_types.h:
-
-/usr/include/bits/shm.h:
-
-/usr/include/bits/shmlba.h:
+/usr/include/bits/mathdef.h:
