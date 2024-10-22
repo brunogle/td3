@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 
-#include "nxjson.h"
+#include "cJSON.h"
 #include "server.h"
 #include "buffer.h"
 #include "handler.h"
@@ -25,8 +25,7 @@ int ajax_handler_callback(http_request_t http_request, ajax_response_t * ajax_re
  
         //Preparo un event_web_to_dev para escribir en el buffer
         event_web_to_dev event;
-        for(int i = 0; i < 4; i++)
-            memset(event.text_display[i], 0, DISPLAY_WIDTH);
+        memset(event.message, 0, DISPLAY_WIDTH);
 
         //Parsing del JSON
         char json_text[1024];
@@ -34,12 +33,12 @@ int ajax_handler_callback(http_request_t http_request, ajax_response_t * ajax_re
         memcpy(json_text, http_request.body, http_request.body_size);
         json_text[http_request.body_size] = '\0';
 
-        const nx_json * json = nx_json_parse(json_text, 0);
+        cJSON *json = cJSON_Parse(json_text);
         if (!json) {
             perror("ERROR: Failed to parse JSON in update_lcd request\n");
             return 0;
         }
-        const char * text = nx_json_get(json, "text")->text_value;
+        char * text = cJSON_GetObjectItem(json, "text")->valuestring;;
         if (!text) {
             perror("ERROR: \"text\" request not found in JSON in update_lcd request\n");
             return 0;
@@ -52,35 +51,71 @@ int ajax_handler_callback(http_request_t http_request, ajax_response_t * ajax_re
         int line_idx = 0;
         int text_idx = 0;
         
-        while(line < DISPLAY_HEIGHT && text_idx < text_len){
-            line_idx = 0;
-            while(text_idx < text_len && line_idx < DISPLAY_WIDTH){
-                event.text_display[line][line_idx] = text[text_idx];
-                text_idx++;
-                line_idx++;
-                if(text[text_idx] == '\n'){
-                    text_idx++;
-                    line_idx++;
-                    break;             
-                }
-            }
-
-            line++;
-        }
+        strcpy(event.message, text);
 
 
         //Escribe el evento en el buffer
         event_buffer_t * buffer = (event_buffer_t *)context;
         write_web_to_dev(buffer, event);
 
-        //Respuesta HTTP
-        char * response_str = "LCD Update Command Processed Correctly";
-        strcpy(ajax_response->response, response_str);
-        ajax_response->response_len = strlen(response_str);
+    
+        return 1;
     }
 
+    else if(strcmp(http_request.url, "/fetch_log") == 0){
+        event_buffer_t * buffer = (event_buffer_t *)context;
+        char * log_text = malloc(DISPLAY_WIDTH*BUFFER_SIZE*sizeof(char));
+        int size = 0;
 
-    return 1;
+        for(int i = 0; i < BUFFER_SIZE; i++){
+            event_web_to_dev event = read_web_to_dev(buffer, i);
+            if(event.message[0] == 0){
+                break;
+            }
+            if(i != 0){
+                size += sprintf(&log_text[size], "\n");
+            }
+            size += sprintf(&log_text[size], "%s", event.message);
+        }
+
+
+        cJSON *json = cJSON_CreateObject();
+        if (json == NULL) {
+            perror("ERROR: Failed to create JSON object\n");
+            return 0;
+        }
+
+        //printf("%s\n", log_text);
+
+
+        // Add the "log" field with the string value
+        if (cJSON_AddStringToObject(json, "log", log_text) == NULL) {
+            perror("ERROR: Failed to add log message to JSON object\n");
+            cJSON_Delete(json);
+            return 0;
+        }
+
+        // Convert the JSON object to a string
+        ajax_response->response= cJSON_PrintUnformatted(json);
+        if (ajax_response->response == NULL) {
+            perror("ERROR: Failed to print JSON object as string\n");
+        }
+
+        ajax_response->response_len = strlen(ajax_response->response);
+
+
+        // Clean up the cJSON object (the string must be freed by the caller)
+        cJSON_Delete(json);
+
+
+        
+
+
+        return 1;
+    }
+
+    return 0;
+  
 }
 
 int parse_arguments(int argc, char *argv[], int * port, int * max_connections){
@@ -156,7 +191,7 @@ int main(int argc, char *argv[]){
     /*
     El fork crea un proceso child que sera el servidor
     */
-
+    
     int pid = fork();
     if (pid < 0) {
         perror("ERROR: fork failed\n");
@@ -189,8 +224,4 @@ int main(int argc, char *argv[]){
             handler_proc(event_buffer);
         }
     }
-
-        
-
-
 }

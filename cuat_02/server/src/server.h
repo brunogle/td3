@@ -19,7 +19,7 @@ typedef struct child_desc_node {
 
 
 typedef struct ajax_response_t {
-    char response[WRITE_BUFF_SIZE]; // Respuesta generada por el callback 
+    char * response; // Respuesta generada por el callback 
     unsigned int response_len; // Largo de la respuesta
 } ajax_response_t;
 

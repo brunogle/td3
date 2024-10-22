@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib/cJSON.c" "CMakeFiles/remote_lcd.dir/lib/cJSON.c.o" "gcc" "CMakeFiles/remote_lcd.dir/lib/cJSON.c.o.d"
   "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/lib/nxjson.c" "CMakeFiles/remote_lcd.dir/lib/nxjson.c.o" "gcc" "CMakeFiles/remote_lcd.dir/lib/nxjson.c.o.d"
   "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/buffer.c" "CMakeFiles/remote_lcd.dir/src/buffer.c.o" "gcc" "CMakeFiles/remote_lcd.dir/src/buffer.c.o.d"
   "/home/bruno/git/utn/r5051-GLECER-BRUNO/cuat_02/server/src/handler.c" "CMakeFiles/remote_lcd.dir/src/handler.c.o" "gcc" "CMakeFiles/remote_lcd.dir/src/handler.c.o.d"

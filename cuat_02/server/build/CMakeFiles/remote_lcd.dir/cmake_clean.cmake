@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/remote_lcd.dir/lib/cJSON.c.o"
+  "CMakeFiles/remote_lcd.dir/lib/cJSON.c.o.d"
   "CMakeFiles/remote_lcd.dir/lib/nxjson.c.o"
   "CMakeFiles/remote_lcd.dir/lib/nxjson.c.o.d"
   "CMakeFiles/remote_lcd.dir/src/buffer.c.o"

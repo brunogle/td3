@@ -28,4 +28,5 @@ target_sources(remote_lcd
         src/handler.c
 
         lib/nxjson.c
+        lib/cJSON.c
 )

@@ -14,37 +14,73 @@
 
         body {
             font-family: Arial, sans-serif;
-            text-align: left;
+            text-align: center;
             padding: 30px;
             color: #FFFFFF;
             background-color: #333333;
+
+            /* Flexbox for centering */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 90vh; /* Full viewport height */
+            margin: 10px; /* Remove default body margin */
         }
 
-        textarea {
-            font-size: 35px;
-            height: 190px; 
-            width: 445px;
-            font-family:'5x8 LCD HD44780U A02 Regular';
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        /* Container to allow flexbox space allocation */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Full width */
+            max-width: 800px; /* Optional: limit max width */
+            height: 100%;
+        }
+
+        #log_textarea {
+            font-size: 20px;
+            font-family: '5x8 LCD HD44780U A02 Regular';
             resize: none;
             padding: 10px;
             background-color: #002ef5;
-            justify-content: center;
             box-sizing: border-box;
-            text-align: left; /* Left-align the text */
+            color: #dde2ff;
+            flex-grow: 1; /* Make it take all remaining space */
+        }
+
+        .input-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #b2bbf9;
+            width: 100%; /* Full width of the container */
+            margin-bottom: 20px; /* Space between this row and the rest */
+            margin-top: 20px;
+        }
+
+        #message_textarea {
+            font-size: 35px;
+            font-family: '5x8 LCD HD44780U A02 Regular';
+            resize: none;
+            padding: 10px;
+            background-color: #002ef5;
+            box-sizing: border-box;
+            color: #dde2ff;
+            flex: 1; /* Make the input expand to take up available space */
+            margin-right: 10px; /* Space between the input and button */
         }
 
         button {
             font-size: 16px;   /* Larger font for the button */
-            margin-top: 10px;  /* Add some space between the textbox and button */
             padding: 10px 20px; /* Padding inside the button */
             font-family: 'Courier New', monospace;
             background-color: #ffffff;
-            input:checked + .seatButton { background: red; }
         }
+
         button:hover {     
             background-color: #cccccc;
         }
@@ -54,14 +90,19 @@
     </style>
 </head>
 <body>
-    <script>0</script>
-    <h1>Beaglebone LCD Controller</h1>
+    <div class="container">
+        <h1>Beaglebone LCD Controller</h1>
 
-    <textarea placeholder="Enter text..." id="textbox" name="textbox" rows="4" cols="16" oninput="limitTextArea(this)"
-    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea><br><br>
-    
-    <button onclick="send_lcd_update()">Update LCD</button>
+        <textarea placeholder="Messages will appear here" id="log_textarea" name="log_textarea" cols="20" rows="10"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" readonly="true"></textarea><br><br>
 
+        <div class="input-container">
+            <input placeholder="Enter text..." id="message_textarea" name="message_textarea" maxlength="20" cols="20"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            
+            <button onclick="send_lcd_update()">Update LCD</button>
+        </div>
 
+    </div>
 </body>
 </html>

@@ -129,6 +129,30 @@ remote_lcd/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/build
 .PHONY : remote_lcd/fast
 
+lib/cJSON.o: lib/cJSON.c.o
+.PHONY : lib/cJSON.o
+
+# target to build an object file
+lib/cJSON.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/cJSON.c.o
+.PHONY : lib/cJSON.c.o
+
+lib/cJSON.i: lib/cJSON.c.i
+.PHONY : lib/cJSON.i
+
+# target to preprocess a source file
+lib/cJSON.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/cJSON.c.i
+.PHONY : lib/cJSON.c.i
+
+lib/cJSON.s: lib/cJSON.c.s
+.PHONY : lib/cJSON.s
+
+# target to generate assembly for a file
+lib/cJSON.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/cJSON.c.s
+.PHONY : lib/cJSON.c.s
+
 lib/nxjson.o: lib/nxjson.c.o
 .PHONY : lib/nxjson.o
 
@@ -258,6 +282,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... remote_lcd"
+	@echo "... lib/cJSON.o"
+	@echo "... lib/cJSON.i"
+	@echo "... lib/cJSON.s"
 	@echo "... lib/nxjson.o"
 	@echo "... lib/nxjson.i"
 	@echo "... lib/nxjson.s"

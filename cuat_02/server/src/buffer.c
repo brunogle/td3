@@ -2,33 +2,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <memory.h>
 
 #include "buffer.h"
 
 
 void write_web_to_dev(event_buffer_t * buffer, event_web_to_dev event){
-    sem_wait(&buffer->web_to_dev_write_sem); // Espera a que haya lugar en el buffer
+    sem_wait(&buffer->sem_busy); // Espera a que haya lugar en el buffer
 
     buffer->web_to_dev_shm[buffer->web_to_dev_write_idx] = event;
     buffer->web_to_dev_write_idx = (buffer->web_to_dev_write_idx + 1) % BUFFER_SIZE; 
 
-    sem_post(&buffer->web_to_dev_read_sem); // Hay un evento para leer
+    sem_post(&buffer->sem_busy); // Hay un evento para leer
 }
 
-event_web_to_dev read_web_to_dev(event_buffer_t * buffer){
+event_web_to_dev read_web_to_dev(event_buffer_t * buffer, int idx){
     event_web_to_dev ret;
 
-    sem_wait(&buffer->web_to_dev_read_sem); // Espera a que haya lugar en el buffer
+    sem_wait(&buffer->sem_busy); // Espera a que haya lugar en el buffer
 
-    ret = buffer->web_to_dev_shm[buffer->web_to_dev_read_idx];
-    buffer->web_to_dev_read_idx = (buffer->web_to_dev_read_idx + 1) % BUFFER_SIZE; 
+    ret = buffer->web_to_dev_shm[idx];
 
-    sem_post(&buffer->web_to_dev_write_sem); // Hay un evento para leer
+    sem_post(&buffer->sem_busy); // Hay un evento para leer
 
     return ret;
 
 }
-
 
 
 event_buffer_t * init_buffer(){
@@ -61,22 +60,17 @@ event_buffer_t * init_buffer(){
         return NULL;
     }
 
+    memset(ret, 0, sizeof(event_buffer_t));
+
     
-    if (sem_init(&ret->web_to_dev_write_sem, 1, BUFFER_SIZE) != 0){
+    if (sem_init(&ret->sem_busy, 1, BUFFER_SIZE) != 0){
         perror("FATAL: sem_init failed");
         munmap((void *)ret, sizeof(event_buffer_t));
         shm_unlink(WEB_TO_DEV_NAME);       
     }
-
-    if (sem_init(&ret->web_to_dev_read_sem, 1, 0)){
-        perror("FATAL: sem_init failed");
-        sem_close(&ret->web_to_dev_write_sem);
-        munmap((void *)ret, sizeof(event_buffer_t));
-        shm_unlink(WEB_TO_DEV_NAME);
-    }
+    
 
     ret->web_to_dev_write_idx = 0;
-    ret->web_to_dev_read_idx = 0;
     ret->web_to_dev_fp = shm_fp;
 
     return ret;
@@ -85,8 +79,7 @@ event_buffer_t * init_buffer(){
 
 void free_buffer(event_buffer_t * event_buffer){
 
-    sem_close(&event_buffer->web_to_dev_read_sem);
-    sem_close(&event_buffer->web_to_dev_write_sem);
+    sem_close(&event_buffer->sem_busy);
 
     munmap((void *)event_buffer, sizeof(event_buffer_t));
     shm_unlink(WEB_TO_DEV_NAME);

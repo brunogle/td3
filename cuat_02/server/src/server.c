@@ -1,4 +1,5 @@
 #include "server.h"
+#include "nxjson.h"
 
 #include <complex.h>
 #include <stdio.h>
@@ -264,17 +265,30 @@ int handle_ajax_request(int client_socket, http_request_t http_request, ajax_han
     if(success){
         char header[256];
 
-        sprintf(header,
-            "HTTP/1.1 200 OK\n"
-            "Content-Type: application/json\n"
-            "Content-Length: %u\n\n",
-            ajax_response.response_len);
+        if(ajax_response.response == NULL){
+            sprintf(header,
+                "HTTP/1.1 200 OK\n"
+                "Content-Type: application/json\n"
+                "Content-Length: 0\n\n");
 
-        // Envia el header de la respuesta
-        write(client_socket, header, strlen(header));
+            write(client_socket, header, strlen(header));
 
-        // Envia la respuesta
-        write(client_socket, ajax_response.response, ajax_response.response_len);
+        }
+        else{
+            sprintf(header,
+                "HTTP/1.1 200 OK\n"
+                "Content-Type: application/json\n"
+                "Content-Length: %u\n\n",
+                ajax_response.response_len);
+
+            // Envia el header de la respuesta
+            write(client_socket, header, strlen(header));
+
+            // Envia la respuesta
+            write(client_socket, ajax_response.response, ajax_response.response_len);
+
+            free(ajax_response.response);
+        }
 
         return 200;
     }
@@ -468,6 +482,7 @@ void client_handler(int client_socket, int connection_id, ajax_handler_callback_
 
 
 
+
         /*****************************************************************************
         *          Parsing del URL para obtener el path y los parametros             *
         *****************************************************************************/
@@ -526,17 +541,18 @@ void sigchld_handler(int signum) {
         }
         else if(pid == 0){
             //Sigue habiendo childs que tienen que ser manejados
-            //continue;
+            continue;
         }
 
         child_desc_node * ended_node = get_process_by_pid(child_desc_node_ll, pid);
         if(ended_node != NULL){
             remove_process_by_pid(&child_desc_node_ll, pid);
+            printf(COLOR_YELLOW);
+            printf("Client %d disconnected. Current connections: %d\n", ended_node->connection_id, count_processes(child_desc_node_ll));
+            printf(COLOR_RESET);
+            fflush(stdout);
         }
-        printf(COLOR_YELLOW);
-        printf("Client %d disconnected. Current connections: %d\n", ended_node->connection_id, count_processes(child_desc_node_ll));
-        printf(COLOR_RESET);
-        fflush(stdout);
+
     }
 
 }
