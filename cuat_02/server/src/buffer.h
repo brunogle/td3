@@ -9,8 +9,9 @@
 #include <semaphore.h>
 
 #define DISPLAY_WIDTH 20
+#define DISPLAY_HEIGHT 4
 
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 12
 
 #define WEB_TO_DEV_NAME "/lcd_web_to_dev_shm"
 

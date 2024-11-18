@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.13)
 
 project(remote_lcd) # Project name
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}\\bin) # Output path
@@ -16,7 +16,7 @@ set(CMAKE_EXE_LINKER_FLAGS "")
 add_executable(remote_lcd)
 
 target_include_directories(remote_lcd PRIVATE ${CMAKE_SOURCE_DIR}/lib ${CMAKE_SOURCE_DIR}/src)
-
+target_link_libraries(remote_lcd rt pthread)
 
 #### SOURCES #####
 

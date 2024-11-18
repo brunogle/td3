@@ -9,7 +9,7 @@
 #include "buffer.h"
 #include "handler.h"
 
-#define DEFAULT_PORT 8080
+#define DEFAULT_PORT 8081
 #define DEFAULT_MAX_CONNECTIONS 10
 
 
@@ -180,11 +180,12 @@ int main(int argc, char *argv[]){
     /*
     Parsing de argumentos
     */
+    /*
     if(parse_arguments(argc, argv, &port, &max_connections) != 0){
         perror("FATAL: Argument parsing errors\n");
         exit(EXIT_FAILURE);
     }
-
+*/
     event_buffer_t * event_buffer = init_buffer();
 
 

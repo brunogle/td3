@@ -1,1 +1,1 @@
-/usr/bin/gcc -g CMakeFiles/remote_lcd.dir/src/server.c.o CMakeFiles/remote_lcd.dir/src/buffer.c.o CMakeFiles/remote_lcd.dir/src/main.c.o CMakeFiles/remote_lcd.dir/src/handler.c.o CMakeFiles/remote_lcd.dir/lib/nxjson.c.o CMakeFiles/remote_lcd.dir/lib/cJSON.c.o -o bin/remote_lcd
+/usr/bin/cc    CMakeFiles/remote_lcd.dir/src/server.c.o CMakeFiles/remote_lcd.dir/src/buffer.c.o CMakeFiles/remote_lcd.dir/src/main.c.o CMakeFiles/remote_lcd.dir/src/handler.c.o CMakeFiles/remote_lcd.dir/lib/nxjson.c.o CMakeFiles/remote_lcd.dir/lib/cJSON.c.o  -o bin/remote_lcd -lrt -lpthread 
