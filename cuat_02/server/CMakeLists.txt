@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(remote_lcd) # Project name
+project(chatlog_server) # Project name
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}\\bin) # Output path
 
 #### COMPILER SETTINGS ####
@@ -13,20 +13,19 @@ set(CMAKE_EXE_LINKER_FLAGS "")
 
 #### EXECUTABLE ####
 
-add_executable(remote_lcd)
+add_executable(chatlog_server)
 
-target_include_directories(remote_lcd PRIVATE ${CMAKE_SOURCE_DIR}/lib ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(remote_lcd rt pthread)
+target_include_directories(chatlog_server PRIVATE ${CMAKE_SOURCE_DIR}/lib ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(chatlog_server rt pthread)
 
 #### SOURCES #####
 
-target_sources(remote_lcd
+target_sources(chatlog_server
     PRIVATE 
         src/server.c
         src/buffer.c
         src/main.c
         src/handler.c
 
-        lib/nxjson.c
         lib/cJSON.c
 )

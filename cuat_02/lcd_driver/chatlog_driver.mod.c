@@ -26,26 +26,27 @@ static const struct modversion_info ____versions[]
 __used
 __attribute__((section("__versions"))) = {
 	{ 0x516e49f9, "module_layout" },
-	{ 0xf55bc851, "platform_driver_unregister" },
-	{ 0x6091b333, "unregister_chrdev_region" },
-	{ 0xf238fdf7, "cdev_del" },
 	{ 0x3df0823f, "class_destroy" },
 	{ 0xaf87d05c, "device_destroy" },
+	{ 0xf55bc851, "platform_driver_unregister" },
 	{ 0xe89992a5, "__platform_driver_register" },
 	{ 0x7c1318e3, "device_create" },
+	{ 0xf238fdf7, "cdev_del" },
 	{ 0xebdab104, "__class_create" },
 	{ 0x8fe01c8, "cdev_add" },
+	{ 0x6091b333, "unregister_chrdev_region" },
 	{ 0xcdd72f0f, "cdev_alloc" },
 	{ 0xe3ec2f2b, "alloc_chrdev_region" },
-	{ 0x328a05f1, "strncpy" },
-	{ 0x59d5dc5f, "devm_gpiod_get" },
-	{ 0xdb7305a1, "__stack_chk_fail" },
+	{ 0xc6f46339, "init_timer_key" },
+	{ 0xe97c4103, "ioremap" },
 	{ 0x28cc25db, "arm_copy_from_user" },
 	{ 0x5f754e5a, "memset" },
-	{ 0x8f678b07, "__stack_chk_guard" },
-	{ 0x8c11e17b, "gpiod_set_value" },
 	{ 0x8e865d3c, "arm_delay_ops" },
-	{ 0x7e68fee7, "gpiod_put" },
+	{ 0x822137e2, "arm_heavy_mb" },
+	{ 0xc38c83b8, "mod_timer" },
+	{ 0x526c3a6c, "jiffies" },
+	{ 0xedc03953, "iounmap" },
+	{ 0x97934ecf, "del_timer_sync" },
 	{ 0x7c32d0f0, "printk" },
 	{ 0x2e5810c6, "__aeabi_unwind_cpp_pr1" },
 	{ 0xb1ad28e0, "__gnu_mcount_nc" },
@@ -56,5 +57,5 @@ __used
 __attribute__((section(".modinfo"))) =
 "depends=";
 
-MODULE_ALIAS("of:N*T*Clcd");
-MODULE_ALIAS("of:N*T*ClcdC*");
+MODULE_ALIAS("of:N*T*Ctd3_glecer");
+MODULE_ALIAS("of:N*T*Ctd3_glecerC*");

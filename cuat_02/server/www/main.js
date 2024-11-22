@@ -19,8 +19,16 @@
   
   })(window, document, undefined);
 
+isFetchingLog = false;
 
 function update_log(){
+    if (isFetchingLog) {
+        console.warn('Skipping update, previous request still in progress.');
+        return;
+    }
+
+
+    isFetchingLog = true;
     fetch('/fetch_log', {headers: {'Content-Type': 'application/json'}})
     .then(response => {
         // Check if the response is successful (status code 200-299)
@@ -43,8 +51,11 @@ function update_log(){
     .catch(error => {
         // Handle any errors that occurred during the fetch
         console.error('Error fetching log:', error);
-    });
-}
+    })
+    .finally(error => {
+        // Handle any errors that occurred during the fetch
+        isFetchingLog = false;
+    })}
 
 async function send_lcd_update() {
 

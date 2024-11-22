@@ -1,5 +1,5 @@
 #include "server.h"
-#include "nxjson.h"
+//#include "nxjson.h"
 
 #include <complex.h>
 #include <stdio.h>
@@ -13,9 +13,8 @@
 #define USE_COLORS
 #include "colors.h"
 
-
+// #define A_LITTLE_VERBOSE
 // #define VERBOSE
-
 
 #define STR_(X) #X
 #define STR(X) STR_(X)
@@ -65,8 +64,10 @@ void insert_process(child_desc_node ** head, child_desc_node node) {
         }
         current->next = new_node;
     }
-
+    #ifdef A_LITTLE_VERBOSE
     printf("Process %d inserted\n", node.pid);
+    #endif
+
 }
 
 void remove_process_by_pid(child_desc_node **head, pid_t pid) {
@@ -90,9 +91,9 @@ void remove_process_by_pid(child_desc_node **head, pid_t pid) {
     }
 
     free(current);
-    
+    #ifdef A_LITTLE_VERBOSE
     printf("Process %d removed\n", pid);
-
+    #endif
     return;
 }
 
@@ -547,10 +548,12 @@ void sigchld_handler(int signum) {
         child_desc_node * ended_node = get_process_by_pid(child_desc_node_ll, pid);
         if(ended_node != NULL){
             remove_process_by_pid(&child_desc_node_ll, pid);
+            #ifdef A_LITTLE_VERBOSE
             printf(COLOR_YELLOW);
             printf("Client %d disconnected. Current connections: %d\n", ended_node->connection_id, count_processes(child_desc_node_ll));
             printf(COLOR_RESET);
             fflush(stdout);
+            #endif
         }
 
     }
@@ -642,11 +645,13 @@ int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax
         int client_port = ntohs(client_address.sin_port);
 
         connection_id_counter++;
+
+        #ifdef A_LITTLE_VERBOSE
         printf(COLOR_GREEN);
         printf("New client connected (%s:%i) (ID %d). Current connections: %d\n", client_ip_str, client_port, connection_id_counter, count_processes(child_desc_node_ll)+1);
         printf(COLOR_RESET);
         fflush(stdout);
-        
+        #endif
         
         pid_t new_pid = fork();
         if (new_pid < 0) {

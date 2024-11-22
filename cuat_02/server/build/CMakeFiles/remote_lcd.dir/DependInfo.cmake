@@ -4,12 +4,12 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/home/debian/server/lib/cJSON.c" "/home/debian/server/build/CMakeFiles/remote_lcd.dir/lib/cJSON.c.o"
-  "/home/debian/server/lib/nxjson.c" "/home/debian/server/build/CMakeFiles/remote_lcd.dir/lib/nxjson.c.o"
-  "/home/debian/server/src/buffer.c" "/home/debian/server/build/CMakeFiles/remote_lcd.dir/src/buffer.c.o"
-  "/home/debian/server/src/handler.c" "/home/debian/server/build/CMakeFiles/remote_lcd.dir/src/handler.c.o"
-  "/home/debian/server/src/main.c" "/home/debian/server/build/CMakeFiles/remote_lcd.dir/src/main.c.o"
-  "/home/debian/server/src/server.c" "/home/debian/server/build/CMakeFiles/remote_lcd.dir/src/server.c.o"
+  "/home/debian/td3/cuat_02/server/lib/cJSON.c" "/home/debian/td3/cuat_02/server/build/CMakeFiles/remote_lcd.dir/lib/cJSON.c.o"
+  "/home/debian/td3/cuat_02/server/lib/nxjson.c" "/home/debian/td3/cuat_02/server/build/CMakeFiles/remote_lcd.dir/lib/nxjson.c.o"
+  "/home/debian/td3/cuat_02/server/src/buffer.c" "/home/debian/td3/cuat_02/server/build/CMakeFiles/remote_lcd.dir/src/buffer.c.o"
+  "/home/debian/td3/cuat_02/server/src/handler.c" "/home/debian/td3/cuat_02/server/build/CMakeFiles/remote_lcd.dir/src/handler.c.o"
+  "/home/debian/td3/cuat_02/server/src/main.c" "/home/debian/td3/cuat_02/server/build/CMakeFiles/remote_lcd.dir/src/main.c.o"
+  "/home/debian/td3/cuat_02/server/src/server.c" "/home/debian/td3/cuat_02/server/build/CMakeFiles/remote_lcd.dir/src/server.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

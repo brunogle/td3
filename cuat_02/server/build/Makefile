@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/debian/server
+CMAKE_SOURCE_DIR = /home/debian/td3/cuat_02/server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/debian/server/build
+CMAKE_BINARY_DIR = /home/debian/td3/cuat_02/server/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/debian/server/build/CMakeFiles /home/debian/server/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/debian/td3/cuat_02/server/build/CMakeFiles /home/debian/td3/cuat_02/server/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/debian/server/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/debian/td3/cuat_02/server/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named remote_lcd
+# Target rules for targets named chatlog_server
 
 # Build rule for target.
-remote_lcd: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 remote_lcd
-.PHONY : remote_lcd
+chatlog_server: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 chatlog_server
+.PHONY : chatlog_server
 
 # fast build rule for target.
-remote_lcd/fast:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/build
-.PHONY : remote_lcd/fast
+chatlog_server/fast:
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/build
+.PHONY : chatlog_server/fast
 
 lib/cJSON.o: lib/cJSON.c.o
 
@@ -129,7 +129,7 @@ lib/cJSON.o: lib/cJSON.c.o
 
 # target to build an object file
 lib/cJSON.c.o:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/cJSON.c.o
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/lib/cJSON.c.o
 .PHONY : lib/cJSON.c.o
 
 lib/cJSON.i: lib/cJSON.c.i
@@ -138,7 +138,7 @@ lib/cJSON.i: lib/cJSON.c.i
 
 # target to preprocess a source file
 lib/cJSON.c.i:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/cJSON.c.i
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/lib/cJSON.c.i
 .PHONY : lib/cJSON.c.i
 
 lib/cJSON.s: lib/cJSON.c.s
@@ -147,35 +147,8 @@ lib/cJSON.s: lib/cJSON.c.s
 
 # target to generate assembly for a file
 lib/cJSON.c.s:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/cJSON.c.s
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/lib/cJSON.c.s
 .PHONY : lib/cJSON.c.s
-
-lib/nxjson.o: lib/nxjson.c.o
-
-.PHONY : lib/nxjson.o
-
-# target to build an object file
-lib/nxjson.c.o:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/nxjson.c.o
-.PHONY : lib/nxjson.c.o
-
-lib/nxjson.i: lib/nxjson.c.i
-
-.PHONY : lib/nxjson.i
-
-# target to preprocess a source file
-lib/nxjson.c.i:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/nxjson.c.i
-.PHONY : lib/nxjson.c.i
-
-lib/nxjson.s: lib/nxjson.c.s
-
-.PHONY : lib/nxjson.s
-
-# target to generate assembly for a file
-lib/nxjson.c.s:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/lib/nxjson.c.s
-.PHONY : lib/nxjson.c.s
 
 src/buffer.o: src/buffer.c.o
 
@@ -183,7 +156,7 @@ src/buffer.o: src/buffer.c.o
 
 # target to build an object file
 src/buffer.c.o:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/buffer.c.o
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/buffer.c.o
 .PHONY : src/buffer.c.o
 
 src/buffer.i: src/buffer.c.i
@@ -192,7 +165,7 @@ src/buffer.i: src/buffer.c.i
 
 # target to preprocess a source file
 src/buffer.c.i:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/buffer.c.i
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/buffer.c.i
 .PHONY : src/buffer.c.i
 
 src/buffer.s: src/buffer.c.s
@@ -201,7 +174,7 @@ src/buffer.s: src/buffer.c.s
 
 # target to generate assembly for a file
 src/buffer.c.s:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/buffer.c.s
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/buffer.c.s
 .PHONY : src/buffer.c.s
 
 src/handler.o: src/handler.c.o
@@ -210,7 +183,7 @@ src/handler.o: src/handler.c.o
 
 # target to build an object file
 src/handler.c.o:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/handler.c.o
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/handler.c.o
 .PHONY : src/handler.c.o
 
 src/handler.i: src/handler.c.i
@@ -219,7 +192,7 @@ src/handler.i: src/handler.c.i
 
 # target to preprocess a source file
 src/handler.c.i:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/handler.c.i
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/handler.c.i
 .PHONY : src/handler.c.i
 
 src/handler.s: src/handler.c.s
@@ -228,7 +201,7 @@ src/handler.s: src/handler.c.s
 
 # target to generate assembly for a file
 src/handler.c.s:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/handler.c.s
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/handler.c.s
 .PHONY : src/handler.c.s
 
 src/main.o: src/main.c.o
@@ -237,7 +210,7 @@ src/main.o: src/main.c.o
 
 # target to build an object file
 src/main.c.o:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/main.c.o
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/main.c.o
 .PHONY : src/main.c.o
 
 src/main.i: src/main.c.i
@@ -246,7 +219,7 @@ src/main.i: src/main.c.i
 
 # target to preprocess a source file
 src/main.c.i:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/main.c.i
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/main.c.i
 .PHONY : src/main.c.i
 
 src/main.s: src/main.c.s
@@ -255,7 +228,7 @@ src/main.s: src/main.c.s
 
 # target to generate assembly for a file
 src/main.c.s:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/main.c.s
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/main.c.s
 .PHONY : src/main.c.s
 
 src/server.o: src/server.c.o
@@ -264,7 +237,7 @@ src/server.o: src/server.c.o
 
 # target to build an object file
 src/server.c.o:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/server.c.o
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/server.c.o
 .PHONY : src/server.c.o
 
 src/server.i: src/server.c.i
@@ -273,7 +246,7 @@ src/server.i: src/server.c.i
 
 # target to preprocess a source file
 src/server.c.i:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/server.c.i
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/server.c.i
 .PHONY : src/server.c.i
 
 src/server.s: src/server.c.s
@@ -282,7 +255,7 @@ src/server.s: src/server.c.s
 
 # target to generate assembly for a file
 src/server.c.s:
-	$(MAKE) -f CMakeFiles/remote_lcd.dir/build.make CMakeFiles/remote_lcd.dir/src/server.c.s
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/server.c.s
 .PHONY : src/server.c.s
 
 # Help Target
@@ -292,14 +265,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... remote_lcd"
+	@echo "... chatlog_server"
 	@echo "... edit_cache"
 	@echo "... lib/cJSON.o"
 	@echo "... lib/cJSON.i"
 	@echo "... lib/cJSON.s"
-	@echo "... lib/nxjson.o"
-	@echo "... lib/nxjson.i"
-	@echo "... lib/nxjson.s"
 	@echo "... src/buffer.o"
 	@echo "... src/buffer.i"
 	@echo "... src/buffer.s"

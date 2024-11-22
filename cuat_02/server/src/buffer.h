@@ -10,6 +10,7 @@
 
 #define DISPLAY_WIDTH 20
 #define DISPLAY_HEIGHT 4
+#define DISPLAY_LEN 80
 
 #define BUFFER_SIZE 12
 
