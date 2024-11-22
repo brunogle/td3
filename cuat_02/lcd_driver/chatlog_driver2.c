@@ -50,10 +50,11 @@
 #define GPIO_FALLINGDETECT 0x14c
 #define GPIO_IRQSTATUS_SET_0 0x34
 #define GPIO_IRQSTATUS_SET_1 0x38
+#define GPIO_IRQSTATUS_CLR_0 0x3C
+#define GPIO_IRQSTATUS_CLR_1 0x40
 #define GPIO_IRQSTATUS_0 0x2C
 #define GPIO_DEBOUNCENABLE 0x150
-#define GPIO_DEBOUNCINGTIME 0x154
-
+#define GPIO_DEBOUNCINGTIME 0x154 
 
 #define D4_PIN (1 << 7)
 #define D5_PIN (1 << 9)
@@ -217,26 +218,8 @@ static struct platform_driver chatlog_display_driver = {
 };
 
 static irqreturn_t interrupt_handler(int irq){
-    int irq_status;
-
-
-    irq_status = ioread32(gpio2_map + GPIO_IRQSTATUS_0);
-
-    if(irq_status & UP_PIN){
-        iowrite32(UP_PIN, gpio2_map + GPIO_IRQSTATUS_0);
-        printk(KERN_INFO "chatlog_display: UP pressed\n");
-        
-
-    }
-    else if(irq_status & DOWN_PIN){
-        iowrite32(DOWN_PIN, gpio2_map + GPIO_IRQSTATUS_0);
-        printk(KERN_INFO "chatlog_display: DOWN pressed\n");
-
-    }
-    else{
-        printk(KERN_INFO "chatlog_display: Unkown interrupt\n");
-    }
-
+    printk(KERN_INFO "chatlog_display: Interrupt triggered\n");
+    iowrite32(UP_PIN, gpio2_map + GPIO_IRQSTATUS_0);
     return IRQ_HANDLED;
 }
 
@@ -258,8 +241,7 @@ static void debug_routine(struct timer_list *t) {
 static int funcion_probe(struct platform_device * pdev){
         
     static int Request_result;
-	
-    int reg;
+
     
     printk(KERN_INFO "chatlog_display: probe called\n");
 
@@ -268,21 +250,21 @@ static int funcion_probe(struct platform_device * pdev){
         printk(KERN_ERR "chatlog_display: CM_PER remap error\n");
         return -1;
     }
-    printk(KERN_ERR "chatlog_display: CM_PER remap OK\n");
+    printk(KERN_INFO "chatlog_display: CM_PER remap OK\n");
 
     gpio2_map = ioremap (GPIO2, GPIO2_SIZE);
     if(gpio2_map == NULL){
         printk(KERN_ERR "chatlog_display: GPIO2 remap error\n");
         return -1;
     }
-    printk(KERN_ERR "chatlog_display: GPIO2 remap OK\n");
+    printk(KERN_INFO "chatlog_display: GPIO2 remap OK\n");
 
     ctrl_module_map = ioremap (CTRL_MODULE, CTRL_MODULE_SIZE);
     if(ctrl_module_map == NULL){
         printk(KERN_ERR "chatlog_display: CONTROL_MODULE remmap error\n");
         return -1;
     }
-    printk(KERN_ERR "chatlog_display: CONTROL_MODULE remap OK\n");
+    printk(KERN_INFO "chatlog_display: CONTROL_MODULE remap OK\n");
 
 
     irq = platform_get_irq(pdev,0);
@@ -304,47 +286,45 @@ static int funcion_probe(struct platform_device * pdev){
     iowrite32(0x07, ctrl_module_map + CTRL_MODULE_D7_PIN);
     iowrite32(0x37, ctrl_module_map + CTRL_MODULE_UP_PIN);
     iowrite32(0x37, ctrl_module_map + CTRL_MODULE_DOWN_PIN);
-    printk(KERN_ERR "chatlog_display: Pin-mux set OK\n");
-	
-    reg = ioread32(cm_per_map + 0x0);
 
-    reg |= (1<<20);
+    printk(KERN_INFO "chatlog_display: Pin-mux set OK\n");
 
-    iowrite32(reg, cm_per_map + 0x0);
 
-    iowrite32(0x40002, cm_per_map + CM_PER_GPIO2_CLKCTRL);
+    iowrite32(0x02, cm_per_map + CM_PER_GPIO2_CLKCTRL);
 
-    iowrite32(0x2, gpio2_map + 0x10);
+    printk(KERN_INFO "chatlog_display: 1\n");
 
-    udelay(100);
+    iowrite32(UP_PIN, gpio2_map + GPIO_DEBOUNCENABLE);
+
+    printk(KERN_INFO "chatlog_display: 2\n");
+
+    iowrite32(UP_PIN, gpio2_map + GPIO_DEBOUNCINGTIME);
+
+    printk(KERN_INFO "chatlog_display: 3\n");
 
     iowrite32((0xFFFFFFFF&(~(EN_PIN|RS_PIN|D4_PIN|D5_PIN|D6_PIN|D7_PIN))), gpio2_map + GPIO_OE);
     
-    iowrite32(UP_PIN|DOWN_PIN, gpio2_map + GPIO_FALLINGDETECT);
+    printk(KERN_INFO "chatlog_display: 4\n");
+
+    iowrite32(UP_PIN, gpio2_map + GPIO_FALLINGDETECT);
+ 
+    printk(KERN_INFO "chatlog_display: 5\n");
     
-    //printk(KERN_INFO "GPIO_SYSSTATUS: %08X\n", ioread32(gpio2_map + 0x114));
 
 
-    printk(KERN_ERR "chatlog_display: GPIO Configuration OK\n");
+    printk(KERN_INFO "chatlog_display: GPIO Configuration OK\n");
 
-
-    iowrite32(UP_PIN|DOWN_PIN, gpio2_map + GPIO_IRQSTATUS_SET_0);
-    //iowrite32(UP_PIN|DOWN_PIN, gpio2_map + GPIO_IRQSTATUS_SET_1);
-
-    iowrite32(0xFF, gpio2_map + GPIO_DEBOUNCINGTIME);
-    iowrite32(UP_PIN|DOWN_PIN, gpio2_map + GPIO_DEBOUNCENABLE);
-
-
+    iowrite32(UP_PIN, gpio2_map + GPIO_IRQSTATUS_SET_0);
 
     init_lcd();
-    printk(KERN_ERR "chatlog_display: LCD Init OK\n");
+    printk(KERN_INFO "chatlog_display: LCD Init OK\n");
 
 
 
     lcd_initialized = true;
 
     show_init_message();
-    printk(KERN_ERR "chatlog_display: LCD Message shown OK\n");
+    printk(KERN_INFO "chatlog_display: LCD Message shown OK\n");
 
 
 
@@ -358,16 +338,20 @@ static int funcion_probe(struct platform_device * pdev){
 static int funcion_remove(struct platform_device * pdev){    
 	printk(KERN_INFO "chatlog_display: remove called");
 
+    iowrite32(UP_PIN, gpio2_map + GPIO_IRQSTATUS_CLR_0);
+
+
     //del_timer_sync(&debug_timer);
 	iounmap(cm_per_map);
 	iounmap(gpio2_map);
     iounmap(ctrl_module_map);
+
 	free_irq(irq,NULL);
  
 	return 0;
 }
 
-/*
+/* 
 =================================================
           Definiciones Char Driver
 =================================================
@@ -403,13 +387,8 @@ ssize_t Host_write (struct file * file, const char __user * userbuff, size_t siz
     int i = 0;
     static char recv_str[RECV_BUFFER_SIZE];
 
-    uint32_t x;
+    printk(KERN_INFO "GPIO_DATAIN: %08X\n", ioread32(gpio2_map + GPIO_DATAIN));
 
-    x = ioread32(gpio2_map + GPIO_DATAIN);
-
-    printk(KERN_INFO "GPIO_DATAIN: %08X\n", x);
-
-    
 
     if(!lcd_initialized){
         printk(KERN_ALERT "chatlog_display: LCD not initialized\n");
