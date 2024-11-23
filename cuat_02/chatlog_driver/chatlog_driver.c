@@ -516,6 +516,12 @@ ssize_t Host_read (struct file * file, char __user * userbuff, size_t count, lof
 
     *offset += bytes_read; // Update file offset
     printk(KERN_INFO "hello_device: Sent %zd bytes to user space\n", bytes_read);
+
+    if (*offset >= message_size){
+        button_pressed = 0;
+        *offset = 0;
+        //return 0; // EOF
+    }
     return bytes_read;
 }
 

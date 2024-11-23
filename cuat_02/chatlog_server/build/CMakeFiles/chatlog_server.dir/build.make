@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/debian/td3/cuat_02/server
+CMAKE_SOURCE_DIR = /home/debian/td3/cuat_02/chatlog_server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/debian/td3/cuat_02/server/build
+CMAKE_BINARY_DIR = /home/debian/td3/cuat_02/chatlog_server/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/chatlog_server.dir/depend.make
@@ -59,68 +59,68 @@ include CMakeFiles/chatlog_server.dir/flags.make
 
 CMakeFiles/chatlog_server.dir/src/server.c.o: CMakeFiles/chatlog_server.dir/flags.make
 CMakeFiles/chatlog_server.dir/src/server.c.o: ../src/server.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/chatlog_server.dir/src/server.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/src/server.c.o   -c /home/debian/td3/cuat_02/server/src/server.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/chatlog_server.dir/src/server.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/src/server.c.o   -c /home/debian/td3/cuat_02/chatlog_server/src/server.c
 
 CMakeFiles/chatlog_server.dir/src/server.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/chatlog_server.dir/src/server.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/server/src/server.c > CMakeFiles/chatlog_server.dir/src/server.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/chatlog_server/src/server.c > CMakeFiles/chatlog_server.dir/src/server.c.i
 
 CMakeFiles/chatlog_server.dir/src/server.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/chatlog_server.dir/src/server.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/server/src/server.c -o CMakeFiles/chatlog_server.dir/src/server.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/chatlog_server/src/server.c -o CMakeFiles/chatlog_server.dir/src/server.c.s
 
 CMakeFiles/chatlog_server.dir/src/buffer.c.o: CMakeFiles/chatlog_server.dir/flags.make
 CMakeFiles/chatlog_server.dir/src/buffer.c.o: ../src/buffer.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/chatlog_server.dir/src/buffer.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/src/buffer.c.o   -c /home/debian/td3/cuat_02/server/src/buffer.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/chatlog_server.dir/src/buffer.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/src/buffer.c.o   -c /home/debian/td3/cuat_02/chatlog_server/src/buffer.c
 
 CMakeFiles/chatlog_server.dir/src/buffer.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/chatlog_server.dir/src/buffer.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/server/src/buffer.c > CMakeFiles/chatlog_server.dir/src/buffer.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/chatlog_server/src/buffer.c > CMakeFiles/chatlog_server.dir/src/buffer.c.i
 
 CMakeFiles/chatlog_server.dir/src/buffer.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/chatlog_server.dir/src/buffer.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/server/src/buffer.c -o CMakeFiles/chatlog_server.dir/src/buffer.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/chatlog_server/src/buffer.c -o CMakeFiles/chatlog_server.dir/src/buffer.c.s
 
 CMakeFiles/chatlog_server.dir/src/main.c.o: CMakeFiles/chatlog_server.dir/flags.make
 CMakeFiles/chatlog_server.dir/src/main.c.o: ../src/main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/chatlog_server.dir/src/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/src/main.c.o   -c /home/debian/td3/cuat_02/server/src/main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/chatlog_server.dir/src/main.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/src/main.c.o   -c /home/debian/td3/cuat_02/chatlog_server/src/main.c
 
 CMakeFiles/chatlog_server.dir/src/main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/chatlog_server.dir/src/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/server/src/main.c > CMakeFiles/chatlog_server.dir/src/main.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/chatlog_server/src/main.c > CMakeFiles/chatlog_server.dir/src/main.c.i
 
 CMakeFiles/chatlog_server.dir/src/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/chatlog_server.dir/src/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/server/src/main.c -o CMakeFiles/chatlog_server.dir/src/main.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/chatlog_server/src/main.c -o CMakeFiles/chatlog_server.dir/src/main.c.s
 
 CMakeFiles/chatlog_server.dir/src/handler.c.o: CMakeFiles/chatlog_server.dir/flags.make
 CMakeFiles/chatlog_server.dir/src/handler.c.o: ../src/handler.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/chatlog_server.dir/src/handler.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/src/handler.c.o   -c /home/debian/td3/cuat_02/server/src/handler.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/chatlog_server.dir/src/handler.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/src/handler.c.o   -c /home/debian/td3/cuat_02/chatlog_server/src/handler.c
 
 CMakeFiles/chatlog_server.dir/src/handler.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/chatlog_server.dir/src/handler.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/server/src/handler.c > CMakeFiles/chatlog_server.dir/src/handler.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/chatlog_server/src/handler.c > CMakeFiles/chatlog_server.dir/src/handler.c.i
 
 CMakeFiles/chatlog_server.dir/src/handler.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/chatlog_server.dir/src/handler.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/server/src/handler.c -o CMakeFiles/chatlog_server.dir/src/handler.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/chatlog_server/src/handler.c -o CMakeFiles/chatlog_server.dir/src/handler.c.s
 
 CMakeFiles/chatlog_server.dir/lib/cJSON.c.o: CMakeFiles/chatlog_server.dir/flags.make
 CMakeFiles/chatlog_server.dir/lib/cJSON.c.o: ../lib/cJSON.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/chatlog_server.dir/lib/cJSON.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/lib/cJSON.c.o   -c /home/debian/td3/cuat_02/server/lib/cJSON.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/chatlog_server.dir/lib/cJSON.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/chatlog_server.dir/lib/cJSON.c.o   -c /home/debian/td3/cuat_02/chatlog_server/lib/cJSON.c
 
 CMakeFiles/chatlog_server.dir/lib/cJSON.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/chatlog_server.dir/lib/cJSON.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/server/lib/cJSON.c > CMakeFiles/chatlog_server.dir/lib/cJSON.c.i
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/debian/td3/cuat_02/chatlog_server/lib/cJSON.c > CMakeFiles/chatlog_server.dir/lib/cJSON.c.i
 
 CMakeFiles/chatlog_server.dir/lib/cJSON.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/chatlog_server.dir/lib/cJSON.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/server/lib/cJSON.c -o CMakeFiles/chatlog_server.dir/lib/cJSON.c.s
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/debian/td3/cuat_02/chatlog_server/lib/cJSON.c -o CMakeFiles/chatlog_server.dir/lib/cJSON.c.s
 
 # Object files for target chatlog_server
 chatlog_server_OBJECTS = \
@@ -140,7 +140,7 @@ bin/chatlog_server: CMakeFiles/chatlog_server.dir/src/handler.c.o
 bin/chatlog_server: CMakeFiles/chatlog_server.dir/lib/cJSON.c.o
 bin/chatlog_server: CMakeFiles/chatlog_server.dir/build.make
 bin/chatlog_server: CMakeFiles/chatlog_server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/debian/td3/cuat_02/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking C executable bin/chatlog_server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking C executable bin/chatlog_server"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/chatlog_server.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -153,6 +153,6 @@ CMakeFiles/chatlog_server.dir/clean:
 .PHONY : CMakeFiles/chatlog_server.dir/clean
 
 CMakeFiles/chatlog_server.dir/depend:
-	cd /home/debian/td3/cuat_02/server/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/debian/td3/cuat_02/server /home/debian/td3/cuat_02/server /home/debian/td3/cuat_02/server/build /home/debian/td3/cuat_02/server/build /home/debian/td3/cuat_02/server/build/CMakeFiles/chatlog_server.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/debian/td3/cuat_02/chatlog_server/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/debian/td3/cuat_02/chatlog_server /home/debian/td3/cuat_02/chatlog_server /home/debian/td3/cuat_02/chatlog_server/build /home/debian/td3/cuat_02/chatlog_server/build /home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles/chatlog_server.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/chatlog_server.dir/depend
 

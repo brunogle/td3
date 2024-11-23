@@ -3,6 +3,6 @@
 
 #include "buffer.h"
 
-void handler_proc(event_buffer_t * buffer);
+void handler_proc(sh_mem_buffer_t * buffer);
 
 #endif

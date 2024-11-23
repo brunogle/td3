@@ -6,5 +6,5 @@ C_FLAGS =
 
 C_DEFINES = 
 
-C_INCLUDES = -I/home/debian/td3/cuat_02/server/lib -I/home/debian/td3/cuat_02/server/src 
+C_INCLUDES = -I/home/debian/td3/cuat_02/chatlog_server/lib -I/home/debian/td3/cuat_02/chatlog_server/src 
 

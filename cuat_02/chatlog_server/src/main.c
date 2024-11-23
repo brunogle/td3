@@ -24,8 +24,8 @@ int ajax_handler_callback(http_request_t http_request, ajax_response_t * ajax_re
     if(strcmp(http_request.url, "/update_lcd") == 0){
  
         //Preparo un event_web_to_dev para escribir en el buffer
-        event_web_to_dev event;
-        memset(event.message, 0, DISPLAY_WIDTH);
+        message_t event;
+        memset(event.text, 0, DISPLAY_WIDTH);
 
         //Parsing del JSON
         char json_text[1024];
@@ -51,31 +51,31 @@ int ajax_handler_callback(http_request_t http_request, ajax_response_t * ajax_re
         int line_idx = 0;
         int text_idx = 0;
         
-        strcpy(event.message, text);
+        strcpy(event.text, text);
 
 
         //Escribe el evento en el buffer
-        event_buffer_t * buffer = (event_buffer_t *)context;
-        write_web_to_dev(buffer, event);
+        sh_mem_buffer_t * buffer = (sh_mem_buffer_t *)context;
+        write_buffer(buffer, event);
 
     
         return 1;
     }
 
     else if(strcmp(http_request.url, "/fetch_log") == 0){
-        event_buffer_t * buffer = (event_buffer_t *)context;
+        sh_mem_buffer_t * buffer = (sh_mem_buffer_t *)context;
         char * log_text = malloc(DISPLAY_WIDTH*BUFFER_SIZE*sizeof(char));
         int size = 0;
 
         for(int i = 0; i < BUFFER_SIZE; i++){
-            event_web_to_dev event = read_web_to_dev(buffer, i);
-            if(event.message[0] == 0){
+            message_t event = read_buffer(buffer, i);
+            if(event.text[0] == 0){
                 break;
             }
             if(i != 0){
                 size += sprintf(&log_text[size], "\n");
             }
-            size += sprintf(&log_text[size], "%s", event.message);
+            size += sprintf(&log_text[size], "%s", event.text);
         }
 
 
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]){
         exit(EXIT_FAILURE);
     }
 */
-    event_buffer_t * event_buffer = init_buffer();
+    sh_mem_buffer_t * event_buffer = init_buffer();
 
 
     /*
