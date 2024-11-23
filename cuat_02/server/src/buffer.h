@@ -29,8 +29,11 @@ typedef struct {
     int web_to_dev_fp;
 
     int web_to_dev_write_idx;
+    int fill_size;
 
     sem_t sem_busy;
+
+    int position;
 
 } event_buffer_t;
 

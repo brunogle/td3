@@ -10,6 +10,9 @@
 void write_web_to_dev(event_buffer_t * buffer, event_web_to_dev event){
     sem_wait(&buffer->sem_busy); // Espera a que haya lugar en el buffer
 
+    if(buffer->fill_size < BUFFER_SIZE)
+        buffer->fill_size ++;
+
     buffer->web_to_dev_shm[buffer->web_to_dev_write_idx] = event;
     buffer->web_to_dev_write_idx = (buffer->web_to_dev_write_idx + 1) % BUFFER_SIZE; 
 
@@ -72,7 +75,9 @@ event_buffer_t * init_buffer(){
 
     ret->web_to_dev_write_idx = 0;
     ret->web_to_dev_fp = shm_fp;
-
+    ret->fill_size = 0;
+    ret->position = 0;
+    
     return ret;
 
 }

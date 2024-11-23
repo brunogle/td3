@@ -11,6 +11,7 @@ CMakeFiles/chatlog_server.dir/src/handler.c.o: ../src/buffer.h
 CMakeFiles/chatlog_server.dir/src/handler.c.o: ../src/handler.c
 CMakeFiles/chatlog_server.dir/src/handler.c.o: ../src/handler.h
 
+CMakeFiles/chatlog_server.dir/src/main.c.o: ../lib/cJSON.h
 CMakeFiles/chatlog_server.dir/src/main.c.o: ../src/buffer.h
 CMakeFiles/chatlog_server.dir/src/main.c.o: ../src/handler.h
 CMakeFiles/chatlog_server.dir/src/main.c.o: ../src/main.c

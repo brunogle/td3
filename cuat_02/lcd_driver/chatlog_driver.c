@@ -92,9 +92,14 @@
 
 #define LCD_WRITE_DATA 0x80
 
+#define UP_PRESSED 0x1
+#define DOWN_PRESSED 0x2
+
+
 const uint8_t row_addresses[4] = {0x00, 0x40, 0x14, 0x54};
 
-
+const char * up_pressed_str = "up\n";
+const char * down_pressed_str = "down\n";
 
 int Host_open (struct inode * inode, struct file * file);
 ssize_t Host_write (struct file * file, const char __user * userbuff,size_t tamano, loff_t* offset);
@@ -122,6 +127,12 @@ static void *gpio2_map;
 static bool lcd_initialized = false;
 
 int irq;
+
+char button_pressed;
+
+DECLARE_WAIT_QUEUE_HEAD(button_press_queue);
+
+
 
 /*
 =================================================
@@ -219,17 +230,21 @@ static struct platform_driver chatlog_display_driver = {
 static irqreturn_t interrupt_handler(int irq){
     int irq_status;
 
-
+    
     irq_status = ioread32(gpio2_map + GPIO_IRQSTATUS_0);
 
     if(irq_status & UP_PIN){
         iowrite32(UP_PIN, gpio2_map + GPIO_IRQSTATUS_0);
+        button_pressed = UP_PRESSED;
+        wake_up_interruptible(&button_press_queue);
         printk(KERN_INFO "chatlog_display: UP pressed\n");
         
 
     }
     else if(irq_status & DOWN_PIN){
         iowrite32(DOWN_PIN, gpio2_map + GPIO_IRQSTATUS_0);
+        button_pressed = DOWN_PRESSED;
+        wake_up_interruptible(&button_press_queue);
         printk(KERN_INFO "chatlog_display: DOWN pressed\n");
 
     }
@@ -268,21 +283,21 @@ static int funcion_probe(struct platform_device * pdev){
         printk(KERN_ERR "chatlog_display: CM_PER remap error\n");
         return -1;
     }
-    printk(KERN_ERR "chatlog_display: CM_PER remap OK\n");
+    printk(KERN_INFO "chatlog_display: CM_PER remap OK\n");
 
     gpio2_map = ioremap (GPIO2, GPIO2_SIZE);
     if(gpio2_map == NULL){
         printk(KERN_ERR "chatlog_display: GPIO2 remap error\n");
         return -1;
     }
-    printk(KERN_ERR "chatlog_display: GPIO2 remap OK\n");
+    printk(KERN_INFO "chatlog_display: GPIO2 remap OK\n");
 
     ctrl_module_map = ioremap (CTRL_MODULE, CTRL_MODULE_SIZE);
     if(ctrl_module_map == NULL){
         printk(KERN_ERR "chatlog_display: CONTROL_MODULE remmap error\n");
         return -1;
     }
-    printk(KERN_ERR "chatlog_display: CONTROL_MODULE remap OK\n");
+    printk(KERN_INFO "chatlog_display: CONTROL_MODULE remap OK\n");
 
 
     irq = platform_get_irq(pdev,0);
@@ -304,7 +319,7 @@ static int funcion_probe(struct platform_device * pdev){
     iowrite32(0x07, ctrl_module_map + CTRL_MODULE_D7_PIN);
     iowrite32(0x37, ctrl_module_map + CTRL_MODULE_UP_PIN);
     iowrite32(0x37, ctrl_module_map + CTRL_MODULE_DOWN_PIN);
-    printk(KERN_ERR "chatlog_display: Pin-mux set OK\n");
+    printk(KERN_INFO "chatlog_display: Pin-mux set OK\n");
 	
     reg = ioread32(cm_per_map + 0x0);
 
@@ -325,7 +340,7 @@ static int funcion_probe(struct platform_device * pdev){
     //printk(KERN_INFO "GPIO_SYSSTATUS: %08X\n", ioread32(gpio2_map + 0x114));
 
 
-    printk(KERN_ERR "chatlog_display: GPIO Configuration OK\n");
+    printk(KERN_INFO "chatlog_display: GPIO Configuration OK\n");
 
 
     iowrite32(UP_PIN|DOWN_PIN, gpio2_map + GPIO_IRQSTATUS_SET_0);
@@ -337,14 +352,15 @@ static int funcion_probe(struct platform_device * pdev){
 
 
     init_lcd();
-    printk(KERN_ERR "chatlog_display: LCD Init OK\n");
+    printk(KERN_INFO "chatlog_display: LCD Init OK\n");
 
 
 
     lcd_initialized = true;
+    button_pressed = 0;
 
     show_init_message();
-    printk(KERN_ERR "chatlog_display: LCD Message shown OK\n");
+    printk(KERN_INFO "chatlog_display: LCD Message shown OK\n");
 
 
 
@@ -457,10 +473,50 @@ ssize_t Host_write (struct file * file, const char __user * userbuff, size_t siz
   return 0;
 }
 
-ssize_t Host_read (struct file * file, char __user * userbuff, size_t tamano, loff_t * offset)
+
+
+int data_size = 10;
+static char *message = "hello\n";
+static ssize_t message_size = 6;
+
+ssize_t Host_read (struct file * file, char __user * userbuff, size_t count, loff_t * offset)
 {
 
-  return 0;
+    ssize_t bytes_read = 0;
+    static char * str_to_send;
+
+    wait_event_interruptible(button_press_queue, button_pressed);
+    if(button_pressed == UP_PRESSED){
+        str_to_send = up_pressed_str;
+        
+        //button_pressed = 0;
+    }
+    else if(button_pressed == DOWN_PRESSED){
+        str_to_send = down_pressed_str;
+        //button_pressed = 0;
+    }
+    else{
+        printk(KERN_ERR "chatlog_display: Unkown message to send\n");
+        return 0;
+    }
+    
+    message_size = strlen(str_to_send);
+
+    if (*offset >= message_size){
+        button_pressed = 0;
+        *offset = 0;
+        return 0; // EOF
+    }
+
+    bytes_read = min(count, (size_t)(message_size - *offset));
+    if (copy_to_user(userbuff, str_to_send + *offset, bytes_read)) {
+        printk(KERN_ERR "hello_device: Failed to send data to user space\n");
+        return -EFAULT;
+    }
+
+    *offset += bytes_read; // Update file offset
+    printk(KERN_INFO "hello_device: Sent %zd bytes to user space\n", bytes_read);
+    return bytes_read;
 }
 
 
