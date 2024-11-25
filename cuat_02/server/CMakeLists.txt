@@ -24,8 +24,8 @@ target_sources(chatlog_server
     PRIVATE 
         src/server.c
         src/buffer.c
-        src/main.c
-        src/handler.c
+        src/chatlog_server.c
+        src/display.c
 
         lib/cJSON.c
 )

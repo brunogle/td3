@@ -8,7 +8,7 @@
 
 
 void write_buffer(sh_mem_buffer_t * buffer, message_t message){
-    sem_wait(&buffer->sem_busy); // Espera a que haya lugar en el buffer
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
 
     buffer->last_idx = (buffer->last_idx + 1) % BUFFER_SIZE; 
 
@@ -23,25 +23,98 @@ void write_buffer(sh_mem_buffer_t * buffer, message_t message){
 
     printf("last: %d,   first:  %d", buffer->last_idx, buffer->first_idx);
 
-    sem_post(&buffer->sem_busy); // Hay un evento para leer
-    sem_post(&buffer->sem_new_message); // Hay un evento para leer
+    sem_post(&buffer->sem_busy);
+    sem_post(&buffer->sem_new_message); 
 
 }
 
 message_t read_buffer(sh_mem_buffer_t * buffer, int idx){
     message_t ret;
 
-    sem_wait(&buffer->sem_busy); // Espera a que haya lugar en el buffer
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
 
     ret = buffer->messages[idx];
 
-    sem_post(&buffer->sem_busy); // Hay un evento para leer
+    sem_post(&buffer->sem_busy); 
 
     return ret;
 
 }
 
+void set_last_idx(sh_mem_buffer_t * buffer, int value){
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
 
+    buffer->last_idx = value;
+
+    sem_post(&buffer->sem_busy); 
+}
+
+
+void set_first_idx(sh_mem_buffer_t * buffer, int value){
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
+
+    buffer->first_idx = value;
+
+    sem_post(&buffer->sem_busy);
+}
+
+void set_display_position(sh_mem_buffer_t * buffer, int value){
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
+
+    buffer->display_position = value;
+
+    sem_post(&buffer->sem_busy);
+}
+
+void set_display_driver_file(sh_mem_buffer_t * buffer, int driver_file){
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
+
+    buffer->display_driver_file = driver_file;
+
+    sem_post(&buffer->sem_busy);
+}
+
+
+int get_last_idx(sh_mem_buffer_t * buffer){
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
+
+    int ret = buffer->last_idx;
+
+    sem_post(&buffer->sem_busy); 
+
+    return ret;
+}
+
+
+int get_first_idx(sh_mem_buffer_t * buffer){
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
+
+    int ret = buffer->first_idx;
+
+    sem_post(&buffer->sem_busy);
+
+    return ret;
+}
+
+int get_display_position(sh_mem_buffer_t * buffer){
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
+
+    int ret = buffer->display_position;
+
+    sem_post(&buffer->sem_busy);
+
+    return ret;
+}
+
+int get_display_driver_file(sh_mem_buffer_t * buffer){
+    sem_wait(&buffer->sem_busy); // Espera a que se pueda acceder a la memoria
+
+    int ret = buffer->display_driver_file;
+
+    sem_post(&buffer->sem_busy);
+
+    return ret;
+}
 
 sh_mem_buffer_t * init_buffer(){
 
@@ -80,13 +153,16 @@ sh_mem_buffer_t * init_buffer(){
         perror("FATAL: sem_init failed");
         munmap((void *)ret, sizeof(sh_mem_buffer_t));
         shm_unlink(WEB_TO_DEV_NAME);       
+        return NULL;
     }
     
     
     if (sem_init(&ret->sem_new_message, 1, 0) != 0){
         perror("FATAL: sem_init failed");
         munmap((void *)ret, sizeof(sh_mem_buffer_t));
-        shm_unlink(WEB_TO_DEV_NAME);       
+        shm_unlink(WEB_TO_DEV_NAME);
+        sem_close(&ret->sem_busy);
+        return NULL;   
     }
     
     ret->last_idx = BUFFER_SIZE - 1;

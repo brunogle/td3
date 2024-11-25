@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/debian/td3/cuat_02/chatlog_server
+CMAKE_SOURCE_DIR = /home/debian/td3/cuat_02/server
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/debian/td3/cuat_02/chatlog_server/build
+CMAKE_BINARY_DIR = /home/debian/td3/cuat_02/server/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles /home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/debian/td3/cuat_02/server/build/CMakeFiles /home/debian/td3/cuat_02/server/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/debian/td3/cuat_02/chatlog_server/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/debian/td3/cuat_02/server/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -177,59 +177,59 @@ src/buffer.c.s:
 	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/buffer.c.s
 .PHONY : src/buffer.c.s
 
-src/handler.o: src/handler.c.o
+src/chatlog_server.o: src/chatlog_server.c.o
 
-.PHONY : src/handler.o
-
-# target to build an object file
-src/handler.c.o:
-	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/handler.c.o
-.PHONY : src/handler.c.o
-
-src/handler.i: src/handler.c.i
-
-.PHONY : src/handler.i
-
-# target to preprocess a source file
-src/handler.c.i:
-	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/handler.c.i
-.PHONY : src/handler.c.i
-
-src/handler.s: src/handler.c.s
-
-.PHONY : src/handler.s
-
-# target to generate assembly for a file
-src/handler.c.s:
-	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/handler.c.s
-.PHONY : src/handler.c.s
-
-src/main.o: src/main.c.o
-
-.PHONY : src/main.o
+.PHONY : src/chatlog_server.o
 
 # target to build an object file
-src/main.c.o:
-	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/main.c.o
-.PHONY : src/main.c.o
+src/chatlog_server.c.o:
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/chatlog_server.c.o
+.PHONY : src/chatlog_server.c.o
 
-src/main.i: src/main.c.i
+src/chatlog_server.i: src/chatlog_server.c.i
 
-.PHONY : src/main.i
+.PHONY : src/chatlog_server.i
 
 # target to preprocess a source file
-src/main.c.i:
-	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/main.c.i
-.PHONY : src/main.c.i
+src/chatlog_server.c.i:
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/chatlog_server.c.i
+.PHONY : src/chatlog_server.c.i
 
-src/main.s: src/main.c.s
+src/chatlog_server.s: src/chatlog_server.c.s
 
-.PHONY : src/main.s
+.PHONY : src/chatlog_server.s
 
 # target to generate assembly for a file
-src/main.c.s:
-	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/main.c.s
-.PHONY : src/main.c.s
+src/chatlog_server.c.s:
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/chatlog_server.c.s
+.PHONY : src/chatlog_server.c.s
+
+src/display.o: src/display.c.o
+
+.PHONY : src/display.o
+
+# target to build an object file
+src/display.c.o:
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/display.c.o
+.PHONY : src/display.c.o
+
+src/display.i: src/display.c.i
+
+.PHONY : src/display.i
+
+# target to preprocess a source file
+src/display.c.i:
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/display.c.i
+.PHONY : src/display.c.i
+
+src/display.s: src/display.c.s
+
+.PHONY : src/display.s
+
+# target to generate assembly for a file
+src/display.c.s:
+	$(MAKE) -f CMakeFiles/chatlog_server.dir/build.make CMakeFiles/chatlog_server.dir/src/display.c.s
+.PHONY : src/display.c.s
 
 src/server.o: src/server.c.o
 
@@ -273,12 +273,12 @@ help:
 	@echo "... src/buffer.o"
 	@echo "... src/buffer.i"
 	@echo "... src/buffer.s"
-	@echo "... src/handler.o"
-	@echo "... src/handler.i"
-	@echo "... src/handler.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
+	@echo "... src/chatlog_server.o"
+	@echo "... src/chatlog_server.i"
+	@echo "... src/chatlog_server.s"
+	@echo "... src/display.o"
+	@echo "... src/display.i"
+	@echo "... src/display.s"
 	@echo "... src/server.o"
 	@echo "... src/server.i"
 	@echo "... src/server.s"

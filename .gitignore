@@ -24,6 +24,10 @@
 !*.seer
 !launch*.json
 !tasks*.json
+!*.sh
+
 # Unignore all dirs
 !*/
 
+# Ignore kernel build files
+*.mod.c

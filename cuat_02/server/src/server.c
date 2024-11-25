@@ -43,90 +43,6 @@ child_desc_node * child_desc_node_ll; // Linked list para mantener registro de p
 
  */
 
-
-void insert_process(child_desc_node ** head, child_desc_node node) {
-    child_desc_node * new_node = (child_desc_node *)malloc(sizeof(child_desc_node));
-
-    if (!new_node) {
-        perror("FATAL: malloc");
-        exit(EXIT_FAILURE);
-    }
-
-    *new_node = node;
-    new_node->next = NULL;
-
-    if (*head == NULL) {
-        *head = new_node;
-    } else {
-        child_desc_node * current = *head;
-        while (current->next != NULL) {
-            current = current->next;
-        }
-        current->next = new_node;
-    }
-    #ifdef A_LITTLE_VERBOSE
-    printf("Process %d inserted\n", node.pid);
-    #endif
-
-}
-
-void remove_process_by_pid(child_desc_node **head, pid_t pid) {
-    child_desc_node *current = *head, *prev = NULL;
-
-    while (current != NULL && current->pid != pid) {
-        prev = current;
-        current = current->next;
-    }
-
-    if (current == NULL) {
-        fprintf(stderr, "WARN: remove_process_by_pid: PID %d not found in the list.\n", pid);
-        return;
-    }
-
-    if (prev == NULL) {
-        *head = current->next;
-    }
-    else {
-        prev->next = current->next;
-    }
-
-    free(current);
-    #ifdef A_LITTLE_VERBOSE
-    printf("Process %d removed\n", pid);
-    #endif
-    return;
-}
-
-child_desc_node * get_process_by_pid(child_desc_node *head, pid_t pid) {
-    child_desc_node *current = head;
-
-    while (current != NULL && current->pid != pid) {
-        current = current->next;
-    }
-
-    if (current == NULL) {
-        fprintf(stderr, "WARN: remove_process_by_pid: PID %d not found in the list.\n", pid);
-        return (child_desc_node *)NULL;
-    }
-
-    return current;
-}
-
-int count_processes(child_desc_node * head){
-
-    if(head == NULL)
-        return 0;
-    else{
-        int count = 1;
-        while (head->next != NULL) {
-            head = head->next;
-            count++;
-        } 
-        return count;
-    }
-
-}
-
 /*********************************************************************
  *                                                                   *
  *                         RESPUESTAS HTTP                           *
@@ -545,16 +461,6 @@ void sigchld_handler(int signum) {
             continue;
         }
 
-        child_desc_node * ended_node = get_process_by_pid(child_desc_node_ll, pid);
-        if(ended_node != NULL){
-            remove_process_by_pid(&child_desc_node_ll, pid);
-            #ifdef A_LITTLE_VERBOSE
-            printf(COLOR_YELLOW);
-            printf("Client %d disconnected. Current connections: %d\n", ended_node->connection_id, count_processes(child_desc_node_ll));
-            printf(COLOR_RESET);
-            fflush(stdout);
-            #endif
-        }
 
     }
 
@@ -630,16 +536,6 @@ int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax
             continue;
         }
 
-        if(count_processes(child_desc_node_ll) + 1 > max_connections){
-            printf(COLOR_RED);
-            printf("Max Connections Reached (%d), closing connection\n", max_connections);
-            printf(COLOR_RESET);  
-            fflush(stdout);  
-            http_service_unavailable_503(client_socket);
-            close(client_socket);
-            continue;
-        }
-
         char client_ip_str[32];
         inet_ntop(AF_INET, &(client_address.sin_addr), client_ip_str, INET_ADDRSTRLEN);
         int client_port = ntohs(client_address.sin_port);
@@ -678,10 +574,7 @@ int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax
             */
 
             // Agrega proceso hijo al administrador de procesos
-            child_desc_node new_node;
-            new_node.pid = new_pid;
-            new_node.connection_id = connection_id_counter;
-            insert_process(&child_desc_node_ll, new_node);
+
             
             close(client_socket);
         }

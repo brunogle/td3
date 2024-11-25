@@ -35,12 +35,26 @@ typedef struct {
     sem_t sem_busy;
 
     sem_t sem_new_message;
+
+    int display_driver_file;
 } sh_mem_buffer_t;
 
 
 
 void write_buffer(sh_mem_buffer_t * buffer, message_t event);
 message_t read_buffer(sh_mem_buffer_t * buffer, int idx);
+
+int get_last_idx(sh_mem_buffer_t * buffer);
+int get_first_idx(sh_mem_buffer_t * buffer);
+int get_display_position(sh_mem_buffer_t * buffer);
+int get_display_driver_file(sh_mem_buffer_t * buffer);
+
+
+void set_last_idx(sh_mem_buffer_t * buffer, int value);
+void set_first_idx(sh_mem_buffer_t * buffer, int value);
+void set_display_position(sh_mem_buffer_t * buffer, int value);
+void set_display_driver_file(sh_mem_buffer_t * buffer, int driver_file);
+
 
 sh_mem_buffer_t * init_buffer();
 void free_buffer(sh_mem_buffer_t * event_buffer);

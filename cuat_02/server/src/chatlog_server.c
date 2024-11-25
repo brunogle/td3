@@ -7,7 +7,7 @@
 #include "cJSON.h"
 #include "server.h"
 #include "buffer.h"
-#include "handler.h"
+#include "display.h"
 
 #define DEFAULT_PORT 8081
 #define DEFAULT_MAX_CONNECTIONS 10
@@ -57,7 +57,6 @@ int ajax_handler_callback(http_request_t http_request, ajax_response_t * ajax_re
         //Escribe el evento en el buffer
         sh_mem_buffer_t * buffer = (sh_mem_buffer_t *)context;
         write_buffer(buffer, event);
-
     
         return 1;
     }
@@ -118,81 +117,24 @@ int ajax_handler_callback(http_request_t http_request, ajax_response_t * ajax_re
   
 }
 
-int parse_arguments(int argc, char *argv[], int * port, int * max_connections){
-    char * port_str = NULL;
-    char * max_connections_str = NULL;
-    char c;
-    while ((c = getopt(argc, argv, "hp:n:")) != -1){
-    switch (c)
-        {
-            
-        case 'p': // Configuracion de numero de puerto
-            port_str = optarg;
-        break;
-
-        
-        case 'n': // Configuracion de maximo numero de conexiones
-            max_connections_str = optarg;
-        break;
-        
-
-        case 'h': // Help
-            printf("Available Options:\n"
-                   "-p <port>      Change port (default 8080)\n"
-                   "-n <max_conn>  Change maximum connections (default 10)\n"
-                   "-h             Displays help\n");
-            exit(EXIT_SUCCESS);
-        break;
-
-        case '?':
-            if (optopt == 'p'){
-                fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-            }  
-            else if (isprint (optopt)){
-                fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-            }
-            else{
-                fprintf (stderr,
-                    "Unknown option character `\\x%x'.\n",
-                    optopt);
-            }
-            return 1;
-
-        default:
-            return 1;
-        }
-    }
-    if(port_str != NULL){
-        sscanf(port_str, "%i", port);
-    }
-    if(max_connections_str != NULL){
-        sscanf(max_connections_str, "%i", max_connections);
-    }
-
-    return 0;
-}
 
 int main(int argc, char *argv[]){
 
+
+    // TODO: Uso de argumentos de linea de comando
     int port = DEFAULT_PORT;
     int max_connections = DEFAULT_MAX_CONNECTIONS;
 
-    /*
-    Parsing de argumentos
-    */
-    /*
-    if(parse_arguments(argc, argv, &port, &max_connections) != 0){
-        perror("FATAL: Argument parsing errors\n");
-        exit(EXIT_FAILURE);
-    }
-*/
-    sh_mem_buffer_t * event_buffer = init_buffer();
 
+    sh_mem_buffer_t * event_buffer = init_buffer();
+    if (event_buffer == NULL) {
+        perror("ERROR: init_buffer failed\n");
+        exit(EXIT_FAILURE);
+    }   
 
     /*
     El fork crea un proceso child que sera el servidor
     */
-    
     int pid = fork();
     if (pid < 0) {
         perror("ERROR: fork failed\n");
@@ -210,7 +152,6 @@ int main(int argc, char *argv[]){
 
         //Si el servidor termina, entonces hubo un error
 
-        //TODO: Liberar sockets
         free_buffer(event_buffer);
         exit(EXIT_FAILURE);
     }
@@ -218,11 +159,13 @@ int main(int argc, char *argv[]){
         /*
         Proceso parent
 
-        Este proceso continua leyendo del buffer los eventos, y enviandolos al LCD mediante el server
+        Este proceso continua leyendo del buffer los mensajes, y enviandolos al LCD mediante el server escribe
+        los mensajes en el buffer. El server tambien usa un semaforo dentro de event_buffer para "avisar" que 
+        hay un mensaje nuevo
 
         */
         while(1){
-            handler_proc(event_buffer);
+            display_interface(event_buffer);
         }
     }
 }
