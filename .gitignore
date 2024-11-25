@@ -25,7 +25,7 @@
 !launch*.json
 !tasks*.json
 !*.sh
-
+!*.dts
 # Unignore all dirs
 !*/
 

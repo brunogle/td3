@@ -514,14 +514,12 @@ static ssize_t write (struct file * file, const char __user * userbuff, size_t s
         row += 1;
     }
     
-    printk("chatlog_display: Updated LCD\n");
+    printk(KERN_INFO "chatlog_display: Updated LCD\n");
 
     return size;
 }
 
 
-
-int data_size = 10;
 
 static ssize_t read (struct file * file, char __user * userbuff, size_t count, loff_t * offset)
 {   
