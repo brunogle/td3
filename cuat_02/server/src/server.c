@@ -21,27 +21,6 @@
 
 
 
-/*********************************************************************
- *                                                                   *
- *                      VARIABLES GLOBALES                           *
- *                                                                   *
- *********************************************************************/
-
-child_desc_node * child_desc_node_ll; // Linked list para mantener registro de procesos client handler
-
-
-
-/*********************************************************************
- *                                                                   *
- *                     MANEJO DE PROCESOS                            *
- *                                                                   *
- *********************************************************************
-
-    Para mantener registro de los procesos se utiliza una lista enlazada. El nodo base esta apuntado por
-    child_desc_node_ll y se puede interacutar con insert_process, remove_process_by_pid, get_process_by_pid y
-    count_processes.
-
- */
 
 /*********************************************************************
  *                                                                   *
@@ -453,12 +432,12 @@ void sigchld_handler(int signum) {
             else{
                 //Fallo el waitpid
                 perror("FATAL: waitpid failed");
-                continue;
+                break;//continue;
             }
         }
         else if(pid == 0){
             //Sigue habiendo childs que tienen que ser manejados
-            continue;
+            break;//bcontinue;
         }
 
 
@@ -544,7 +523,7 @@ int http_server_proc(int port, int max_connections, ajax_handler_callback_t ajax
 
         #ifdef A_LITTLE_VERBOSE
         printf(COLOR_GREEN);
-        printf("New client connected (%s:%i) (ID %d). Current connections: %d\n", client_ip_str, client_port, connection_id_counter, count_processes(child_desc_node_ll)+1);
+        printf("New client connected (%s:%i) (ID %d)\n", client_ip_str, client_port, connection_id_counter);
         printf(COLOR_RESET);
         fflush(stdout);
         #endif
